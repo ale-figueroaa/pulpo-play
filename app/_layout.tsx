@@ -5,8 +5,10 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+// 1. Cambiamos el anchor para que la app sepa que el punto de partida 
+// cuando se gestionen redirecciones iniciales pueda considerar el flujo de auth.
 export const unstable_settings = {
-  anchor: '(tabs)',
+  initialRouteName: '(auth)',
 };
 
 export default function RootLayout() {
@@ -14,8 +16,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        {/* 2. Registramos el grupo de autenticación como la pantalla inicial */}
+        <Stack.Screen name="(auth)" />
+        
+        {/* 3. El grupo de pestañas principales queda listo para cuando el pulpo haga login */}
+        <Stack.Screen name="(tabs)" />
+        
+        {/* 4. Mantenemos el modal por si necesitas usarlo como un pop-up de pausa o logro */}
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />

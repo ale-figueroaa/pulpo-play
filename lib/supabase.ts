@@ -2,44 +2,55 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://chexcatdzxejsfxqmrpc.supabase.co';
-const supabaseAnonKey = 'sb_publishable_UaIOWCVCcg6yR371AStngg_ZxKz4ddn';
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-// Objeto temporal en memoria para evitar que la librería AsyncStorage explote en Node.js
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ ¡Faltan las variables de entorno de Supabase en el archivo .env!');
+}
+
 const serverMemoryStorage: Record<string, string> = {};
 
 const customStorage = {
   getItem: async (key: string): Promise<string | null> => {
-    if (typeof window !== 'undefined') {
-      return window.localStorage.getItem(key);
-    }
-    // Si estamos en el servidor (Node), usamos la memoria local temporal en lugar de AsyncStorage
     if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined') {
+        return window.localStorage.getItem(key);
+      }
       return serverMemoryStorage[key] || null;
     }
-    return AsyncStorage.getItem(key);
+    return AsyncStorage?.getItem ? await AsyncStorage.getItem(key) : null;
   },
   setItem: async (key: string, value: string): Promise<void> => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(key, value);
-    } else if (Platform.OS === 'web') {
-      serverMemoryStorage[key] = value;
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, value);
+      } else {
+        serverMemoryStorage[key] = value;
+      }
     } else {
-      await AsyncStorage.setItem(key, value);
+      if (AsyncStorage?.setItem) {
+        await AsyncStorage.setItem(key, value);
+      }
     }
   },
   removeItem: async (key: string): Promise<void> => {
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(key);
-    } else if (Platform.OS === 'web') {
-      delete serverMemoryStorage[key];
+    if (Platform.OS === 'web') {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(key);
+      } else {
+        delete serverMemoryStorage[key];
+      }
     } else {
-      await AsyncStorage.removeItem(key);
+      if (AsyncStorage?.removeItem) {
+        await AsyncStorage.removeItem(key);
+      }
     }
   },
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Inicializamos el cliente usando las variables seguras
+export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {
   auth: {
     storage: customStorage,
     autoRefreshToken: true,

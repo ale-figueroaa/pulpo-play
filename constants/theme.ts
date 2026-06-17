@@ -7,6 +7,14 @@ import { Platform } from 'react-native';
 
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
+// src/constants/Colors.ts (o donde prefieras estructurarlo)
+export const ColorsPulpoPlay = {
+  oceanBlue: '#A2D2FF',
+  deepSea: '#0000CD',
+  navy: '#000080',
+  coralButton: '#0084FF',
+  white: '#FFFFFF',
+};
 
 export const Colors = {
   light: {
