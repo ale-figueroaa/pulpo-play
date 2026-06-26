@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, useWindowDimensions, Platform, SafeAreaView, LayoutAnimation } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, useWindowDimensions, Platform, SafeAreaView, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; 
+import { Ionicons } from '@expo/vector-icons'; 
 import { supabase } from '../../lib/supabase'; 
 import { router } from 'expo-router'; 
+
 const MOBILE_BREAKPOINT = 768;
 
 interface NavItem {
@@ -18,41 +20,28 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'profile', label: 'Profile', icon: require('../../assets/images/CoralReef.png') },
 ];
 
-export default function HomeScreenWeb() {
+const DAYS_DATA = [
+  { name: 'Mon', completed: true },
+  { name: 'Tue', completed: true },
+  { name: 'Wed', completed: true },
+  { name: 'Thu', completed: true },
+  { name: 'Fri', completed: true },
+  { name: 'Sat', completed: false },
+  { name: 'Sun', completed: false },
+];
+
+const MILESTONES = [
+  { id: '1', days: 2, reward: 10 },
+  { id: '2', days: 3, reward: 50 },
+  { id: '3', days: 10, reward: 100 },
+  { id: '4', days: 15, reward: 150 },
+  { id: '5', days: 20, reward: 200 },
+];
+
+export default function StreaksScreenWeb() {
   const [coins, setCoins] = useState<number>(0);
-  const [showDialog, setShowDialog] = useState<boolean>(true); 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
-
-  // --- CONFIGURACIÓN DEL CARRUSEL CONTROLADO ---
-  const [activeIndex, setActiveIndex] = useState(1); 
-  const touchStartX = useRef(0);
-
-  const WORLDS_ARRAY = [
-    { id: 0, image: require('../../assets/images/SunkenShip.png') },
-    { id: 1, image: require('../../assets/images/CoralReef.png') },
-    { id: 2, image: require('../../assets/images/SubmarineWorld.png') },
-  ];
-
-  const changeWorld = (direction: 'next' | 'prev') => {
-    if (Platform.OS !== 'web') {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    }
-    setActiveIndex((prev) => {
-      if (direction === 'next') {
-        return prev === WORLDS_ARRAY.length - 1 ? 0 : prev + 1;
-      } else {
-        return prev === 0 ? WORLDS_ARRAY.length - 1 : prev - 1;
-      }
-    });
-  };
-
-  const leftIndex = activeIndex === 0 ? WORLDS_ARRAY.length - 1 : activeIndex - 1;
-  const rightIndex = activeIndex === WORLDS_ARRAY.length - 1 ? 0 : activeIndex + 1;
-
-  const leftWorld = WORLDS_ARRAY[leftIndex];
-  const centerWorldItem = WORLDS_ARRAY[activeIndex];
-  const rightWorld = WORLDS_ARRAY[rightIndex];
 
   useEffect(() => {
     fetchUserCoins();
@@ -71,7 +60,7 @@ export default function HomeScreenWeb() {
         if (data && !error) setCoins(data.coins);
       }
     } catch (err) {
-      console.error('Error cargando monedas:', err);
+      console.error('Error cargando monedas en streaks:', err);
     }
   };
 
@@ -88,7 +77,7 @@ export default function HomeScreenWeb() {
     >
       <SafeAreaView style={[styles.container, isMobile && styles.containerMobile]}>
         
-        {/* --- MENÚ SUPERIOR (LOGO Y MONEDAS) --- */}
+        {/* --- NAVBAR SUPERIOR --- */}
         {isMobile ? (
           <View style={styles.headerRowMobile}>
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
@@ -135,7 +124,6 @@ export default function HomeScreenWeb() {
                     key={item.key}
                     activeOpacity={0.8}
                     style={[styles.navPill, isMobile && styles.navPillMobile]}
-                    // 👈 ¡LISTO! Agregado el evento onPress que le faltaba a la versión de escritorio
                     onPress={() => {
                       if (item.key === 'streak') {
                         router.push('/streaks');
@@ -168,98 +156,103 @@ export default function HomeScreenWeb() {
           </View>
         )}
 
-       {/* --- CONTENIDO CENTRAL --- */}
-        <View style={styles.mainContent}>
-          
-          {/* --- VENTANA FLOTANTE --- */}
-          <TouchableOpacity 
-            activeOpacity={0.8}
-            onPress={() => setShowDialog(false)}
-            disabled={!showDialog}
-            style={[
-              styles.dialogWrapper, 
-              isMobile && styles.dialogWrapperMobile,
-              !showDialog && { opacity: 0 }
-            ]}
+        {/* ================= CONTENIDO PRINCIPAL ADAPTATIVO ================= */}
+        {isMobile ? (
+          /* --- CONTENEDOR EN MÓVIL (SCROLL GLOBAL) --- */
+          <ScrollView 
+            contentContainerStyle={styles.mainContentMobile}
+            showsVerticalScrollIndicator={false}
           >
-            <View style={styles.dialogBubble}>
-              <View style={styles.dialogTextContainer}>
-                <Text style={styles.dialogText}>
-                  Ready for a splash? Choose a zone below to start your mission explores!
-                </Text>
+            <View style={styles.weeklyCard}>
+              <Text style={styles.sectionTitleMobile}>Weekly Streak</Text>
+              <View style={styles.daysRowMobile}>
+                {DAYS_DATA.slice(0, 4).map((day, idx) => (
+                  <View key={idx} style={styles.dayItem}>
+                    <View style={[styles.dayCircle, day.completed ? styles.dayCompleted : styles.dayUpcoming]}>
+                      {day.completed ? <Ionicons name="checkmark" size={20} color="#FFFFFF" /> : <View style={styles.innerUpcomingCircle} />}
+                    </View>
+                    <Text style={styles.dayText}>{day.name}</Text>
+                  </View>
+                ))}
               </View>
-              <View style={styles.avatarCircleDecorator} />
-            </View>
-            <View style={styles.dialogTail} />
-          </TouchableOpacity>
-
-          {/* --- CAROUSEL ANIMADO INTERACTIVO --- */}
-          {isMobile ? (
-            <View 
-              style={styles.carouselWrapperMobile}
-              onTouchStart={(e) => { touchStartX.current = e.nativeEvent.pageX; }}
-              onTouchEnd={(e) => {
-                const diffX = touchStartX.current - e.nativeEvent.pageX;
-                if (diffX > 50) changeWorld('next');  
-                if (diffX < -50) changeWorld('prev'); 
-              }}
-            >
-              <TouchableOpacity 
-                activeOpacity={0.9} 
-                style={[styles.worldCircle, styles.sideWorldMobile]}
-                onPress={() => changeWorld('prev')}
-              >
-                <Image source={leftWorld.image} style={styles.worldImage} />
-              </TouchableOpacity>
-
-              {/* Contenedor central móvil con botón */}
-              <View style={styles.centerWorldContainerMobile}>
-                <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorldMobile]}>
-                  <Image source={centerWorldItem.image} style={styles.worldImage} />
-                </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8} style={styles.playButtonMobile}>
-                  <Text style={styles.playButtonTextMobile}>Play</Text>
-                </TouchableOpacity>
+              <View style={styles.daysRowMobile}>
+                {DAYS_DATA.slice(4, 7).map((day, idx) => (
+                  <View key={idx} style={styles.dayItem}>
+                    <View style={[styles.dayCircle, day.completed ? styles.dayCompleted : styles.dayUpcoming]}>
+                      {day.completed ? <Ionicons name="checkmark" size={20} color="#FFFFFF" /> : <View style={styles.innerUpcomingCircle} />}
+                    </View>
+                    <Text style={styles.dayText}>{day.name}</Text>
+                  </View>
+                ))}
               </View>
-
-              <TouchableOpacity 
-                activeOpacity={0.9} 
-                style={[styles.worldCircle, styles.sideWorldMobile]}
-                onPress={() => changeWorld('next')}
-              >
-                <Image source={rightWorld.image} style={styles.worldImage} />
-              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={styles.worldsRow}>
-              <TouchableOpacity 
-                activeOpacity={0.9} 
-                style={[styles.worldCircle, styles.sideWorld]}
-                onPress={() => changeWorld('prev')}
-              >
-                <Image source={leftWorld.image} style={styles.worldImage} />
-              </TouchableOpacity>
 
-              {/* Contenedor central Web con botón */}
-              <View style={styles.centerWorldContainer}>
-                <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorld]}>
-                  <Image source={centerWorldItem.image} style={styles.worldImage} />
-                </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8} style={styles.playButton}>
-                  <Text style={styles.playButtonText}>Play</Text>
-                </TouchableOpacity>
+            <View style={styles.milestonesContainer}>
+              <Text style={styles.sectionTitleMobile}>Milestones Rewards</Text>
+              {MILESTONES.map((milestone) => (
+                <View key={milestone.id} style={styles.milestoneCard}>
+                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
+                  <View style={styles.milestoneTextContainer}>
+                    <Text style={styles.milestoneTitle}>{milestone.days} Days Streak</Text>
+                    <Text style={styles.milestoneReward}>+{milestone.reward} Sand Dollars</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        ) : (
+          /* --- CONTENEDOR ESCRITORIO WEB (VISTA DE DOS COLUMNAS INDEPENDIENTES) --- */
+          <View style={styles.mainContentWeb}>
+            <View style={styles.webDashboardLayout}>
+              
+              {/* Columna Izquierda: Racha Semanal (COMPLETAMENTE ESTÁTICA) */}
+              <View style={[styles.weeklyCard, styles.weeklyCardWeb]}>
+                <Text style={styles.sectionTitleWeb}>Your Weekly Splash Streak</Text>
+                <Text style={styles.sectionSubTitleWeb}>Keep the momentum going to unlock chest rewards!</Text>
+                
+                <View style={styles.daysRowWeb}>
+                  {DAYS_DATA.map((day, idx) => (
+                    <View key={idx} style={styles.dayItemWeb}>
+                      <View style={[styles.dayCircleWeb, day.completed ? styles.dayCompletedWeb : styles.dayUpcomingWeb]}>
+                        {day.completed ? (
+                          <Ionicons name="checkmark" size={32} color="#FFFFFF" />
+                        ) : (
+                          <View style={styles.innerUpcomingCircleWeb} />
+                        )}
+                      </View>
+                      <Text style={[styles.dayTextWeb, day.completed && styles.dayTextActiveWeb]}>{day.name}</Text>
+                    </View>
+                  ))}
+                </View>
               </View>
 
-              <TouchableOpacity 
-                activeOpacity={0.9} 
-                style={[styles.worldCircle, styles.sideWorld]}
-                onPress={() => changeWorld('next')}
-              >
-                <Image source={rightWorld.image} style={styles.worldImage} />
-              </TouchableOpacity>
+              {/* Columna Derecha: Hitos de Recompensa (CON SCROLL PROPIO) */}
+              <View style={styles.milestonesContainerWeb}>
+                <Text style={styles.sectionTitleWeb}>Streak Milestones</Text>
+                
+                <ScrollView 
+                  style={styles.milestonesScrollWeb}
+                  contentContainerStyle={styles.milestonesScrollContentWeb}
+                  showsVerticalScrollIndicator={false}
+                >
+                  {MILESTONES.map((milestone) => (
+                    <View key={milestone.id} style={[styles.milestoneCard, styles.milestoneCardWeb]}>
+                      <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
+                      <View style={styles.milestoneTextContainer}>
+                        <Text style={styles.milestoneTitleWeb}>{milestone.days} Days Milestone</Text>
+                        <Text style={styles.milestoneRewardWeb}>{milestone.reward} Sand Dollars Reward</Text>
+                      </View>
+                      <View style={styles.claimBadgeWeb}>
+                        <Text style={styles.claimBadgeText}>Locked</Text>
+                      </View>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+
             </View>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* --- NAVBAR INFERIOR (SÓLO MOBILE) --- */}
         {isMobile && (
@@ -297,19 +290,41 @@ export default function HomeScreenWeb() {
 }
 
 const styles = StyleSheet.create({
-  mainContent: {
+  gradientContainer: {
     flex: 1,
-    justifyContent: 'center',
-    position: 'relative', 
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: '4%',
+    paddingTop: 20,
+    width: '100%',
+    alignSelf: 'center',    
+    maxWidth: 1400,          
+  },
+  containerMobile: {
+    paddingHorizontal: '5%',
+    paddingTop: 55, 
+  },
+  mainContentMobile: {
+    paddingBottom: 110,
+    paddingTop: 10,       
+    paddingHorizontal: 16, 
+  },
+  mainContentWeb: {
+    flex: 1,               // Toma todo el espacio disponible restante abajo de la navbar
+    paddingVertical: 20,   
+    paddingHorizontal: 32, 
+    marginBottom: 20,
   },
 
-  // ================= DESKTOP =================
+  // ================= DESKTOP NAV =================
   topNavbar: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 30, 
-    zIndex: 50, // 👈 Elevado para asegurar que no se solape con fondos en la web
+    marginBottom: 40,      
+    zIndex: 50, 
     paddingHorizontal: '5%', 
   },
   headerSide: {
@@ -329,12 +344,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // ================= MOBILE =================
+  // ================= MOBILE NAV =================
   headerRowMobile: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
+    marginBottom: 30,      
     zIndex: 30,
   },
   headerSideMobile: {
@@ -483,7 +499,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 22,
     marginHorizontal: 10,
-    // 👈 Toque Web Pro: añade puntero de ratón al pasar encima en el navegador
     ...Platform.select({
       web: { cursor: 'pointer' }
     })
@@ -519,107 +534,6 @@ const styles = StyleSheet.create({
     lineHeight: 16, 
   },
 
-  // --- Diálogos estables ---
-  dialogWrapper: {
-    alignSelf: 'center',       
-    width: 480,
-    marginTop: 35,             
-    marginLeft: 320,           
-    position: 'relative',
-    zIndex: 20,
-  },
-  dialogWrapperMobile: {
-    alignSelf: 'center',
-    width: '100%',
-    marginTop: 40,   
-    marginRight: 0,
-    marginLeft: 0, 
-  },
-  dialogBubble: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 25,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 3,
-    borderColor: '#E2EEFF',
-    ...Platform.select({
-      web: {
-        shadowColor: 'rgba(0,0,0,0.05)',
-        shadowOffset: { width: 0, height: 6 },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-      }
-    })
-  },
-  dialogTextContainer: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  dialogText: {
-    color: '#7F8C9D',
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 18,
-  },
-  avatarCircleDecorator: {
-    width: 45,
-    height: 45,
-    borderRadius: 15,
-    backgroundColor: '#5C96FF',
-  },
-  dialogTail: {
-    position: 'absolute',
-    bottom: -15,
-    right: 35,
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 12,
-    borderRightWidth: 12,
-    borderTopWidth: 16,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#FFFFFF',
-  },
-
-  // ================= MUNDOS / PLANETAS DESKTOP =================
-  worldsRow: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -140, 
-    marginBottom: 40,
-  },
-  worldCircle: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...Platform.select({
-      web: { cursor: 'pointer' }
-    })
-  },
-  centerWorld: {
-    width: 320,           
-    height: 320,         
-    marginHorizontal: 10, 
-    zIndex: 10,
-  },
-  sideWorld: {
-    width: 200,           
-    height: 200,         
-    zIndex: 5,
-    opacity: 0.85,
-    marginHorizontal: 15, 
-    transform: [{ translateY: -25 }], 
-  },
-  worldImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain',
-  },
   profileIconMobile: {
     width: 54,
     height: 54,
@@ -630,95 +544,168 @@ const styles = StyleSheet.create({
     height: 60,
     resizeMode: 'contain',
   },
-  gradientContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: '4%',
-    paddingTop: 20,
-    width: '100%',
-    alignSelf: 'center',    
-    maxWidth: 1400,          
-  },
-  containerMobile: {
-    paddingHorizontal: '5%',
-    paddingTop: 55, 
-  },
-   
-  // ================= CONTENEDORES Y BOTÓN PLAY =================
-  centerWorldContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  playButton: {
-    backgroundColor: '#3B629B', 
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 45,
-    borderWidth: 3,
-    borderColor: '#B0CFFF', 
-    marginTop: 15,
-    ...Platform.select({
-      web: {
-        shadowColor: 'rgba(0,0,0,0.15)',
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-        cursor: 'pointer', 
-      },
-    }),
-  },
-  playButtonText: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
 
-  // ================= ESTILOS DEL CARRUSEL CONTROLADO MOBILE =================
-  carouselWrapperMobile: {
+  // ================= ESTILOS PROPIOS DEL CONTENIDO DE RACHAS =================
+  sectionTitleMobile: { fontSize: 20, fontWeight: '900', color: '#FFFFFF', marginBottom: 15, textAlign: 'center' },
+  weeklyCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 20,
+    marginBottom: 25,
+    borderWidth: 3,
+    borderColor: '#EAF2FF',
+  },
+  daysRowMobile: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-around',
+    marginBottom: 12,
+  },
+  dayItem: { alignItems: 'center', flex: 1 },
+  dayCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  dayCompleted: { backgroundColor: '#5A9EFF', borderWidth: 3, borderColor: '#EAF2FF' },
+  dayUpcoming: { backgroundColor: '#F2F7FF', borderWidth: 2, borderColor: '#C0D4F0', borderStyle: 'dashed' },
+  innerUpcomingCircle: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#D2E3FC' },
+  dayText: { fontSize: 13, color: '#3B629B', fontWeight: '800' },
+
+  milestonesContainer: { width: '100%' },
+  milestoneCard: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 22,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+    borderWidth: 3,
+    borderColor: '#EAF2FF',
+  },
+  milestoneCoinIcon: { width: 50, height: 50, resizeMode: 'contain', marginRight: 15 },
+  milestoneTextContainer: { flex: 1 },
+  milestoneTitle: { color: '#3B629B', fontSize: 16, fontWeight: '900' },
+  milestoneReward: { color: '#5A9EFF', fontSize: 14, fontWeight: '800' },
+
+  // --- DISEÑO ESCRITORIO WEB CONTENIDO MÁS FLEXIBLE ---
+  webDashboardLayout: {
+    flex: 1,
+    flexDirection: 'row',
     width: '100%',
-    height: 300, 
-    marginTop: -150,    
-    marginBottom: -20, 
+    justifyContent: 'space-between',
+    gap: 30,
   },
-  centerWorldContainerMobile: {
-    alignItems: 'center',
+  weeklyCardWeb: {
+    flex: 1.3,
+    padding: 35,
+    marginBottom: 0,
     justifyContent: 'center',
-    zIndex: 10,
-    marginHorizontal: -25, 
-    transform: [{ translateY: 15 }], 
+    alignSelf: 'stretch',     // Se estira al alto completo disponible de forma fija
   },
-  centerWorldMobile: {
-    width: 225, 
-    height: 225,
-    zIndex: 10,
+  milestonesContainerWeb: {
+    flex: 1,
+    height: '100%',           // Forzamos que use el alto completo para que el scroll interno funcione
   },
-  sideWorldMobile: {
-    width: 135, 
-    height: 135, 
-    marginHorizontal: 8, 
-    zIndex: 5,
-    opacity: 0.70, 
-    transform: [{ translateY: -35 }], 
+  milestonesScrollWeb: {
+    flex: 1,
+    marginTop: 15,
   },
-  playButtonMobile: {
-    backgroundColor: '#3B629B',
-    borderRadius: 16,
-    paddingVertical: 8, 
-    paddingHorizontal: 35,
-    borderWidth: 2,
-    borderColor: '#B0CFFF',
-    marginTop: 15, 
+  milestonesScrollContentWeb: {
+    gap: 15,
+    paddingBottom: 20,        // Aire al final del scroll para que no pegue con el fondo
   },
-  playButtonTextMobile: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  sectionTitleWeb: {
+    fontSize: 28,
     fontWeight: '900',
+    color: '#0a3575',
+    marginBottom: 5,
+  },
+  sectionSubTitleWeb: {
+    fontSize: 16,
+    color: '#7F8C9D',
+    fontWeight: '600',
+    marginBottom: 40,
+  },
+  daysRowWeb: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  dayItemWeb: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  dayCircleWeb: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  dayCompletedWeb: {
+    backgroundColor: '#3B629B',
+    borderWidth: 4,
+    borderColor: '#B0CFFF',
+  },
+  dayUpcomingWeb: {
+    backgroundColor: '#F5F9FF',
+    borderWidth: 3,
+    borderColor: '#CBDFFF',
+    borderStyle: 'dashed',
+  },
+  innerUpcomingCircleWeb: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#CBDFFF',
+  },
+  dayTextWeb: {
+    fontSize: 16,
+    color: '#A0B8DD',
+    fontWeight: '800',
+  },
+  dayTextActiveWeb: {
+    color: '#3B629B',
+    fontWeight: '900',
+  },
+  milestoneCardWeb: {
+    marginBottom: 0,
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: '#B0CFFF',
+  },
+  milestoneCoinIconWeb: {
+    width: 65,
+    height: 65,
+    marginRight: 20,
+  },
+  milestoneTitleWeb: {
+    fontSize: 19,
+    fontWeight: '900',
+    color: '#3B629B',
+    marginBottom: 3,
+  },
+  milestoneRewardWeb: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#5A9EFF',
+  },
+  claimBadgeWeb: {
+    backgroundColor: '#EAEAEA',
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+  },
+  claimBadgeText: {
+    color: '#888888',
+    fontWeight: '800',
+    fontSize: 13,
   },
 });
