@@ -23,9 +23,9 @@ export default function HomeScreen() {
       
       <Text style={styles.title}>Pulpo Play</Text>
       
-      <ActivityIndicator size="large" color="#000080" style={styles.loader} />
+      <ActivityIndicator size="large" color="#B0CFFF" style={styles.loader} />
       
-      <Text style={styles.subtitle}>Preparando tu aventura...</Text>
+      <Text style={styles.subtitle}>Preparing your adventure...</Text>
     </View>
   );
 }
