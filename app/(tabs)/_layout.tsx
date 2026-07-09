@@ -6,7 +6,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false, 
+        headerShown: false,
+        tabBarStyle: { display: 'none' }, // 👈 oculta la barra completa
       }}
     >
       <Tabs.Screen
@@ -27,8 +28,13 @@ export default function TabLayout() {
         name="streaks"
         options={{
           title: 'Rachas',
-          // Usé "star.fill" como ejemplo, pero puedes cambiarlo por el icono que prefieras
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="star.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="coralReef"
+        options={{
+          href: null, // 👈 oculta esta pantalla de cualquier listado de tabs
         }}
       />
     </Tabs>

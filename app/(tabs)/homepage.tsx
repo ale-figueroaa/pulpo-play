@@ -3,7 +3,7 @@ import { Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { router } from 'expo-router'; 
 
-// 1. Importamos la lógica y estilos
+// 1. Importamos la lógica y estilos originales
 import { useHomeLogic, NavItem } from '../../utils/homepage';
 import { styles } from '../../styles/homepage.style';
 
@@ -75,6 +75,8 @@ export default function HomeScreenWeb() {
                         router.push('/streaks');
                       } else if (item.key === 'worlds') {
                         router.push('/homepage');
+                      } else if (item.key === 'store') { // 👈 Ruta agregada para Escritorio
+                        router.push('/store');
                       }
                     }}
                   >
@@ -150,7 +152,10 @@ export default function HomeScreenWeb() {
                 <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorldMobile]}>
                   <Image source={centerWorldItem.image} style={styles.worldImage} />
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8} style={styles.playButtonMobile}>
+                <TouchableOpacity 
+                  activeOpacity={0.8} 
+                  style={styles.playButtonMobile}
+                  onPress={() => router.push(centerWorldItem.route as any)}                >
                   <Text style={styles.playButtonTextMobile}>Play</Text>
                 </TouchableOpacity>
               </View>
@@ -177,7 +182,10 @@ export default function HomeScreenWeb() {
                 <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorld]}>
                   <Image source={centerWorldItem.image} style={styles.worldImage} />
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.8} style={styles.playButton}>
+                <TouchableOpacity 
+                  activeOpacity={0.8} 
+                  style={styles.playButton}
+                  onPress={() => router.push(centerWorldItem.route as any)}                >
                   <Text style={styles.playButtonText}>Play</Text>
                 </TouchableOpacity>
               </View>
@@ -207,6 +215,8 @@ export default function HomeScreenWeb() {
                       router.push('/streaks');  
                     } else if (item.key === 'worlds') {
                       router.push('/homepage'); 
+                    } else if (item.key === 'store') { // 👈 Ruta agregada para Móvil
+                      router.push('/store');
                     }
                   }}
                 >
