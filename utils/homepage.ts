@@ -18,9 +18,9 @@ export const NAV_ITEMS: NavItem[] = [
 ];
 
 export const WORLDS_ARRAY = [
-  { id: 0, image: require('../assets/images/SunkenShip.png') },
-  { id: 1, image: require('../assets/images/CoralReef.png') },
-  { id: 2, image: require('../assets/images/SubmarineWorld.png') },
+  { id: 0, image: require('../assets/images/SunkenShip.png'), route: '/SunkenShip' },
+  { id: 1, image: require('../assets/images/CoralReef.png'), route: '/CoralReef' },
+  { id: 2, image: require('../assets/images/SubmarineWorld.png'), route: '/SubmarineWorld' },
 ];
 
 export const useHomeLogic = () => {
