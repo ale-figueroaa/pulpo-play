@@ -8,7 +8,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 // 1. Cambiamos el anchor para que la app sepa que el punto de partida 
 // cuando se gestionen redirecciones iniciales pueda considerar el flujo de auth.
 export const unstable_settings = {
-  initialRouteName: '(auth)',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
@@ -17,7 +17,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        {/* 2. Registramos el grupo de autenticación como la pantalla inicial */}
+        {/* Pantalla inicial Landing Page (solo Web, en móvil redirige a Login) */}
+        <Stack.Screen name="index" />
+        
+        {/* Registramos el grupo de autenticación */}
         <Stack.Screen name="(auth)" />
         
         {/* 3. El grupo de pestañas principales queda listo para cuando el pulpo haga login */}

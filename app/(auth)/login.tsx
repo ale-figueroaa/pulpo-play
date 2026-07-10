@@ -1,21 +1,27 @@
+
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Text, View, TextInput, TouchableOpacity,
-  SafeAreaView, ActivityIndicator, ScrollView,
-  Platform, useWindowDimensions
+  ActivityIndicator,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput, TouchableOpacity,
+  useWindowDimensions,
+  View
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
 
 // la logica en utils y el estilo en style
-import { handleLoginLogic } from '../../utils/login';
 import { styles } from '../../styles/login.style';
+import { handleLoginLogic } from '../../utils/login';
 
 export default function LoginScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
   const isMobile = !isWeb || width < 768;
