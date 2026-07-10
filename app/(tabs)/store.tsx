@@ -1,9 +1,10 @@
 // StoreScreen.tsx
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
+import { getUserSandDollars } from '../../utils/db';
 
 import { styles } from '../../styles/store.style';
 
@@ -14,26 +15,23 @@ export default function StoreScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
-  useEffect(() => {
-    fetchUserCoins();
-  }, []);
-
   const fetchUserCoins = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data, error } = await supabase
-          .from('profiles') 
-          .select('coins')
-          .eq('id', user.id)
-          .single();
-
-        if (data && !error) setCoins(data.coins);
+        const sandDollars = await getUserSandDollars(user.id);
+        setCoins(sandDollars);
       }
     } catch (err) {
       console.error('Error cargando monedas en la tienda:', err);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserCoins();
+    }, [])
+  );
 
   const handleNavigation = (key: string) => {
     if (key === 'streak') router.push('/streaks');

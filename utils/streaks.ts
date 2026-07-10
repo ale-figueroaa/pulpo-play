@@ -1,13 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { supabase } from '../lib/supabase';
+import { getUserSandDollars } from './db';
 
-const MOBILE_BREAKPOINT = 768;
+export const MOBILE_BREAKPOINT = 768;
 
 export interface NavItem {
   key: string;
   label: string;
   icon: any;
+}
+
+export interface DayData {
+  day: string;
+  active: boolean;
+}
+
+export interface MilestoneData {
+  id: string;
+  days: number;
+  reward: number;
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -17,25 +30,14 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'profile', label: 'Profile', icon: require('../assets/images/CoralReef.png') },
 ];
 
-export interface DayData {
-  name: string;
-  completed: boolean;
-}
-
-export interface MilestoneData {
-  id: string;
-  days: number;
-  reward: number;
-}
-
 export const DAYS_DATA = [
-  { name: 'Mon', completed: true },
-  { name: 'Tue', completed: true },
-  { name: 'Wed', completed: true },
-  { name: 'Thu', completed: true },
-  { name: 'Fri', completed: true },
-  { name: 'Sat', completed: false },
-  { name: 'Sun', completed: false },
+  { day: 'Lun', active: true },
+  { day: 'Mar', active: true },
+  { day: 'Mié', active: false },
+  { day: 'Jue', active: false },
+  { day: 'Vie', active: false },
+  { day: 'Sáb', active: false },
+  { day: 'Dom', active: false },
 ];
 
 export const MILESTONES = [
@@ -51,26 +53,23 @@ export const useStreaksLogic = () => {
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
-  useEffect(() => {
-    fetchUserCoins();
-  }, []);
-
   const fetchUserCoins = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('coins')
-          .eq('id', user.id)
-          .single();
-
-        if (data && !error) setCoins(data.coins);
+        const sandDollars = await getUserSandDollars(user.id);
+        setCoins(sandDollars);
       }
     } catch (err) {
       console.error('Error cargando monedas en streaks:', err);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserCoins();
+    }, [])
+  );
 
   const visibleNavItems = isMobile
     ? NAV_ITEMS.filter(item => item.key !== 'profile')
