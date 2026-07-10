@@ -1,7 +1,7 @@
+// store.style.ts
 import { StyleSheet, Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
-  // ── Contenedor raíz ────────────────────────────────────────────────
   gradientContainer: {
     flex: 1,
   },
@@ -9,74 +9,54 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: '4%',
     paddingTop: 20,
+    width: '100%',
+    alignSelf: 'center',    
+    maxWidth: 1400,          
   },
   containerMobile: {
     paddingHorizontal: '5%',
-    paddingTop: 30,
+    paddingTop: 45, 
+  },
+  mainContentWeb: {
+    flex: 1,               
+    paddingVertical: 10,   
+    paddingHorizontal: 32, 
+    marginBottom: 20,
   },
 
-  // ── NAVBAR SUPERIOR DESKTOP ─────────────────────────────────────────
+  // ================= NAVBARS =================
   topNavbar: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    zIndex: 30,
+    marginTop: 30, 
+    marginBottom: 15,      
+    zIndex: 50, 
+    paddingHorizontal: '5%', 
   },
-  headerSide: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerSideLeft:  { justifyContent: 'flex-start' },
+  headerSide: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  headerSideLeft: { justifyContent: 'flex-start' },
   headerSideRight: { justifyContent: 'flex-end' },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  // ── NAVBAR SUPERIOR MOBILE ──────────────────────────────────────────
+  headerCenter: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   headerRowMobile: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     width: '100%',
+    marginBottom: 10,      
     zIndex: 30,
   },
-  headerSideMobile: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerSideLeftMobile:  { justifyContent: 'flex-start' },
-  headerSideRightMobile: { justifyContent: 'flex-end' },
-  headerCenterMobile: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  headerSideMobile: { flex: 1 },
+  headerSideLeftMobile: { alignItems: 'flex-start' },
+  headerSideRightMobile: { alignItems: 'flex-end' },
+  headerCenterMobile: { flex: 2, alignItems: 'center', justifyContent: 'center' },
+  bottomNavbarMobile: {
+    width: '100%',
+    marginBottom: Platform.OS === 'ios' ? 10 : 15, 
+    zIndex: 30,
   },
 
-  // ── Ícono de perfil / logout (círculo blanco) ───────────────────────
-  profileIconMobile: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 3,
-    borderColor: '#B0CFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      web:     { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
-      default: { elevation: 3 },
-    }),
-  },
-  profileIconImage: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
-  },
-
-  // ── Logo Pulpo Play ─────────────────────────────────────────────────
+  // --- Componentes Atómicos de UI ---
   logoCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
@@ -88,44 +68,27 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 150,
-    ...Platform.select({
-      web:     { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
-      default: { elevation: 3 },
-    }),
   },
   logoTextTitle: { fontSize: 20, fontWeight: '900', color: '#3B629B', lineHeight: 30 },
-  logoTextSub:   { fontSize: 20, fontWeight: '900', color: '#3B629B', lineHeight: 30 },
-
-  // ── Monedas ─────────────────────────────────────────────────────────
+  logoTextSub: { fontSize: 20, fontWeight: '900', color: '#3B629B', lineHeight: 30 },
   coinsCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     paddingVertical: 12,
-    paddingHorizontal: 22,
+    paddingHorizontal: 20, 
     height: 70,
     borderWidth: 3,
     borderColor: '#B0CFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 175,
-    ...Platform.select({
-      web:     { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
-      default: { elevation: 3 },
-    }),
+    width: 150, 
   },
-  coinsCardMobile: {
-    height: 54,
-    paddingHorizontal: 12,
-    minWidth: 0,
-    borderRadius: 14,
-  },
-  coinIcon:       { width: 32, height: 32, resizeMode: 'contain', marginRight: 10 },
-  coinIconMobile: { width: 22, height: 22, marginRight: 6 },
-  coinsText:       { fontSize: 22, fontWeight: '900', color: '#3B629B' },
-  coinsTextMobile: { fontSize: 16 },
-
-  // ── Nav Island ──────────────────────────────────────────────────────
+  coinsCardMobile: { height: 52, width: '105%', paddingHorizontal: 16, borderRadius: 14 },
+  coinIcon: { width: 32, height: 32, resizeMode: 'contain', marginRight: 10 },
+  coinIconMobile: { width: 24, height: 24, marginRight: 8 },
+  coinsText: { fontSize: 22, fontWeight: '900', color: '#3B629B' },
+  coinsTextMobile: { fontSize: 18 },
   navIsland: {
     backgroundColor: '#EAF2FF',
     borderRadius: 30,
@@ -137,207 +100,132 @@ export const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#B0CFFF',
     height: 70,
-    ...Platform.select({ web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' } }),
   },
-  navIslandMobile: {
-    width: '100%',
-    height: 60,
-    paddingHorizontal: 6,
-    borderRadius: 22,
-  },
-  navPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 22,
-    marginHorizontal: 10,
-  },
-  navPillMobile:     { paddingHorizontal: 6, marginHorizontal: 2 },
-  pillIcon:          { width: 54, height: 54, resizeMode: 'contain', marginRight: 8 },
-  pillIconMobile:    { width: 32, height: 32, marginRight: 1 },
-  pillText:          { color: '#3B629B', fontSize: 22, fontWeight: '900' },
-  pillTextMobile:    { fontSize: 14 },
-  bottomNavbarMobile: {
-    width: '100%',
-    marginBottom: Platform.OS === 'ios' ? 10 : 15,
-    zIndex: 30,
-  },
+  navIslandMobile: { width: '100%', alignSelf: 'center', height: 80, paddingHorizontal: 6, borderRadius: 22 },
+  navPill: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 4, paddingHorizontal: 22, marginHorizontal: 10 },
+  navPillMobile: { flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 1, marginHorizontal: 1 },
+  pillIcon: { width: 54, height: 54, resizeMode: 'contain', marginRight: 8 },
+  pillIconMobile: { width: 55, height: 55, resizeMode: 'contain', marginBottom: -8 },
+  pillText: { color: '#3B629B', fontSize: 22, fontWeight: '900' },
+  pillTextMobile: { color: '#3B629B', fontSize: 14, fontWeight: '900', lineHeight: 16 },
+  profileIconMobile: { width: 54, height: 54 },
+  profileIconImage: { marginTop: 3, width: 60, height: 60, resizeMode: 'contain' },
 
-  // ── CONTENIDO MOBILE ────────────────────────────────────────────────
-  mainContentMobile: {
-    paddingTop: 16,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
+  // ================= ESTILOS GLOBALES TIENDA =================
   storeTitle: {
     fontSize: 36,
     fontWeight: '900',
-    color: '#C8006E',
-    marginBottom: 20,
+    color: '#e23e57', 
     textAlign: 'center',
-    letterSpacing: 1,
-  },
-  featuredCard: {
-    width: '100%',
-    backgroundColor: '#DDEEFF',
-    borderRadius: 28,
-    alignItems: 'center',
-    padding: 20,
-    marginBottom: 24,
-    ...Platform.select({
-      web:     { boxShadow: '0px 6px 16px rgba(0,0,0,0.10)' },
-      default: { elevation: 4 },
-    }),
-  },
-  featuredImage: {
-    width: 180,
-    height: 180,
-    resizeMode: 'contain',
-    marginBottom: 16,
-  },
-  featuredPriceTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    ...Platform.select({
-      web:     { boxShadow: '0px 4px 10px rgba(0,0,0,0.08)' },
-      default: { elevation: 3 },
-    }),
-  },
-  featuredPriceText: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: '#3B629B',
-    marginLeft: 8,
-  },
-  rowTitle: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#3B629B',
-    alignSelf: 'flex-start',
-    marginBottom: 12,
-  },
-  itemsScrollContent: {
-    paddingRight: 8,
-  },
-  itemCard: {
-    backgroundColor: '#DDEEFF',
-    borderRadius: 22,
-    alignItems: 'center',
-    padding: 14,
-    marginRight: 14,
-    width: 140,
-    ...Platform.select({
-      web:     { boxShadow: '0px 4px 12px rgba(0,0,0,0.08)' },
-      default: { elevation: 3 },
-    }),
-  },
-  itemImage: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
     marginBottom: 10,
   },
-  itemPriceTag: {
-    flexDirection: 'row',
+  storeTitleWeb: {
+    fontSize: 42,
+    fontWeight: '900',
+    color: '#e23e57', 
+    textAlign: 'left',
+    marginBottom: 12,
+    paddingHorizontal: 10,
+  },
+  featuredItemCard: {
+    backgroundColor: '#8cbaff', 
+    borderRadius: 32,
+    width: '100%',
+    justifyContent: 'flex-end',
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#70a5fa',
+  },
+  featuredPreviewPlaceholder: { flex: 1, width: '100%' },
+  featuredPriceBadge: { bottom: 12, paddingHorizontal: 25 },
+  priceBadge: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 6,
-    ...Platform.select({
-      web:     { boxShadow: '0px 2px 6px rgba(0,0,0,0.06)' },
-      default: { elevation: 2 },
-    }),
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: '#e2efff',
   },
-  itemPriceCoin: { width: 18, height: 18, resizeMode: 'contain' },
-  itemPriceText: { fontSize: 14, fontWeight: '800', color: '#3B629B', marginLeft: 5 },
+  priceCoinIcon: { width: 22, height: 22, resizeMode: 'contain', marginRight: 6 },
+  priceText: { fontSize: 14, fontWeight: '900', color: '#000000' },
+  itemPreviewPlaceholder: { flex: 1, width: '100%' },
 
-  // ── CONTENIDO DESKTOP ───────────────────────────────────────────────
-  mainContentWeb: {
+  // ================= ESTRUCTURA MÓVIL (SPLIT VERTICAL) =================
+  mainContentMobileSplit: {
     flex: 1,
-    paddingTop: 24,
+    width: '100%',
   },
-  storeTitleWeb: {
-    fontSize: 48,
-    fontWeight: '900',
-    color: '#C8006E',
-    textAlign: 'center',
-    marginBottom: 32,
-    letterSpacing: 2,
+  mobileStaticTopSection: {
+    width: '100%',
+    paddingBottom: 10,
   },
-  webGrid: {
+  featuredItemCardMobile: {
+    height: 190, 
+  },
+  mobileScrollingBottomSection: {
+    flex: 1,    
+    width: '100%',
+  },
+  mobileItemsScrollContent: {
+    paddingBottom: 110, 
+    paddingTop: 5,
+  },
+  mobileGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 24,
+    justifyContent: 'space-between',
+    gap: 12,
   },
-  featuredCardWeb: {
-    backgroundColor: '#DDEEFF',
-    borderRadius: 32,
-    alignItems: 'center',
-    padding: 32,
-    width: 320,
-    ...Platform.select({
-      web:     { boxShadow: '0px 8px 20px rgba(0,0,0,0.10)' },
-      default: { elevation: 5 },
-    }),
-  },
-  featuredBadge: {
-    backgroundColor: '#C8006E',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 4,
-    marginBottom: 16,
-    alignSelf: 'flex-start',
-  },
-  featuredBadgeText: { color: '#FFF', fontWeight: '800', fontSize: 13 },
-  featuredImageWeb: { width: 200, height: 200, resizeMode: 'contain', marginBottom: 20 },
-  featuredNameWeb:  { fontSize: 22, fontWeight: '800', color: '#3B629B', marginBottom: 12 },
-  featuredPriceTagWeb: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    paddingHorizontal: 22,
-    paddingVertical: 12,
-    ...Platform.select({
-      web:     { boxShadow: '0px 4px 10px rgba(0,0,0,0.08)' },
-      default: { elevation: 3 },
-    }),
-  },
-  featuredCoinWeb: { width: 28, height: 28, resizeMode: 'contain' },
-  featuredPriceTextWeb: { fontSize: 24, fontWeight: '900', color: '#3B629B', marginLeft: 8 },
-
-  itemCardWeb: {
-    backgroundColor: '#DDEEFF',
+  smallItemCardMobile: {
+    backgroundColor: '#8cbaff',
     borderRadius: 24,
+    width: '48%', 
+    height: 160,
+    padding: 10,
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: 20,
-    width: 200,
-    ...Platform.select({
-      web:     { boxShadow: '0px 4px 12px rgba(0,0,0,0.08)' },
-      default: { elevation: 3 },
-    }),
+    borderWidth: 3,
+    borderColor: '#70a5fa',
   },
-  itemImageWeb:     { width: 120, height: 120, resizeMode: 'contain', marginBottom: 14 },
-  itemNameWeb:      { fontSize: 16, fontWeight: '700', color: '#3B629B', marginBottom: 10 },
-  itemPriceTagWeb: {
+
+  // ================= ESTRUCTURA DESKTOP WEB (SPLIT HORIZONTAL) =================
+  webDashboardLayout: {
+    flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    ...Platform.select({
-      web:     { boxShadow: '0px 2px 6px rgba(0,0,0,0.06)' },
-      default: { elevation: 2 },
-    }),
+    width: '100%',
+    justifyContent: 'space-between',
+    gap: 30,
   },
-  itemCoinWeb:      { width: 22, height: 22, resizeMode: 'contain' },
-  itemPriceTextWeb: { fontSize: 16, fontWeight: '800', color: '#3B629B', marginLeft: 6 },
+  featuredItemCardWeb: {
+    flex: 1.2,
+    height: '100%', 
+    marginBottom: 0,
+  },
+  smallItemsContainerWeb: {
+    flex: 1.5,
+    height: '100%',           
+  },
+  smallItemsScrollWeb: { flex: 1 },
+  smallItemsScrollContentWeb: { paddingBottom: 20 },
+  webGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',         
+    gap: 20,
+    justifyContent: 'flex-start',
+  },
+  smallItemCardWeb: {
+    backgroundColor: '#8cbaff',
+    borderRadius: 28,
+    width: '30%',             
+    minWidth: 150,
+    height: 210,
+    padding: 14,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#70a5fa',
+  },
 });

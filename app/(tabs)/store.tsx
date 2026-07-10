@@ -1,74 +1,81 @@
-import React from 'react';
-import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+// StoreScreen.tsx
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { supabase } from '../../lib/supabase';
 
 import { styles } from '../../styles/store.style';
 
-// 💡 CONFIGURACIÓN DEL MOCKUP
-const IS_MOBILE = false; // Cambia a 'true' para visualizar la interfaz móvil
-const MOCK_COINS = "1,250";
+import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA } from '../../utils/store';
 
-const MOCK_NAV_ITEMS = [
-  { key: 'worlds', label: 'Worlds', icon: require('../../assets/images/SandDollars.png') },
-  { key: 'streak', label: 'Streak', icon: require('../../assets/images/SandDollars.png') },
-  { key: 'store', label: 'Store', icon: require('../../assets/images/SandDollars.png') },
-];
+export default function StoreScreen() {
+  const [coins, setCoins] = useState<number>(0);
+  const { width } = useWindowDimensions();
+  const isMobile = width < MOBILE_BREAKPOINT;
 
-const MOCK_FEATURED_ITEM = {
-  id: 'f1',
-  name: 'Volcano Island',
-  price: 2500,
-  image: require('../../assets/images/SandDollars.png'),
-};
+  useEffect(() => {
+    fetchUserCoins();
+  }, []);
 
-const MOCK_REST_ITEMS = [
-  { id: '1', name: 'Coral Reef', price: 800, image: require('../../assets/images/SandDollars.png') },
-  { id: '2', name: 'Deep Ocean', price: 1200, image: require('../../assets/images/SandDollars.png') },
-  { id: '3', name: 'Ice Berg', price: 1500, image: require('../../assets/images/SandDollars.png') },
-  { id: '4', name: 'Space Station', price: 2000, image: require('../../assets/images/SandDollars.png') },
-];
+  const fetchUserCoins = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles') 
+          .select('coins')
+          .eq('id', user.id)
+          .single();
 
-export default function StoreScreenWeb() {
+        if (data && !error) setCoins(data.coins);
+      }
+    } catch (err) {
+      console.error('Error cargando monedas en la tienda:', err);
+    }
+  };
+
+  const handleNavigation = (key: string) => {
+    if (key === 'streak') router.push('/streaks');
+    else if (key === 'worlds') router.push('/homepage');
+    else if (key === 'store') router.push('/store');
+  };
+
+  const visibleNavItems = isMobile 
+    ? NAV_ITEMS.filter(item => item.key !== 'profile') 
+    : NAV_ITEMS;
+
   return (
     <LinearGradient
-      colors={['#99C1F9', '#C8E6FF']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
+      colors={['#03245a', '#5a9eff']} 
+      start={{ x: 0, y: 1 }}           
+      end={{ x: 0, y: 0 }}             
       style={styles.gradientContainer}
     >
-      <SafeAreaView style={[styles.container, IS_MOBILE && styles.containerMobile]}>
-
-        {/* ── NAVBAR SUPERIOR ─────────────────────────────────────── */}
-        {IS_MOBILE ? (
+      <SafeAreaView style={[styles.container, isMobile && styles.containerMobile]}>
+        
+        {/* --- NAVBAR SUPERIOR --- */}
+        {isMobile ? (
           <View style={styles.headerRowMobile}>
             {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
               <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
-                <Image
-                  source={require('../../assets/images/Perfil.png')}
-                  style={styles.profileIconImage}
-                />
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
               </TouchableOpacity>
             </View>
 
             {/* Monedas (centro) */}
             <View style={styles.headerCenterMobile}>
               <View style={[styles.coinsCard, styles.coinsCardMobile]}>
-                <Image
-                  source={require('../../assets/images/SandDollars.png')}
-                  style={[styles.coinIcon, styles.coinIconMobile]}
-                />
-                <Text style={[styles.coinsText, styles.coinsTextMobile]}>{MOCK_COINS}</Text>
+                <Image source={require('../../assets/images/SandDollars.png')} style={[styles.coinIcon, styles.coinIconMobile]} />
+                <Text style={[styles.coinsText, styles.coinsTextMobile]}>{coins}</Text>
               </View>
             </View>
 
             {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
               <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
-                <Image
-                  source={require('../../assets/images/LogOut.png')}
-                  style={styles.profileIconImage}
-                />
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
               </TouchableOpacity>
             </View>
           </View>
@@ -83,14 +90,15 @@ export default function StoreScreenWeb() {
 
             <View style={styles.headerCenter}>
               <View style={styles.navIsland}>
-                {MOCK_NAV_ITEMS.map((item) => (
+                {visibleNavItems.map((item) => (
                   <TouchableOpacity
                     key={item.key}
                     activeOpacity={0.8}
-                    style={styles.navPill}
+                    style={[styles.navPill, isMobile && styles.navPillMobile]}
+                    onPress={() => handleNavigation(item.key)}
                   >
-                    <Image source={item.icon} style={styles.pillIcon} />
-                    <Text style={styles.pillText}>{item.label}</Text>
+                    <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
+                    <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -98,131 +106,102 @@ export default function StoreScreenWeb() {
 
             <View style={[styles.headerSide, styles.headerSideRight]}>
               <View style={styles.coinsCard}>
-                <Image
-                  source={require('../../assets/images/SandDollars.png')}
-                  style={styles.coinIcon}
-                />
-                <Text style={styles.coinsText}>{MOCK_COINS}</Text>
+                <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
+                <Text style={styles.coinsText}>{coins}</Text>
               </View>
             </View>
           </View>
         )}
 
-        {/* ── CONTENIDO PRINCIPAL ──────────────────────────────────── */}
-        {IS_MOBILE ? (
-          /* ── MOBILE ── */
-          <ScrollView
-            contentContainerStyle={styles.mainContentMobile}
-            showsVerticalScrollIndicator={false}
-          >
-            <Text style={styles.storeTitle}>Store</Text>
-
-            {/* Tarjeta destacada */}
-            <View style={styles.featuredCard}>
-              <Image source={MOCK_FEATURED_ITEM.image} style={styles.featuredImage} />
-              <View style={styles.featuredPriceTag}>
-                <Image
-                  source={require('../../assets/images/SandDollars.png')}
-                  style={styles.coinIconMobile}
-                />
-                <Text style={styles.featuredPriceText}>
-                  {MOCK_FEATURED_ITEM.price.toLocaleString()}
-                </Text>
+        {/* --- CONTENIDO PRINCIPAL ADAPTATIVO --- */}
+        {isMobile ? (
+          /* --- NUEVA DISTRIBUCIÓN MÓVIL: CONTENEDOR PARTIDO VERTICALMENTE --- */
+          <View style={styles.mainContentMobileSplit}>
+            
+            {/* PARTE DE ARRIBA: COMPLETAMENTE ESTÁTICA */}
+            <View style={styles.mobileStaticTopSection}>
+              <Text style={styles.storeTitle}>Store</Text>
+              <View style={[styles.featuredItemCard, styles.featuredItemCardMobile]}>
+                <View style={styles.featuredPreviewPlaceholder} />
+                <TouchableOpacity style={[styles.priceBadge, styles.featuredPriceBadge]} activeOpacity={0.8}>
+                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
+                  <Text style={styles.priceText}>10,0000</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
-            {/* Fila de items adicionales */}
-            <Text style={styles.rowTitle}>More Worlds</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.itemsScrollContent}
-            >
-              {MOCK_REST_ITEMS.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.85}
-                  style={styles.itemCard}
-                >
-                  <Image source={item.image} style={styles.itemImage} />
-                  <View style={styles.itemPriceTag}>
-                    <Image
-                      source={require('../../assets/images/SandDollars.png')}
-                      style={styles.itemPriceCoin}
-                    />
-                    <Text style={styles.itemPriceText}>
-                      {item.price.toLocaleString()}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </ScrollView>
+            {/* PARTE DE ABAJO: CUADRÍCULA CON SCROLL PROPIO */}
+            <View style={styles.mobileScrollingBottomSection}>
+              <ScrollView 
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.mobileItemsScrollContent}
+              >
+                <View style={styles.mobileGrid}>
+                  {STORE_ITEMS_DATA.map((item) => (
+                    <View key={item.id} style={styles.smallItemCardMobile}>
+                      <View style={styles.itemPreviewPlaceholder} />
+                      <TouchableOpacity style={styles.priceBadge} activeOpacity={0.8}>
+                        <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
+                        <Text style={styles.priceText}>{item.price}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          </View>
         ) : (
-          /* ── DESKTOP ── */
+          /* --- DISEÑO ESCRITORIO WEB (DOS COLUMNAS PARALELAS) --- */
           <View style={styles.mainContentWeb}>
             <Text style={styles.storeTitleWeb}>Store</Text>
-
-            <View style={styles.webGrid}>
-              {/* Featured */}
-              <TouchableOpacity
-                activeOpacity={0.9}
-                style={styles.featuredCardWeb}
-              >
-                <View style={styles.featuredBadge}>
-                  <Text style={styles.featuredBadgeText}>⭐ Featured</Text>
-                </View>
-                <Image source={MOCK_FEATURED_ITEM.image} style={styles.featuredImageWeb} />
-                <Text style={styles.featuredNameWeb}>{MOCK_FEATURED_ITEM.name}</Text>
-                <View style={styles.featuredPriceTagWeb}>
-                  <Image
-                    source={require('../../assets/images/SandDollars.png')}
-                    style={styles.featuredCoinWeb}
-                  />
-                  <Text style={styles.featuredPriceTextWeb}>
-                    {MOCK_FEATURED_ITEM.price.toLocaleString()}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-
-              {/* Resto de items */}
-              {MOCK_REST_ITEMS.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.85}
-                  style={styles.itemCardWeb}
-                >
-                  <Image source={item.image} style={styles.itemImageWeb} />
-                  <Text style={styles.itemNameWeb}>{item.name}</Text>
-                  <View style={styles.itemPriceTagWeb}>
-                    <Image
-                      source={require('../../assets/images/SandDollars.png')}
-                      style={styles.itemCoinWeb}
-                    />
-                    <Text style={styles.itemPriceTextWeb}>
-                      {item.price.toLocaleString()}
-                    </Text>
-                  </View>
+            
+            <View style={styles.webDashboardLayout}>
+              {/* Izquierda Estática */}
+              <View style={[styles.featuredItemCard, styles.featuredItemCardWeb]}>
+                <View style={styles.featuredPreviewPlaceholder} />
+                <TouchableOpacity style={[styles.priceBadge, styles.featuredPriceBadge]} activeOpacity={0.8}>
+                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
+                  <Text style={styles.priceText}>10,0000</Text>
                 </TouchableOpacity>
-              ))}
+              </View>
+
+              {/* Derecha con Scroll */}
+              <View style={styles.smallItemsContainerWeb}>
+                <ScrollView 
+                  style={styles.smallItemsScrollWeb}
+                  contentContainerStyle={styles.smallItemsScrollContentWeb}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <View style={styles.webGrid}>
+                    {STORE_ITEMS_DATA.map((item) => (
+                      <View key={item.id} style={styles.smallItemCardWeb}>
+                        <View style={styles.itemPreviewPlaceholder} />
+                        <TouchableOpacity style={styles.priceBadge} activeOpacity={0.8}>
+                          <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
+                          <Text style={styles.priceText}>{item.price}</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+                </ScrollView>
+              </View>
             </View>
           </View>
         )}
 
-        {/* ── NAVBAR INFERIOR MOBILE ───────────────────────────────── */}
-        {IS_MOBILE && (
+        {/* --- NAVBAR INFERIOR (SÓLO MOBILE) --- */}
+        {isMobile && (
           <View style={styles.bottomNavbarMobile}>
             <View style={[styles.navIsland, styles.navIslandMobile]}>
-              {MOCK_NAV_ITEMS.map((item) => (
+              {visibleNavItems.map((item) => (
                 <TouchableOpacity
                   key={item.key}
                   activeOpacity={0.8}
-                  style={[styles.navPill, styles.navPillMobile]}
+                  style={[styles.navPill, isMobile && styles.navPillMobile]}
+                  onPress={() => handleNavigation(item.key)}
                 >
-                  <Image source={item.icon} style={[styles.pillIcon, styles.pillIconMobile]} />
-                  <Text style={[styles.pillText, styles.pillTextMobile]}>
-                    {item.label}
-                  </Text>
+                  <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
+                  <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
