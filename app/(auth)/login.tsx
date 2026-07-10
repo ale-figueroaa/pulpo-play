@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   Text, View, TextInput, TouchableOpacity,
-  SafeAreaView, ActivityIndicator, Platform, useWindowDimensions
+  SafeAreaView, ActivityIndicator, ScrollView,
+  Platform, useWindowDimensions
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
@@ -29,9 +30,57 @@ export default function LoginScreen() {
     });
   };
 
-  return (
-    <SafeAreaView style={[styles.container, isWeb && styles.containerWeb]}>
+  const formContent = (
+    <>
       {!isMobile && (
+        <>
+          <Text style={styles.webFormTitle}>Welcome back!</Text>
+          <Text style={styles.webFormSub}>Log in to continue your adventure</Text>
+        </>
+      )}
+
+      <View style={[styles.card, !isMobile && styles.cardWeb]}>
+        <Text style={styles.label}>Diver's Name</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          editable={!loading}
+          autoCapitalize="none"
+          placeholder="Your username"
+          placeholderTextColor="#A0AEC0"
+        />
+
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          editable={!loading}
+          autoCapitalize="none"
+          placeholder="Your password"
+          placeholderTextColor="#A0AEC0"
+        />
+
+        <TouchableOpacity style={styles.button} onPress={onLoginPress} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>¡Submerge!</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <Link href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
+        Don't have an account? Sign up
+      </Link>
+    </>
+  );
+
+  if (!isMobile) {
+    return (
+      <SafeAreaView style={styles.containerWeb}>
         <View style={styles.webLeftPanel}>
           <Text style={styles.webPanelEmoji}>🐙</Text>
           <Text style={styles.webPanelTitle}>Pulpo Play</Text>
@@ -40,63 +89,23 @@ export default function LoginScreen() {
           <View style={styles.webBubble2} />
           <View style={styles.webBubble3} />
         </View>
-      )}
-
-      <View style={[styles.formWrapper, !isMobile && styles.formWrapperWeb]}>
-        {isMobile && (
-          <>
-            <View style={styles.iconCircle}>
-              <Text style={styles.iconEmoji}>🐙</Text>
-            </View>
-            <Text style={styles.title}>Pulpo Play</Text>
-            <Text style={styles.subtitle}>Your adventure starts here!</Text>
-          </>
-        )}
-
-        {!isMobile && (
-          <>
-            <Text style={styles.webFormTitle}>Welcome back!</Text>
-            <Text style={styles.webFormSub}>Log in to continue your adventure</Text>
-          </>
-        )}
-
-        <View style={[styles.card, !isMobile && styles.cardWeb]}>
-          <Text style={styles.label}>Diver's Name</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            editable={!loading}
-            autoCapitalize="none"
-            placeholder="Your username"
-            placeholderTextColor="#A0AEC0"
-          />
-
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            editable={!loading}
-            autoCapitalize="none"
-            placeholder="Your password"
-            placeholderTextColor="#A0AEC0"
-          />
-
-          <TouchableOpacity style={styles.button} onPress={onLoginPress} disabled={loading}>
-            {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.buttonText}>¡Submerge!</Text>
-            )}
-          </TouchableOpacity>
+        <View style={styles.formWrapperWeb}>
+          {formContent}
         </View>
+      </SafeAreaView>
+    );
+  }
 
-        <Link href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
-          Don't have an account? Sign up
-        </Link>
-      </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        <View style={styles.iconCircle}>
+          <Text style={styles.iconEmoji}>🐙</Text>
+        </View>
+        <Text style={styles.title}>Pulpo Play</Text>
+        <Text style={styles.subtitle}>Your adventure starts here!</Text>
+        {formContent}
+      </ScrollView>
     </SafeAreaView>
   );
 }

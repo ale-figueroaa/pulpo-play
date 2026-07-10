@@ -4,13 +4,30 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a3d8f',
+  },
+  scroll: {
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
+    paddingVertical: 40,
+    backgroundColor: '#0a3d8f',
+  },
+  iconCircle: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
+  },
+  iconEmoji: { fontSize: 38 },
+  title: {
+    fontSize: 32, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 15, color: 'rgba(255,255,255,0.75)', marginBottom: 28,
   },
   containerWeb: {
+    flex: 1,
     flexDirection: 'row',
-    padding: 0,
     backgroundColor: '#f0f4ff',
   },
   webLeftPanel: {
@@ -44,10 +61,6 @@ export const styles = StyleSheet.create({
     borderRadius: 40, backgroundColor: 'rgba(255,255,255,0.05)',
     top: 180, left: 40,
   },
-  formWrapper: {
-    width: '100%',
-    alignItems: 'center',
-  },
   formWrapperWeb: {
     flex: 1,
     backgroundColor: '#f0f4ff',
@@ -61,18 +74,6 @@ export const styles = StyleSheet.create({
   webFormSub: {
     fontSize: 15, color: '#7a8aaa', marginBottom: 28,
   },
-  iconCircle: {
-    width: 80, height: 80, borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 16,
-  },
-  iconEmoji: { fontSize: 38 },
-  title: {
-    fontSize: 32, fontWeight: 'bold', color: '#FFFFFF', marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 15, color: 'rgba(255,255,255,0.75)', marginBottom: 32,
-  },
   card: {
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -84,7 +85,7 @@ export const styles = StyleSheet.create({
   },
   cardWeb: {
     borderRadius: 20,
-    shadowOpacity: 0.08,
+    boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.08)',
     marginBottom: 20,
   },
   label: {
