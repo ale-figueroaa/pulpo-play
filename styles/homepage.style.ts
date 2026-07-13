@@ -260,6 +260,12 @@ export const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#5C96FF',
   },
+  dialogOctopus: {
+    width: 60,
+    height: 60,
+    resizeMode: 'contain',
+    marginLeft: 6,
+  },
   dialogTail: {
     position: 'absolute',
     bottom: -15,

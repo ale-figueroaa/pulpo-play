@@ -1,5 +1,5 @@
 // store.style.ts
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   gradientContainer: {
@@ -10,17 +10,17 @@ export const styles = StyleSheet.create({
     paddingHorizontal: '4%',
     paddingTop: 20,
     width: '100%',
-    alignSelf: 'center',    
-    maxWidth: 1400,          
+    alignSelf: 'center',
+    maxWidth: 1400,
   },
   containerMobile: {
     paddingHorizontal: '5%',
-    paddingTop: 45, 
+    paddingTop: 45,
   },
   mainContentWeb: {
-    flex: 1,               
-    paddingVertical: 10,   
-    paddingHorizontal: 32, 
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 32,
     marginBottom: 20,
   },
 
@@ -29,10 +29,10 @@ export const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 30, 
-    marginBottom: 15,      
-    zIndex: 50, 
-    paddingHorizontal: '5%', 
+    marginTop: 30,
+    marginBottom: 15,
+    zIndex: 50,
+    paddingHorizontal: '5%',
   },
   headerSide: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   headerSideLeft: { justifyContent: 'flex-start' },
@@ -43,7 +43,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 10,      
+    marginBottom: 10,
     zIndex: 30,
   },
   headerSideMobile: { flex: 1 },
@@ -52,7 +52,7 @@ export const styles = StyleSheet.create({
   headerCenterMobile: { flex: 2, alignItems: 'center', justifyContent: 'center' },
   bottomNavbarMobile: {
     width: '100%',
-    marginBottom: Platform.OS === 'ios' ? 10 : 15, 
+    marginBottom: Platform.OS === 'ios' ? 10 : 15,
     zIndex: 30,
   },
 
@@ -75,14 +75,14 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     paddingVertical: 12,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
     height: 70,
     borderWidth: 3,
     borderColor: '#B0CFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 150, 
+    width: 150,
   },
   coinsCardMobile: { height: 52, width: '105%', paddingHorizontal: 16, borderRadius: 14 },
   coinIcon: { width: 32, height: 32, resizeMode: 'contain', marginRight: 10 },
@@ -115,20 +115,20 @@ export const styles = StyleSheet.create({
   storeTitle: {
     fontSize: 36,
     fontWeight: '900',
-    color: '#e23e57', 
+    color: '#0c105aff',
     textAlign: 'center',
     marginBottom: 10,
   },
   storeTitleWeb: {
     fontSize: 42,
     fontWeight: '900',
-    color: '#e23e57', 
+    color: '#0c105aff',
     textAlign: 'left',
     marginBottom: 12,
     paddingHorizontal: 10,
   },
   featuredItemCard: {
-    backgroundColor: '#8cbaff', 
+    backgroundColor: '#8cbaff',
     borderRadius: 32,
     width: '100%',
     justifyContent: 'flex-end',
@@ -163,14 +163,14 @@ export const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   featuredItemCardMobile: {
-    height: 190, 
+    height: 190,
   },
   mobileScrollingBottomSection: {
-    flex: 1,    
+    flex: 1,
     width: '100%',
   },
   mobileItemsScrollContent: {
-    paddingBottom: 110, 
+    paddingBottom: 110,
     paddingTop: 5,
   },
   mobileGrid: {
@@ -182,7 +182,7 @@ export const styles = StyleSheet.create({
   smallItemCardMobile: {
     backgroundColor: '#8cbaff',
     borderRadius: 24,
-    width: '48%', 
+    width: '48%',
     height: 160,
     padding: 10,
     justifyContent: 'flex-end',
@@ -201,25 +201,25 @@ export const styles = StyleSheet.create({
   },
   featuredItemCardWeb: {
     flex: 1.2,
-    height: '100%', 
+    height: '100%',
     marginBottom: 0,
   },
   smallItemsContainerWeb: {
     flex: 1.5,
-    height: '100%',           
+    height: '100%',
   },
   smallItemsScrollWeb: { flex: 1 },
   smallItemsScrollContentWeb: { paddingBottom: 20 },
   webGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',         
+    flexWrap: 'wrap',
     gap: 20,
     justifyContent: 'flex-start',
   },
   smallItemCardWeb: {
     backgroundColor: '#8cbaff',
     borderRadius: 28,
-    width: '30%',             
+    width: '30%',
     minWidth: 150,
     height: 210,
     padding: 14,
