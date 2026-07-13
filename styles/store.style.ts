@@ -136,6 +136,11 @@ export const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#70a5fa',
   },
+  itemImage: {
+    width: '80%',
+    height: '80%',
+    alignSelf: 'center',
+  },
   featuredPreviewPlaceholder: { flex: 1, width: '100%' },
   featuredPriceBadge: { bottom: 12, paddingHorizontal: 25 },
   priceBadge: {
