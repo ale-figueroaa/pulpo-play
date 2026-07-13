@@ -115,14 +115,14 @@ export const styles = StyleSheet.create({
   storeTitle: {
     fontSize: 36,
     fontWeight: '900',
-    color: '#0c105aff',
+    color: '#fafaffff',
     textAlign: 'center',
     marginBottom: 10,
   },
   storeTitleWeb: {
     fontSize: 42,
     fontWeight: '900',
-    color: '#0c105aff',
+    color: '#fafaffff',
     textAlign: 'left',
     marginBottom: 12,
     paddingHorizontal: 10,
