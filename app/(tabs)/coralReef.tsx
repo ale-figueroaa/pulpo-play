@@ -133,6 +133,8 @@ export default function CoralReefScreen() {
         {/* Barra superior con botón de regreso y contador */}
         <View style={styles.header}>
           <TouchableOpacity
+            testID="back-to-home-btn"
+            id="back-to-home-btn"
             style={styles.backButton}
             onPress={() => router.push('/homepage')}
           >
@@ -171,6 +173,8 @@ export default function CoralReefScreen() {
             return (
               <TouchableOpacity
                 key={card.uniqueId}
+                testID={`memorama-card-${card.uniqueId}`}
+                id={`memorama-card-${card.uniqueId}`}
                 activeOpacity={0.8}
                 style={[
                   styles.card,
@@ -211,7 +215,12 @@ export default function CoralReefScreen() {
         </View>
 
         {/* Botón de Reinicio Rápido */}
-        <TouchableOpacity style={styles.resetButton} onPress={initializeGame}>
+        <TouchableOpacity
+          testID="restart-game-btn"
+          id="restart-game-btn"
+          style={styles.resetButton}
+          onPress={initializeGame}
+        >
           <Text style={styles.resetButtonText}>🔄 Reiniciar Memorama</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -234,6 +243,8 @@ export default function CoralReefScreen() {
             </View>
 
             <TouchableOpacity
+              testID="win-modal-home-btn"
+              id="win-modal-home-btn"
               style={styles.modalPrimaryBtn}
               onPress={() => router.push('/homepage')}
             >
@@ -243,6 +254,8 @@ export default function CoralReefScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
+              testID="win-modal-play-again-btn"
+              id="win-modal-play-again-btn"
               style={styles.modalSecondaryBtn}
               onPress={initializeGame}
             >

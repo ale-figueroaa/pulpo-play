@@ -48,6 +48,8 @@ export default function LoginScreen() {
       <View style={[styles.card, !isMobile && styles.cardWeb]}>
         <Text style={styles.label}>Diver's Name</Text>
         <TextInput
+          testID="login-username-input"
+          id="login-username-input"
           style={styles.input}
           value={name}
           onChangeText={setName}
@@ -59,6 +61,8 @@ export default function LoginScreen() {
 
         <Text style={styles.label}>Password</Text>
         <TextInput
+          testID="login-password-input"
+          id="login-password-input"
           style={styles.input}
           value={password}
           onChangeText={setPassword}
@@ -69,7 +73,13 @@ export default function LoginScreen() {
           placeholderTextColor="#A0AEC0"
         />
 
-        <TouchableOpacity style={styles.button} onPress={onLoginPress} disabled={loading}>
+        <TouchableOpacity
+          testID="login-submit-btn"
+          id="login-submit-btn"
+          style={styles.button}
+          onPress={onLoginPress}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
@@ -78,7 +88,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
-      <Link href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
+      <Link testID="login-to-signup-link" id="login-to-signup-link" href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
         Don't have an account? Sign up
       </Link>
     </>

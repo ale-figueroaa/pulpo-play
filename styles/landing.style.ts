@@ -188,6 +188,7 @@ export const styles = StyleSheet.create({
     padding: 28,
     boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.06)',
     alignItems: 'flex-start',
+
   },
   featureIconContainer: {
     width: 60,
