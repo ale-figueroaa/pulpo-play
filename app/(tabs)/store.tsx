@@ -1,7 +1,7 @@
 // StoreScreen.tsx
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { getUserSandDollars } from '../../utils/db';
@@ -39,19 +39,19 @@ export default function StoreScreen() {
     else if (key === 'store') router.push('/store');
   };
 
-  const visibleNavItems = isMobile 
-    ? NAV_ITEMS.filter(item => item.key !== 'profile') 
+  const visibleNavItems = isMobile
+    ? NAV_ITEMS.filter(item => item.key !== 'profile')
     : NAV_ITEMS;
 
   return (
     <LinearGradient
-      colors={['#03245a', '#5a9eff']} 
-      start={{ x: 0, y: 1 }}           
-      end={{ x: 0, y: 0 }}             
+      colors={['#03245a', '#5a9eff']}
+      start={{ x: 0, y: 1 }}
+      end={{ x: 0, y: 0 }}
       style={styles.gradientContainer}
     >
       <SafeAreaView style={[styles.container, isMobile && styles.containerMobile]}>
-        
+
         {/* --- NAVBAR SUPERIOR --- */}
         {isMobile ? (
           <View style={styles.headerRowMobile}>
@@ -115,7 +115,7 @@ export default function StoreScreen() {
         {isMobile ? (
           /* --- NUEVA DISTRIBUCIÓN MÓVIL: CONTENEDOR PARTIDO VERTICALMENTE --- */
           <View style={styles.mainContentMobileSplit}>
-            
+
             {/* PARTE DE ARRIBA: COMPLETAMENTE ESTÁTICA */}
             <View style={styles.mobileStaticTopSection}>
               <Text style={styles.storeTitle}>Store</Text>
@@ -130,7 +130,7 @@ export default function StoreScreen() {
 
             {/* PARTE DE ABAJO: CUADRÍCULA CON SCROLL PROPIO */}
             <View style={styles.mobileScrollingBottomSection}>
-              <ScrollView 
+              <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.mobileItemsScrollContent}
               >
@@ -152,7 +152,7 @@ export default function StoreScreen() {
           /* --- DISEÑO ESCRITORIO WEB (DOS COLUMNAS PARALELAS) --- */
           <View style={styles.mainContentWeb}>
             <Text style={styles.storeTitleWeb}>Store</Text>
-            
+
             <View style={styles.webDashboardLayout}>
               {/* Izquierda Estática */}
               <View style={[styles.featuredItemCard, styles.featuredItemCardWeb]}>
@@ -165,7 +165,7 @@ export default function StoreScreen() {
 
               {/* Derecha con Scroll */}
               <View style={styles.smallItemsContainerWeb}>
-                <ScrollView 
+                <ScrollView
                   style={styles.smallItemsScrollWeb}
                   contentContainerStyle={styles.smallItemsScrollContentWeb}
                   showsVerticalScrollIndicator={false}
@@ -173,7 +173,11 @@ export default function StoreScreen() {
                   <View style={styles.webGrid}>
                     {STORE_ITEMS_DATA.map((item) => (
                       <View key={item.id} style={styles.smallItemCardWeb}>
-                        <View style={styles.itemPreviewPlaceholder} />
+                        <Image
+                          source={item.image}
+                          style={styles.itemImage}
+                          resizeMode="contain"
+                        />
                         <TouchableOpacity style={styles.priceBadge} activeOpacity={0.8}>
                           <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
                           <Text style={styles.priceText}>{item.price}</Text>

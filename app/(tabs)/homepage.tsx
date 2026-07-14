@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; 
 import { router } from 'expo-router'; 
@@ -13,6 +13,12 @@ export default function HomeScreenWeb() {
     coins, showDialog, setShowDialog, touchStartX, changeWorld,
     isMobile, visibleNavItems, leftWorld, centerWorldItem, rightWorld
   } = useHomeLogic();
+
+  // Auto-oculta el diálogo después de 10 segundos
+  useEffect(() => {
+    const timer = setTimeout(() => setShowDialog(false), 10000);
+    return () => clearTimeout(timer);
+  }, [setShowDialog]);
 
   return (
     <LinearGradient
@@ -124,7 +130,10 @@ export default function HomeScreenWeb() {
                   Ready for a splash? Choose a zone below to start your mission explores!
                 </Text>
               </View>
-              <View style={styles.avatarCircleDecorator} />
+              <Image
+                source={require('../../assets/images/octavio.png')}
+                style={styles.dialogOctopus}
+              />
             </View>
             <View style={styles.dialogTail} />
           </TouchableOpacity>

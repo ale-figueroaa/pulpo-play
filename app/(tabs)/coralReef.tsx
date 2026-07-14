@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { addSandDollars } from '../../utils/db';
 import { styles } from '../../styles/coralReef.style';
@@ -65,9 +65,12 @@ export default function CoralReefScreen() {
     setIsProcessing(false);
   };
 
-  useEffect(() => {
-    initializeGame();
-  }, []);
+  // Se reinicia automáticamente cada vez que la pantalla recibe el foco
+  useFocusEffect(
+    useCallback(() => {
+      initializeGame();
+    }, [])
+  );
 
   const handleCardPress = (card: CardItem) => {
     // Evitar acciones si la carta ya está emparejada, volteada o estamos comparando 2 cartas
