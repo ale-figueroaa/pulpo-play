@@ -72,9 +72,20 @@ export default function StoreScreen() {
   );
 
   const handleNavigation = (key: string) => {
-    if (key === 'streak') router.push('/streaks');
-    else if (key === 'worlds') router.push('/homepage');
-    else if (key === 'store') router.push('/store');
+    if (key === 'streak') router.push('/(tabs)/streaks' as any);
+    else if (key === 'worlds') router.push('/(tabs)/homepage' as any);
+    else if (key === 'store') router.push('/(tabs)/store' as any);
+    else if (key === 'profile') router.push('/(tabs)/profile' as any);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err);
+    } finally {
+      router.replace('/login' as any);
+    }
   };
 
   const visibleNavItems = isMobile
@@ -186,7 +197,11 @@ export default function StoreScreen() {
           <View style={styles.headerRowMobile}>
             {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
                 <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
               </TouchableOpacity>
             </View>
@@ -201,7 +216,11 @@ export default function StoreScreen() {
 
             {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
                 <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
               </TouchableOpacity>
             </View>
@@ -231,11 +250,25 @@ export default function StoreScreen() {
               </View>
             </View>
 
-            <View style={[styles.headerSide, styles.headerSideRight]}>
+            <View style={[styles.headerSide, styles.headerSideRight, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
               <View style={styles.coinsCard}>
                 <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         )}

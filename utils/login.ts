@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginWithUsernameOrEmail } from './db';
 
 interface LoginParams {
@@ -21,6 +22,12 @@ export const handleLoginLogic = async ({ name, password, setLoading, onSuccess }
     if (error || !userId) {
       Alert.alert('¡Océano Inexplorado!', error || 'No pudimos verificar tu cuenta. 🌊');
       return;
+    }
+
+    try {
+      await AsyncStorage.setItem(`pulpo_last_password_${userId}`, password.trim());
+    } catch (e) {
+      console.log('No se pudo guardar la contraseña localmente:', e);
     }
 
     // 4. Success!

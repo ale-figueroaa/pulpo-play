@@ -3,6 +3,7 @@ import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView } from 'r
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { supabase } from '../../lib/supabase';
 
 import { useStreaksLogic, NavItem, DayData, MilestoneData } from '../../utils/streaks';
 import { styles } from '../../styles/streaks.styles';
@@ -11,6 +12,16 @@ import { styles } from '../../styles/streaks.styles';
 export default function StreaksScreenWeb() {
   // Con esta línea, conectamos la vista con el "cerebro"
   const { coins, isMobile, visibleNavItems, DAYS_DATA, MILESTONES } = useStreaksLogic();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err);
+    } finally {
+      router.replace('/login' as any);
+    }
+  };
 
   return (
     <LinearGradient
@@ -25,7 +36,11 @@ export default function StreaksScreenWeb() {
         {isMobile ? (
           <View style={styles.headerRowMobile}>
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
                 <Image
                   source={require('../../assets/images/Perfil.png')}
                   style={styles.profileIconImage}
@@ -44,7 +59,11 @@ export default function StreaksScreenWeb() {
             </View>
 
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity style={styles.profileIconMobile} activeOpacity={0.8}>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
                 <Image
                   source={require('../../assets/images/LogOut.png')}
                   style={styles.profileIconImage}
@@ -70,9 +89,13 @@ export default function StreaksScreenWeb() {
                     style={[styles.navPill, isMobile && styles.navPillMobile]}
                     onPress={() => {
                       if (item.key === 'streak') {
-                        router.push('/streaks');
+                        router.push('/(tabs)/streaks' as any);
                       } else if (item.key === 'worlds') {
-                        router.push('/homepage');
+                        router.push('/(tabs)/homepage' as any);
+                      } else if (item.key === 'store') {
+                        router.push('/(tabs)/store' as any);
+                      } else if (item.key === 'profile') {
+                        router.push('/(tabs)/profile' as any);
                       }
                     }}
                   >
@@ -88,7 +111,7 @@ export default function StreaksScreenWeb() {
               </View>
             </View>
 
-            <View style={[styles.headerSide, styles.headerSideRight]}>
+            <View style={[styles.headerSide, styles.headerSideRight, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
               <View style={styles.coinsCard}>
                 <Image
                   source={require('../../assets/images/SandDollars.png')}
@@ -96,6 +119,20 @@ export default function StreaksScreenWeb() {
                 />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         )}

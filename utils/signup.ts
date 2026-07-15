@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase'; // Ajusta la ruta si tu carpeta lib está en otro lado
 
 interface SignUpParams {
@@ -40,7 +41,7 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
     }
 
     // 2. Registrar en Supabase Auth
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password: password.trim(),
       options: {
@@ -51,6 +52,14 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
     });
 
     if (error) throw error;
+
+    if (data?.user?.id) {
+      try {
+        await AsyncStorage.setItem(`pulpo_last_password_${data.user.id}`, password.trim());
+      } catch (e) {
+        console.log('No se pudo guardar la contraseña localmente en registro:', e);
+      }
+    }
 
     // 3. Éxito
     Alert.alert(

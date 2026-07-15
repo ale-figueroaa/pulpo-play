@@ -16,7 +16,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'worlds', label: 'Worlds', icon: require('../assets/images/Worlds.png') },
   { key: 'streak', label: 'Streak', icon: require('../assets/images/Streak.png') },
   { key: 'store', label: 'Store', icon: require('../assets/images/Store.png') },
-  { key: 'profile', label: 'Profile', icon: require('../assets/images/CoralReef.png') },
+  { key: 'profile', label: 'Profile', icon: require('../assets/images/Perfil.png') },
 ];
 
 export const WORLDS_ARRAY = [
