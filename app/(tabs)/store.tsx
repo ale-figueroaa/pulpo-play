@@ -2,34 +2,72 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
-import { getUserSandDollars } from '../../utils/db';
+import { getUserSandDollars, addSandDollars } from '../../utils/db';
 
 import { styles } from '../../styles/store.style';
 
-import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA } from '../../utils/store';
+import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
+
+const FEATURED_ITEM: StoreItem = {
+  id: 'featured',
+  name: 'Traje de Buzo Leyenda',
+  price: '10,000',
+  image: require('../../assets/images/octavioExplorador.png'),
+};
 
 export default function StoreScreen() {
   const [coins, setCoins] = useState<number>(0);
+  const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
+  const [purchasing, setPurchasing] = useState<boolean>(false);
+  const [equippedItem, setEquippedItem] = useState<StoreItem>(FEATURED_ITEM);
+  const [ownedItems, setOwnedItems] = useState<string[]>(['featured']);
+  const [userId, setUserId] = useState<string | null>(null);
+
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
-  const fetchUserCoins = async () => {
+  const fetchStoreData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserId(user.id);
         const sandDollars = await getUserSandDollars(user.id);
         setCoins(sandDollars);
+
+        const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+        if (storedEquipped) {
+          try {
+            setEquippedItem(JSON.parse(storedEquipped));
+          } catch (e) {
+            setEquippedItem(FEATURED_ITEM);
+          }
+        } else {
+          setEquippedItem(FEATURED_ITEM);
+        }
+
+        const storedOwned = await AsyncStorage.getItem(`pulpo_owned_items_${user.id}`);
+        if (storedOwned) {
+          try {
+            const parsedOwned = JSON.parse(storedOwned);
+            setOwnedItems(Array.isArray(parsedOwned) ? parsedOwned : ['featured']);
+          } catch (e) {
+            setOwnedItems(['featured']);
+          }
+        } else {
+          setOwnedItems(['featured']);
+        }
       }
     } catch (err) {
-      console.error('Error cargando monedas en la tienda:', err);
+      console.error('Error cargando datos en la tienda:', err);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchUserCoins();
+      fetchStoreData();
     }, [])
   );
 
@@ -42,6 +80,97 @@ export default function StoreScreen() {
   const visibleNavItems = isMobile
     ? NAV_ITEMS.filter(item => item.key !== 'profile')
     : NAV_ITEMS;
+
+  const handlePriceClick = (item: StoreItem) => {
+    setSelectedItem(item);
+  };
+
+  const handleEquipItem = async (item: StoreItem) => {
+    setEquippedItem(item);
+    if (userId) {
+      await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(item));
+    }
+    Alert.alert('¡Ítem Equipado!', `Ahora llevas puesto: ${item.name} 🐙✨`);
+  };
+
+  const confirmPurchase = async () => {
+    if (!selectedItem || purchasing) return;
+    const cost = Number(selectedItem.price.replace(/,/g, ''));
+    if (isNaN(cost) || coins < cost) return;
+
+    setPurchasing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await addSandDollars(user.id, -cost);
+      }
+      setCoins(prev => prev - cost);
+      
+      const newOwned = [...ownedItems, selectedItem.id];
+      setOwnedItems(newOwned);
+      setEquippedItem(selectedItem);
+
+      if (userId) {
+        await AsyncStorage.setItem(`pulpo_owned_items_${userId}`, JSON.stringify(newOwned));
+        await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(selectedItem));
+      }
+
+      const purchasedName = selectedItem.name;
+      setSelectedItem(null);
+      Alert.alert('¡Compra Exitosa!', `¡Has adquirido "${purchasedName}" y se ha equipado automáticamente! 🐙✨`);
+    } catch (err) {
+      console.error('Error al confirmar compra:', err);
+      Alert.alert('Error', 'No se pudo completar la compra. Intenta de nuevo.');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  // Helper de renderizado para los botones de las tarjetas pequeñas
+  const renderItemCardAction = (item: StoreItem, testIdPrefix: string) => {
+    const isEquipped = equippedItem.id === item.id;
+    const isOwned = ownedItems.includes(item.id);
+
+    if (isEquipped) {
+      return (
+        <TouchableOpacity
+          testID={`${testIdPrefix}-${item.id}`}
+          id={`${testIdPrefix}-${item.id}`}
+          style={[styles.priceBadge, styles.badgeInUse]}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.badgeInUseText}>✨ In Use</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    if (isOwned) {
+      return (
+        <TouchableOpacity
+          testID={`${testIdPrefix}-${item.id}`}
+          id={`${testIdPrefix}-${item.id}`}
+          style={[styles.priceBadge, styles.badgeEquip]}
+          activeOpacity={0.8}
+          onPress={() => handleEquipItem(item)}
+        >
+          <Text style={styles.badgeEquipText}>🎒 Equipar</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        testID={`${testIdPrefix}-${item.id}`}
+        id={`${testIdPrefix}-${item.id}`}
+        style={styles.priceBadge}
+        activeOpacity={0.8}
+        onPress={() => handlePriceClick(item)}
+      >
+        <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
+        <Text style={styles.priceText}>{item.price}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <LinearGradient
@@ -116,14 +245,19 @@ export default function StoreScreen() {
           /* --- NUEVA DISTRIBUCIÓN MÓVIL: CONTENEDOR PARTIDO VERTICALMENTE --- */
           <View style={styles.mainContentMobileSplit}>
 
-            {/* PARTE DE ARRIBA: COMPLETAMENTE ESTÁTICA */}
+            {/* PARTE DE ARRIBA: OBJETO EQUIPADO / EN USO */}
             <View style={styles.mobileStaticTopSection}>
               <Text style={styles.storeTitle}>Store</Text>
               <View style={[styles.featuredItemCard, styles.featuredItemCardMobile]}>
-                <View style={styles.featuredPreviewPlaceholder} />
-                <TouchableOpacity style={[styles.priceBadge, styles.featuredPriceBadge]} activeOpacity={0.8}>
-                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
-                  <Text style={styles.priceText}>10,0000</Text>
+                <Image source={equippedItem.image} style={styles.itemImage} resizeMode="contain" />
+                <Text style={styles.featuredItemTitle}>{equippedItem.name}</Text>
+                <TouchableOpacity
+                  testID="store-price-featured-mobile"
+                  id="store-price-featured-mobile"
+                  style={[styles.priceBadge, styles.badgeInUse]}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.badgeInUseText}>✨ In Use</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -137,11 +271,8 @@ export default function StoreScreen() {
                 <View style={styles.mobileGrid}>
                   {STORE_ITEMS_DATA.map((item) => (
                     <View key={item.id} style={styles.smallItemCardMobile}>
-                      <View style={styles.itemPreviewPlaceholder} />
-                      <TouchableOpacity style={styles.priceBadge} activeOpacity={0.8}>
-                        <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
-                        <Text style={styles.priceText}>{item.price}</Text>
-                      </TouchableOpacity>
+                      <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
+                      {renderItemCardAction(item, 'store-price-mobile')}
                     </View>
                   ))}
                 </View>
@@ -154,12 +285,17 @@ export default function StoreScreen() {
             <Text style={styles.storeTitleWeb}>Store</Text>
 
             <View style={styles.webDashboardLayout}>
-              {/* Izquierda Estática */}
+              {/* Izquierda Estática: OBJETO EQUIPADO / EN USO */}
               <View style={[styles.featuredItemCard, styles.featuredItemCardWeb]}>
-                <View style={styles.featuredPreviewPlaceholder} />
-                <TouchableOpacity style={[styles.priceBadge, styles.featuredPriceBadge]} activeOpacity={0.8}>
-                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
-                  <Text style={styles.priceText}>10,0000</Text>
+                <Image source={equippedItem.image} style={styles.itemImage} resizeMode="contain" />
+                <Text style={styles.featuredItemTitle}>{equippedItem.name}</Text>
+                <TouchableOpacity
+                  testID="store-price-featured-web"
+                  id="store-price-featured-web"
+                  style={[styles.priceBadge, styles.badgeInUse]}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.badgeInUseText}>✨ In Use</Text>
                 </TouchableOpacity>
               </View>
 
@@ -178,10 +314,7 @@ export default function StoreScreen() {
                           style={styles.itemImage}
                           resizeMode="contain"
                         />
-                        <TouchableOpacity style={styles.priceBadge} activeOpacity={0.8}>
-                          <Image source={require('../../assets/images/SandDollars.png')} style={styles.priceCoinIcon} />
-                          <Text style={styles.priceText}>{item.price}</Text>
-                        </TouchableOpacity>
+                        {renderItemCardAction(item, 'store-price-web')}
                       </View>
                     ))}
                   </View>
@@ -206,6 +339,71 @@ export default function StoreScreen() {
                   <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
+            </View>
+          </View>
+        )}
+
+        {/* --- MODAL DE CONFIRMACIÓN DE COMPRA --- */}
+        {selectedItem && (
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>Confirmar Compra 🛒</Text>
+              <Text style={styles.modalSubtitle}>¿Deseas adquirir este ítem marino?</Text>
+
+              <View style={styles.modalItemBox}>
+                <Image source={selectedItem.image} style={styles.modalItemImage} />
+                <Text style={styles.modalItemName}>{selectedItem.name}</Text>
+                <View style={styles.modalPriceRow}>
+                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
+                  <Text style={styles.modalPriceText}>{selectedItem.price}</Text>
+                </View>
+              </View>
+
+              {(() => {
+                const itemCost = Number(selectedItem.price.replace(/,/g, ''));
+                const canAfford = !isNaN(itemCost) && coins >= itemCost;
+
+                return (
+                  <>
+                    {!canAfford && (
+                      <Text style={styles.modalWarningText}>
+                        ⚠️ ¡No tienes suficientes Sand Dollars! Te faltan {itemCost - coins} Sand Dollars.
+                      </Text>
+                    )}
+
+                    <View style={styles.modalButtonsRow}>
+                      <TouchableOpacity
+                        testID="store-confirm-modal-cancel"
+                        id="store-confirm-modal-cancel"
+                        style={styles.cancelButton}
+                        onPress={() => !purchasing && setSelectedItem(null)}
+                        disabled={purchasing}
+                      >
+                        <Text style={styles.cancelButtonText}>Cancelar</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        testID="store-confirm-modal-buy"
+                        id="store-confirm-modal-buy"
+                        style={[
+                          styles.confirmBuyButton,
+                          (!canAfford || purchasing) && styles.confirmBuyButtonDisabled,
+                        ]}
+                        onPress={confirmPurchase}
+                        disabled={!canAfford || purchasing}
+                      >
+                        {purchasing ? (
+                          <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                          <Text style={styles.confirmBuyButtonText}>
+                            {canAfford ? 'Confirmar compra' : 'Saldo insuficiente'}
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                );
+              })()}
             </View>
           </View>
         )}
