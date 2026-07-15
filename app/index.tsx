@@ -1,31 +1,3 @@
-/**
- * ============================================================================
- * GUÍA PASO A PASO: CÓMO CREAR ESTA LANDING PAGE DESDE CERO EN EXPO ROUTER
- * ============================================================================
- * 
- * PASO 1: Definir el archivo raíz (`app/index.tsx`)
- *   - En Expo Router, el archivo `index.tsx` dentro de la carpeta `app/` es la 
- *     ruta principal ("/") de tu aplicación.
- * 
- * PASO 2: Separar el comportamiento Web vs. Móvil (`Platform.OS`)
- *   - Usamos `Platform.OS === 'web'` para detectar si el usuario abrió la app en 
- *     un navegador de computadora/celular web.
- *   - Si NO es web (`!isWeb`), devolvemos `<Redirect href="/(auth)/login" />` 
- *     para mandar a los usuarios de iOS/Android directo a iniciar sesión.
- * 
- * PASO 3: Estructurar la Landing Page en Bloques Lógicos (Componentes visuales)
- *   Una buena Landing Page se compone de 4 secciones clave dentro de un ScrollView:
- *     A) Navbar (Barra superior): Logo a la izquierda y botones de acción (Log In / Sign Up) a la derecha.
- *     B) Hero Section (Sección Principal): Título llamativo, subtítulo explicativo y botones Call-To-Action (CTA).
- *     C) Features Section (Beneficios/Características): Tarjetas en cuadrícula (`flexWrap: 'wrap'`) explicando qué hace la app.
- *     D) Footer (Pie de página): Derechos de autor o enlaces secundarios.
- * 
- * PASO 4: Conectar con el Sistema de Diseño (`styles/landing.style.ts`)
- *   - Separamos los estilos en un archivo externo para mantener el código limpio.
- *   - Usamos la paleta de colores de la app (`#0a3d8f` azul marino, `#00897b` verde/turquesa)
- *     y elementos decorativos como burbujas oceánicas con posición absoluta.
- * ============================================================================
- */
 
 import { Redirect, useRouter } from 'expo-router';
 import React from 'react';
@@ -73,8 +45,6 @@ export default function WebLandingScreen() {
           <View style={styles.navActions}>
             {/* TouchableOpacity: Botón interactivo que reduce su opacidad al hacer clic */}
             <TouchableOpacity
-              testID="nav-login-btn"
-              id="nav-login-btn"
               style={styles.navLoginBtn}
               onPress={() => router.push('/(auth)/login' as any)}
             >
@@ -82,8 +52,6 @@ export default function WebLandingScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              testID="nav-signup-btn"
-              id="nav-signup-btn"
               style={styles.navSignUpBtn}
               onPress={() => router.push('/(auth)/signup' as any)}
             >
@@ -121,8 +89,6 @@ export default function WebLandingScreen() {
           {/* Contenedor horizontal (Row) con los botones principales de llamada a la acción (CTA) */}
           <View style={styles.heroButtonsRow}>
             <TouchableOpacity
-              testID="hero-signup-btn"
-              id="hero-signup-btn"
               style={styles.primaryHeroBtn}
               onPress={() => router.push('/(auth)/signup' as any)}
             >
@@ -130,8 +96,6 @@ export default function WebLandingScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              testID="hero-login-btn"
-              id="hero-login-btn"
               style={styles.secondaryHeroBtn}
               onPress={() => router.push('/(auth)/login' as any)}
             >
