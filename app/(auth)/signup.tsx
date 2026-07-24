@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Text, View, TextInput, TouchableOpacity,
   SafeAreaView, ActivityIndicator, ScrollView,
-  Platform, useWindowDimensions
+  Platform, useWindowDimensions, Modal
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
@@ -16,6 +16,10 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalCallback, setModalCallback] = useState<(() => void) | null>(null);
   
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -28,7 +32,19 @@ export default function SignUpScreen() {
       email,
       password,
       setLoading,
-      onSuccess: () => router.replace('/login')
+      onSuccess: () => router.replace('/login'),
+      onError: (title: string, message: string) => {
+        setModalTitle(title);
+        setModalMessage(message);
+        setModalCallback(null);
+        setModalVisible(true);
+      },
+      onSuccessMsg: (title: string, message: string, cb: () => void) => {
+        setModalTitle(title);
+        setModalMessage(message);
+        setModalCallback(() => cb);
+        setModalVisible(true);
+      }
     });
   };
 
@@ -89,6 +105,27 @@ export default function SignUpScreen() {
       <Link href="/login" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
         Already have an account? Log In
       </Link>
+
+      {modalVisible && (
+        <Modal transparent animationType="fade" visible={modalVisible} onRequestClose={() => {
+          setModalVisible(false);
+          if (modalCallback) modalCallback();
+        }}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalEmoji}>🫧</Text>
+              <Text style={styles.modalTitle}>{modalTitle}</Text>
+              <Text style={styles.modalSubtitle}>{modalMessage}</Text>
+              <TouchableOpacity style={styles.modalBtn} onPress={() => {
+                setModalVisible(false);
+                if (modalCallback) modalCallback();
+              }}>
+                <Text style={styles.modalBtnText}>Aceptar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </>
   );
 

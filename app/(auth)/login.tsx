@@ -9,7 +9,8 @@ import {
   Text,
   TextInput, TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
+  Modal
 } from 'react-native';
 
 // la logica en utils y el estilo en style
@@ -21,6 +22,9 @@ export default function LoginScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -32,7 +36,12 @@ export default function LoginScreen() {
       name,
       password,
       setLoading,
-      onSuccess: () => router.replace('/(tabs)/homepage' as any)
+      onSuccess: () => router.replace('/(tabs)/homepage' as any),
+      onError: (title: string, message: string) => {
+        setModalTitle(title);
+        setModalMessage(message);
+        setModalVisible(true);
+      }
     });
   };
 
@@ -91,6 +100,21 @@ export default function LoginScreen() {
       <Link testID="login-to-signup-link" id="login-to-signup-link" href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
         Don't have an account? Sign up
       </Link>
+
+      {modalVisible && (
+        <Modal transparent animationType="fade" visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalEmoji}>🫧</Text>
+              <Text style={styles.modalTitle}>{modalTitle}</Text>
+              <Text style={styles.modalSubtitle}>{modalMessage}</Text>
+              <TouchableOpacity style={styles.modalBtn} onPress={() => setModalVisible(false)}>
+                <Text style={styles.modalBtnText}>Aceptar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
     </>
   );
 

@@ -26,7 +26,7 @@ const DEFAULT_EQUIPPED: StoreItem = {
 
 export default function ProfileScreen() {
   const [coins, setCoins] = useState<number>(0);
-  const [nombreUsuario, setNombreUsuario] = useState<string>('Buzo Explorador');
+  const [nombreUsuario, setNombreUsuario] = useState<string>('Explorer Diver');
   const [email, setEmail] = useState<string>('buzo@pulpoplay.com');
   const [password, setPassword] = useState<string>('••••••••••••');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -46,7 +46,7 @@ export default function ProfileScreen() {
         if (profile?.nombreUsuario) {
           setNombreUsuario(profile.nombreUsuario);
         } else {
-          setNombreUsuario(user.user_metadata?.nombreUsuario || 'Buzo Explorador');
+          setNombreUsuario(user.user_metadata?.nombreUsuario || 'Explorer Diver');
         }
 
         const sandDollars = await getUserSandDollars(user.id);
@@ -73,7 +73,7 @@ export default function ProfileScreen() {
         }
       }
     } catch (err) {
-      console.error('Error cargando perfil del usuario:', err);
+      console.error('Error loading user profile:', err);
     }
   };
 
@@ -94,7 +94,7 @@ export default function ProfileScreen() {
     try {
       await supabase.auth.signOut();
     } catch (err) {
-      console.error('Error al cerrar sesión:', err);
+      console.error('Error logging out:', err);
     } finally {
       router.replace('/login' as any);
     }
@@ -118,13 +118,7 @@ export default function ProfileScreen() {
           <View style={styles.headerRowMobile}>
             {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => handleNavigation('profile')}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Profile icon removed */}
             </View>
 
             {/* Monedas (centro) */}
@@ -137,13 +131,7 @@ export default function ProfileScreen() {
 
             {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Logout icon removed */}
             </View>
           </View>
         ) : (
@@ -176,20 +164,7 @@ export default function ProfileScreen() {
                 <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Icons removed */}
             </View>
           </View>
         )}
@@ -206,35 +181,35 @@ export default function ProfileScreen() {
               <Image source={equippedItem.image} style={styles.avatarImage} />
             </View>
             <View style={styles.equippedBadge}>
-              <Text style={styles.equippedBadgeText}>En Uso: {equippedItem.name}</Text>
+              <Text style={styles.equippedBadgeText}>In Use: {equippedItem.name}</Text>
             </View>
 
             {/* CAMPOS DE INFORMACIÓN DEL USUARIO */}
             <View style={styles.infoSection}>
               
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Nombre del Buzo</Text>
+                <Text style={styles.fieldLabel}>Diver Name</Text>
                 <Text style={styles.fieldValue} testID="profile-username-text" id="profile-username-text">
                   {nombreUsuario}
                 </Text>
               </View>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Correo Electrónico</Text>
+                <Text style={styles.fieldLabel}>Email Address</Text>
                 <Text style={styles.fieldValue} testID="profile-email-text" id="profile-email-text">
                   {email}
                 </Text>
               </View>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Saldo Actual</Text>
+                <Text style={styles.fieldLabel}>Current Balance</Text>
                 <Text style={styles.fieldValue}>
                   {coins} Sand Dollars 🪙
                 </Text>
               </View>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Contraseña</Text>
+                <Text style={styles.fieldLabel}>Password</Text>
                 <View style={styles.passwordRow}>
                   <Text style={styles.fieldValue} testID="profile-password-text" id="profile-password-text">
                     {showPassword ? password : '••••••••••••'}
@@ -247,7 +222,7 @@ export default function ProfileScreen() {
                     onPress={() => setShowPassword(!showPassword)}
                   >
                     <Text style={styles.toggleBtnText}>
-                      {showPassword ? '🙈 Ocultar' : '👁️ Ver'}
+                      {showPassword ? '🙈 Hide' : '👁️ Show'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -263,7 +238,7 @@ export default function ProfileScreen() {
               activeOpacity={0.85}
               onPress={handleLogout}
             >
-              <Text style={styles.logoutButtonText}>Cerrar Sesión 🚪</Text>
+              <Text style={styles.logoutButtonText}>Log Out 🚪</Text>
             </TouchableOpacity>
 
           </View>

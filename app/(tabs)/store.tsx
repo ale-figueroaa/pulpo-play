@@ -101,7 +101,7 @@ export default function StoreScreen() {
     if (userId) {
       await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(item));
     }
-    Alert.alert('¡Ítem Equipado!', `Ahora llevas puesto: ${item.name} 🐙✨`);
+    Alert.alert('Item Equipped!', `You are now wearing: ${item.name} 🐙✨`);
   };
 
   const confirmPurchase = async () => {
@@ -128,10 +128,10 @@ export default function StoreScreen() {
 
       const purchasedName = selectedItem.name;
       setSelectedItem(null);
-      Alert.alert('¡Compra Exitosa!', `¡Has adquirido "${purchasedName}" y se ha equipado automáticamente! 🐙✨`);
+      Alert.alert('Purchase Successful!', `You have acquired "${purchasedName}" and it has been automatically equipped! 🐙✨`);
     } catch (err) {
-      console.error('Error al confirmar compra:', err);
-      Alert.alert('Error', 'No se pudo completar la compra. Intenta de nuevo.');
+      console.error('Error confirming purchase:', err);
+      Alert.alert('Error', 'Could not complete the purchase. Please try again.');
     } finally {
       setPurchasing(false);
     }
@@ -164,7 +164,7 @@ export default function StoreScreen() {
           activeOpacity={0.8}
           onPress={() => handleEquipItem(item)}
         >
-          <Text style={styles.badgeEquipText}>🎒 Equipar</Text>
+          <Text style={styles.badgeEquipText}>🎒 Equip</Text>
         </TouchableOpacity>
       );
     }
@@ -195,15 +195,8 @@ export default function StoreScreen() {
         {/* --- NAVBAR SUPERIOR --- */}
         {isMobile ? (
           <View style={styles.headerRowMobile}>
-            {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Perfil icon removed */}
             </View>
 
             {/* Monedas (centro) */}
@@ -214,15 +207,8 @@ export default function StoreScreen() {
               </View>
             </View>
 
-            {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Logout icon removed */}
             </View>
           </View>
         ) : (
@@ -255,20 +241,7 @@ export default function StoreScreen() {
                 <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Icons removed */}
             </View>
           </View>
         )}
@@ -380,8 +353,8 @@ export default function StoreScreen() {
         {selectedItem && (
           <View style={styles.modalOverlay}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>Confirmar Compra 🛒</Text>
-              <Text style={styles.modalSubtitle}>¿Deseas adquirir este ítem marino?</Text>
+              <Text style={styles.modalTitle}>Confirm Purchase 🛒</Text>
+              <Text style={styles.modalSubtitle}>Do you want to buy this marine item?</Text>
 
               <View style={styles.modalItemBox}>
                 <Image source={selectedItem.image} style={styles.modalItemImage} />
@@ -400,7 +373,7 @@ export default function StoreScreen() {
                   <>
                     {!canAfford && (
                       <Text style={styles.modalWarningText}>
-                        ⚠️ ¡No tienes suficientes Sand Dollars! Te faltan {itemCost - coins} Sand Dollars.
+                        ⚠️ Not enough Sand Dollars! You need {itemCost - coins} more Sand Dollars.
                       </Text>
                     )}
 
@@ -412,7 +385,7 @@ export default function StoreScreen() {
                         onPress={() => !purchasing && setSelectedItem(null)}
                         disabled={purchasing}
                       >
-                        <Text style={styles.cancelButtonText}>Cancelar</Text>
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -429,7 +402,7 @@ export default function StoreScreen() {
                           <ActivityIndicator color="#FFFFFF" />
                         ) : (
                           <Text style={styles.confirmBuyButtonText}>
-                            {canAfford ? 'Confirmar compra' : 'Saldo insuficiente'}
+                            {canAfford ? 'Confirm Purchase' : 'Insufficient funds'}
                           </Text>
                         )}
                       </TouchableOpacity>

@@ -44,16 +44,7 @@ export default function HomeScreenWeb() {
         {isMobile ? (
           <View style={styles.headerRowMobile}>
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image
-                  source={require('../../assets/images/Perfil.png')}
-                  style={styles.profileIconImage}
-                />
-              </TouchableOpacity>
+              {/* Profile icon removed */}
             </View>
 
             <View style={styles.headerCenterMobile}>
@@ -67,16 +58,7 @@ export default function HomeScreenWeb() {
             </View>
 
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image
-                  source={require('../../assets/images/LogOut.png')}
-                  style={styles.profileIconImage}
-                />
-              </TouchableOpacity>
+              {/* Logout icon removed */}
             </View>
           </View>
         ) : (
@@ -127,20 +109,7 @@ export default function HomeScreenWeb() {
                 />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Icons removed */}
             </View>
           </View>
         )}
@@ -193,6 +162,7 @@ export default function HomeScreenWeb() {
               </TouchableOpacity>
 
               <View style={styles.centerWorldContainerMobile}>
+                <Text style={styles.worldNameTextMobile}>{centerWorldItem.name}</Text>
                 <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorldMobile]}>
                   <Image source={centerWorldItem.image} style={styles.worldImage} />
                 </TouchableOpacity>
@@ -223,6 +193,7 @@ export default function HomeScreenWeb() {
               </TouchableOpacity>
 
               <View style={styles.centerWorldContainer}>
+                <Text style={styles.worldNameText}>{centerWorldItem.name}</Text>
                 <TouchableOpacity activeOpacity={0.9} style={[styles.worldCircle, styles.centerWorld]}>
                   <Image source={centerWorldItem.image} style={styles.worldImage} />
                 </TouchableOpacity>

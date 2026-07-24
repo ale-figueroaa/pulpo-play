@@ -17,7 +17,7 @@ export default function StreaksScreenWeb() {
     try {
       await supabase.auth.signOut();
     } catch (err) {
-      console.error('Error al cerrar sesión:', err);
+      console.error('Error logging out:', err);
     } finally {
       router.replace('/login' as any);
     }
@@ -36,16 +36,7 @@ export default function StreaksScreenWeb() {
         {isMobile ? (
           <View style={styles.headerRowMobile}>
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image
-                  source={require('../../assets/images/Perfil.png')}
-                  style={styles.profileIconImage}
-                />
-              </TouchableOpacity>
+              {/* Profile icon removed */}
             </View>
 
             <View style={styles.headerCenterMobile}>
@@ -59,16 +50,7 @@ export default function StreaksScreenWeb() {
             </View>
 
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image
-                  source={require('../../assets/images/LogOut.png')}
-                  style={styles.profileIconImage}
-                />
-              </TouchableOpacity>
+              {/* Logout icon removed */}
             </View>
           </View>
         ) : (
@@ -119,20 +101,7 @@ export default function StreaksScreenWeb() {
                 />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={() => router.push('/(tabs)/profile' as any)}
-              >
-                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.profileIconMobile}
-                activeOpacity={0.8}
-                onPress={handleLogout}
-              >
-                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
-              </TouchableOpacity>
+              {/* Icons removed */}
             </View>
           </View>
         )}

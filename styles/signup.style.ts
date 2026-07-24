@@ -114,4 +114,38 @@ export const styles = StyleSheet.create({
   footerTextWeb: {
     color: '#004d7a',
   },
+  modalOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center', alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 32,
+    alignItems: 'center',
+    width: '85%',
+    maxWidth: 400,
+    boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.3)',
+    elevation: 10,
+  },
+  modalEmoji: {
+    fontSize: 54, marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 22, fontWeight: 'bold', color: '#004d7a', marginBottom: 12, textAlign: 'center',
+  },
+  modalSubtitle: {
+    fontSize: 16, color: '#7a8aaa', textAlign: 'center', marginBottom: 24, lineHeight: 22,
+  },
+  modalBtn: {
+    backgroundColor: '#00897b',
+    paddingVertical: 14, paddingHorizontal: 32,
+    borderRadius: 100,
+    width: '100%', alignItems: 'center',
+  },
+  modalBtnText: {
+    color: '#FFFFFF', fontSize: 16, fontWeight: 'bold',
+  },
 });
