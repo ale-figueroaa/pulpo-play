@@ -1,18 +1,20 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
   View,
-  Animated,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+  useWindowDimensions,
+  Animated
 } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { addSandDollars } from '../../utils/db';
 import { styles } from '../../styles/coralReef.style';
-import { addExperience, addSandDollars } from '../../utils/db';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StoreItem } from '../../utils/store';
+import { Image } from 'react-native';
 
 interface Creature {
   id: string;
@@ -24,15 +26,22 @@ interface CardItem extends Creature {
   uniqueId: string;
 }
 
-const MARINE_CREATURES: Creature[] = [
-  { id: 'pulpo', emoji: '🐙', name: 'Octopus' },
-  { id: 'coral', emoji: '🪸', name: 'Coral' },
-  { id: 'tortuga', emoji: '🐢', name: 'Turtle' },
-  { id: 'pez', emoji: '🐠', name: 'Clownfish' },
-  { id: 'delfin', emoji: '🐬', name: 'Dolphin' },
-  { id: 'cangrejo', emoji: '🦀', name: 'Crab' },
-  { id: 'tiburon', emoji: '🦈', name: 'Shark' },
-  { id: 'ballena', emoji: '🐋', name: 'Whale' },
+const BASE_MARINE_CREATURES: Creature[] = [
+  { id: 'pulpo', emoji: '­ƒÉÖ', name: 'Pulpo' },
+  { id: 'coral', emoji: '­ƒ¬©', name: 'Coral' },
+  { id: 'tortuga', emoji: '­ƒÉó', name: 'Tortuga' },
+  { id: 'pez', emoji: '­ƒÉá', name: 'Pez Payaso' },
+  { id: 'delfin', emoji: '­ƒÉ¼', name: 'Delf├¡n' },
+  { id: 'cangrejo', emoji: '­ƒªÇ', name: 'Cangrejo' },
+];
+
+const EXTRA_MARINE_CREATURES: Creature[] = [
+  { id: 'tiburon', emoji: '­ƒªê', name: 'Tibur├│n' },
+  { id: 'estrella', emoji: 'Ô¡É', name: 'Estrella' },
+  { id: 'caballito', emoji: '­ƒº£ÔÇìÔÖé´©Å', name: 'Caballito' },
+  { id: 'ballena', emoji: '­ƒÉï', name: 'Ballena' },
+  { id: 'medusa', emoji: '­ƒ¬╝', name: 'Medusa' },
+  { id: 'foca', emoji: '­ƒª¡', name: 'Foca' },
 ];
 
 const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress }: any) => {
@@ -72,22 +81,18 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress }:
             </Text>
           </>
         ) : (
-          <Text style={styles.cardBackEmoji}>🌊</Text>
+          <Text style={styles.cardBackEmoji}>­ƒîè</Text>
         )}
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
+const REWARD_AMOUNT = 50;
+
 export default function CoralReefScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width < 640;
-
-  const [difficulty, setDifficulty] = useState<number>(2);
-
-  const numPairs = difficulty === 1 ? 4 : difficulty === 3 ? 8 : 6;
-  const rewardAmount = difficulty === 1 ? 30 : difficulty === 3 ? 80 : 50;
-  const xpReward = difficulty === 1 ? 10 : difficulty === 3 ? 30 : 20;
 
   const [cards, setCards] = useState<CardItem[]>([]);
   const [flipped, setFlipped] = useState<string[]>([]);
@@ -97,8 +102,79 @@ export default function CoralReefScreen() {
   const [rewardGranted, setRewardGranted] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
+  const [extraPairs, setExtraPairs] = useState<number>(0);
+  const [activeCreaturesCount, setActiveCreaturesCount] = useState<number>(BASE_MARINE_CREATURES.length);
+
   const [countdown, setCountdown] = useState<number | null>(null);
   const [previewMode, setPreviewMode] = useState<boolean>(false);
+
+  const [equippedItem, setEquippedItem] = useState<StoreItem | null>(null);
+  const [motivationMessage, setMotivationMessage] = useState<string>("Let's start!");
+  const motivationMessages = ["Keep going! ­ƒÉÖ", "You can do it! Ô£¿", "Great memory! ­ƒºá", "Don't give up! ­ƒîè", "Awesome! ­ƒÉá"];
+
+  const fetchEquippedItem = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+        if (storedEquipped) {
+          try {
+            setEquippedItem(JSON.parse(storedEquipped));
+          } catch (e) {
+            // handle
+          }
+        } else {
+          setEquippedItem({
+            id: 'featured',
+            name: 'Traje de Buzo Leyenda',
+            price: '10,000',
+            image: require('../../assets/images/octavioExplorador.png'),
+          });
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (moves > 0) {
+      setMotivationMessage(motivationMessages[Math.floor(Math.random() * motivationMessages.length)]);
+    }
+  }, [moves]);
+
+  // Inicializar o reiniciar la partida
+  const initializeGame = () => {
+    // Calculamos qu├® criaturas usaremos basado en extraPairs
+    // Se usa un valor funcional de extraPairs o podemos depender del estado porque useFocusEffect llama a esto
+    setExtraPairs((currentExtraPairs) => {
+      const creaturesToUse = BASE_MARINE_CREATURES.concat(EXTRA_MARINE_CREATURES.slice(0, currentExtraPairs));
+      setActiveCreaturesCount(creaturesToUse.length);
+      
+      const deck: CardItem[] = [];
+      creaturesToUse.forEach((creature) => {
+        deck.push({ ...creature, uniqueId: `${creature.id}-0` });
+        deck.push({ ...creature, uniqueId: `${creature.id}-1` });
+      });
+
+      // Mezclar aleatoriamente las cartas
+      const shuffled = deck.sort(() => Math.random() - 0.5);
+
+      setCards(shuffled);
+      setFlipped([]);
+      setMatched([]);
+      setMoves(0);
+      setShowWinModal(false);
+      setRewardGranted(false);
+      
+      // Start sequence
+      setIsProcessing(true);
+      setPreviewMode(false);
+      setCountdown(3);
+      
+      return currentExtraPairs;
+    });
+  };
 
   useEffect(() => {
     if (countdown !== null) {
@@ -117,47 +193,16 @@ export default function CoralReefScreen() {
     }
   }, [countdown]);
 
-  // Se reinicia automáticamente cada vez que la pantalla recibe el foco
+  // Se reinicia autom├íticamente cada vez que la pantalla recibe el foco
   useFocusEffect(
     useCallback(() => {
-      const loadGame = async () => {
-        let diff = 2;
-        try {
-          const stored = await AsyncStorage.getItem('pulpo_difficulty');
-          if (stored) diff = parseInt(stored, 10);
-        } catch (e) { }
-        setDifficulty(diff);
-
-        const activeNumPairs = diff === 1 ? 4 : diff === 3 ? 8 : 6;
-
-        const deck: CardItem[] = [];
-        const activeCreatures = MARINE_CREATURES.slice(0, activeNumPairs);
-        activeCreatures.forEach((creature) => {
-          deck.push({ ...creature, uniqueId: `${creature.id}-0` });
-          deck.push({ ...creature, uniqueId: `${creature.id}-1` });
-        });
-
-        // Mezclar aleatoriamente las cartas
-        const shuffled = deck.sort(() => Math.random() - 0.5);
-
-        setCards(shuffled);
-        setFlipped([]);
-        setMatched([]);
-        setMoves(0);
-        setShowWinModal(false);
-        setRewardGranted(false);
-        
-        // Start sequence
-        setIsProcessing(true);
-        setPreviewMode(false);
-        setCountdown(3);
-      };
-      loadGame();
+      initializeGame();
+      fetchEquippedItem();
     }, [])
   );
 
   const handleCardPress = (card: CardItem) => {
-    // Evitar acciones si la carta ya está emparejada, volteada o estamos comparando 2 cartas
+    // Evitar acciones si la carta ya est├í emparejada, volteada o estamos comparando 2 cartas
     if (
       isProcessing ||
       flipped.includes(card.uniqueId) ||
@@ -177,18 +222,18 @@ export default function CoralReefScreen() {
       const secondCard = card;
 
       if (firstCard && firstCard.id === secondCard.id) {
-        // ¡Pareja encontrada!
+        // ┬íPareja encontrada!
         const newMatched = [...matched, firstCard.id];
         setMatched(newMatched);
         setFlipped([]);
         setIsProcessing(false);
 
-        // Si se encontraron todas las parejas
-        if (newMatched.length === numPairs) {
-          handleGameWon();
+        // Si se encontraron las parejas
+        if (newMatched.length === activeCreaturesCount) {
+          handleGameWon(moves + 1, activeCreaturesCount);
         }
       } else {
-        // Volver a voltear las cartas después de un instante
+        // Volver a voltear las cartas despu├®s de un instante
         setTimeout(() => {
           setFlipped([]);
           setIsProcessing(false);
@@ -197,8 +242,15 @@ export default function CoralReefScreen() {
     }
   };
 
-  const handleGameWon = async () => {
+  const handleGameWon = async (finalMoves: number, totalPairs: number) => {
     setShowWinModal(true);
+    
+    // Dificultad Din├ímica:
+    // Si completan el juego con menos movimientos que el m├¡nimo + 3, a├▒adimos 2 pares m├ís (4 cartas)
+    if (finalMoves <= totalPairs + 3) {
+      setExtraPairs((prev) => Math.min(prev + 2, EXTRA_MARINE_CREATURES.length));
+    }
+
     if (!rewardGranted) {
       setRewardGranted(true);
       try {
@@ -206,19 +258,55 @@ export default function CoralReefScreen() {
           data: { user },
         } = await supabase.auth.getUser();
         if (user) {
-          await addSandDollars(user.id, rewardAmount);
-          await addExperience(user.id, xpReward);
+          await addSandDollars(user.id, REWARD_AMOUNT);
         }
       } catch (err) {
-        console.error('Error granting rewards:', err);
+        console.error('Error al otorgar Sand Dollars:', err);
       }
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Companion Floating in Top Corner */}
+      {equippedItem && (
+        <View style={{ 
+          position: 'absolute', 
+          top: isMobile ? 90 : 110, 
+          right: isMobile ? 10 : 30, 
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          zIndex: 50 
+        }}>
+          <View style={{ 
+            backgroundColor: '#FFFFFF', 
+            padding: isMobile ? 10 : 16, 
+            borderRadius: 15, 
+            borderWidth: 2, 
+            borderColor: '#B0CFFF', 
+            marginRight: 8, 
+            maxWidth: isMobile ? 160 : 250 
+          }}>
+            <Text style={{ 
+              color: '#3B629B', 
+              fontWeight: 'bold', 
+              fontSize: isMobile ? 14 : 20, 
+              textAlign: 'center' 
+            }}>{motivationMessage}</Text>
+          </View>
+          <Image 
+            source={equippedItem.image} 
+            style={{ 
+              width: isMobile ? 65 : 110, 
+              height: isMobile ? 65 : 110, 
+              resizeMode: 'contain' 
+            }} 
+          />
+        </View>
+      )}
+      
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Barra superior con botón de regreso y contador */}
+        {/* Barra superior con bot├│n de regreso y contador */}
         <View style={styles.header}>
           <TouchableOpacity
             testID="back-to-home-btn"
@@ -226,7 +314,7 @@ export default function CoralReefScreen() {
             style={styles.backButton}
             onPress={() => router.push('/homepage')}
           >
-            <Text style={styles.backButtonText}>← Back to Home</Text>
+            <Text style={styles.backButtonText}>ÔåÉ Back to Home</Text>
           </TouchableOpacity>
 
           <View style={styles.statsRow}>
@@ -238,7 +326,7 @@ export default function CoralReefScreen() {
             <View style={styles.statBadge}>
               <Text style={styles.statLabel}>Pairs</Text>
               <Text style={styles.statValue}>
-                {matched.length} / {numPairs}
+                {matched.length} / {activeCreaturesCount}
               </Text>
             </View>
           </View>
@@ -246,13 +334,13 @@ export default function CoralReefScreen() {
 
         {/* Encabezado */}
         <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Coral Reef Memory Game</Text>
+          <Text style={styles.titleText}>Coral Reef Memory ­ƒÉá</Text>
           <Text style={styles.subTitleText}>
-            Find the pairs
+            Find the matching marine pairs to earn Sand Dollars ­ƒÉÜ
           </Text>
         </View>
 
-        {/* Cuadrícula de Memorama */}
+        {/* Cuadr├¡cula de Memorama */}
         <View style={[styles.gridContainer, { position: 'relative' }]}>
           {countdown !== null && countdown > 0 && (
             <View style={{
@@ -285,29 +373,14 @@ export default function CoralReefScreen() {
           })}
         </View>
 
-        {/* Botón de Reinicio Rápido */}
+        {/* Bot├│n de Reinicio R├ípido */}
         <TouchableOpacity
           testID="restart-game-btn"
           id="restart-game-btn"
           style={styles.resetButton}
-          onPress={() => {
-            // Un truco para forzar re-render con initialize logic
-            setMatched([]);
-            setFlipped([]);
-            setMoves(0);
-            const deck: CardItem[] = [];
-            const activeCreatures = MARINE_CREATURES.slice(0, numPairs);
-            activeCreatures.forEach((creature) => {
-              deck.push({ ...creature, uniqueId: `${creature.id}-0` });
-              deck.push({ ...creature, uniqueId: `${creature.id}-1` });
-            });
-            setCards(deck.sort(() => Math.random() - 0.5));
-            setIsProcessing(true);
-            setPreviewMode(false);
-            setCountdown(3);
-          }}
+          onPress={initializeGame}
         >
-          <Text style={styles.resetButtonText}>Restart Game</Text>
+          <Text style={styles.resetButtonText}>­ƒöä Restart Memory Game</Text>
         </TouchableOpacity>
       </ScrollView>
 
@@ -315,22 +388,16 @@ export default function CoralReefScreen() {
       {showWinModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalEmoji}>🎉🐙🐚</Text>
+            <Text style={styles.modalEmoji}>­ƒÄë­ƒÉÖ­ƒÉÜ</Text>
             <Text style={styles.modalTitle}>Reef Explored Successfully!</Text>
             <Text style={styles.modalSubtitle}>
               You completed all pairs in {moves} moves.
             </Text>
 
             <View style={styles.rewardBadge}>
-              <Text style={styles.rewardEmoji}>🪙</Text>
+              <Text style={styles.rewardEmoji}>­ƒ¬Ö</Text>
               <Text style={styles.rewardText}>
-                +{rewardAmount} Sand Dollars Earned!
-              </Text>
-            </View>
-            <View style={[styles.rewardBadge, { backgroundColor: '#e0f2fe', borderColor: '#3b82f6', marginTop: -12 }]}>
-              <Text style={styles.rewardEmoji}>⭐</Text>
-              <Text style={[styles.rewardText, { color: '#0369a1' }]}>
-                +{xpReward} XP Earned!
+                +{REWARD_AMOUNT} Sand Dollars Earned!
               </Text>
             </View>
 
@@ -349,23 +416,7 @@ export default function CoralReefScreen() {
               testID="win-modal-play-again-btn"
               id="win-modal-play-again-btn"
               style={styles.modalSecondaryBtn}
-              onPress={() => {
-                setShowWinModal(false);
-                setRewardGranted(false);
-                setMatched([]);
-                setFlipped([]);
-                setMoves(0);
-                const deck: CardItem[] = [];
-                const activeCreatures = MARINE_CREATURES.slice(0, numPairs);
-                activeCreatures.forEach((creature) => {
-                  deck.push({ ...creature, uniqueId: `${creature.id}-0` });
-                  deck.push({ ...creature, uniqueId: `${creature.id}-1` });
-                });
-                setCards(deck.sort(() => Math.random() - 0.5));
-                setIsProcessing(true);
-                setPreviewMode(false);
-                setCountdown(3);
-              }}
+              onPress={initializeGame}
             >
               <Text style={styles.modalSecondaryBtnText}>Play Again</Text>
             </TouchableOpacity>

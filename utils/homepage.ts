@@ -3,7 +3,10 @@ import { Platform, LayoutAnimation, useWindowDimensions } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { supabase } from '../lib/supabase'; // Ajusta la ruta si es necesario
 import { getUserSandDollars } from './db';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORE_ITEMS_DATA, StoreItem } from './store';
 
+const BASIC_ITEM: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 export const MOBILE_BREAKPOINT = 768;
 
 export interface NavItem {
@@ -16,17 +19,17 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'worlds', label: 'Worlds', icon: require('../assets/images/Worlds.png') },
   { key: 'streak', label: 'Streak', icon: require('../assets/images/Streak.png') },
   { key: 'store', label: 'Store', icon: require('../assets/images/Store.png') },
-  { key: 'profile', label: 'Profile', icon: require('../assets/images/Perfil.png') },
 ];
 
 export const WORLDS_ARRAY = [
-  { id: 0, image: require('../assets/images/SunkenShip.png'), route: '/SunkenShip', name: 'Sunken Ship' },
-  { id: 1, image: require('../assets/images/CoralReef.png'), route: '/coralReef', name: 'Coral Reef Memory' },
-  { id: 2, image: require('../assets/images/SubmarineWorld.png'), route: '/SubmarineWorld', name: 'Submarine World' },
+  { id: 0, name: 'Sunken Ship Maze', image: require('../assets/images/SunkenShip.png'), route: '/SunkenShip' },
+  { id: 1, name: 'Coral Reef Memory', image: require('../assets/images/CoralReef.png'), route: '/coralReef' },
+  { id: 2, name: 'Submarine Alphabet', image: require('../assets/images/SubmarineWorld.png'), route: '/SubmarineWorld' },
 ];
 
 export const useHomeLogic = () => {
   const [coins, setCoins] = useState<number>(0);
+  const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
   const [showDialog, setShowDialog] = useState<boolean>(true);
   const [activeIndex, setActiveIndex] = useState(1);
   const touchStartX = useRef(0);
@@ -58,6 +61,26 @@ export const useHomeLogic = () => {
         // Obtenemos los Sand Dollars de la tabla Usuario vinculados por FK (idUsuario === auth.users.id)
         const sandDollars = await getUserSandDollars(user.id);
         setCoins(sandDollars);
+
+        const metadata = user.user_metadata || {};
+        if (metadata.equippedItem) {
+          try {
+            setEquippedItem(typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem);
+          } catch (e) {
+            setEquippedItem(BASIC_ITEM);
+          }
+        } else {
+          const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+          if (storedEquipped) {
+            try {
+              setEquippedItem(JSON.parse(storedEquipped));
+            } catch (e) {
+              setEquippedItem(BASIC_ITEM);
+            }
+          } else {
+            setEquippedItem(BASIC_ITEM);
+          }
+        }
       }
     } catch (err) {
       console.error('Error cargando Sand Dollars:', err);
@@ -83,6 +106,7 @@ export const useHomeLogic = () => {
     visibleNavItems,
     leftWorld: WORLDS_ARRAY[leftIndex],
     centerWorldItem: WORLDS_ARRAY[activeIndex],
-    rightWorld: WORLDS_ARRAY[rightIndex]
+    rightWorld: WORLDS_ARRAY[rightIndex],
+    equippedItem
   };
 };

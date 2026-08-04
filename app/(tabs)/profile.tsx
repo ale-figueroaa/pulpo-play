@@ -1,4 +1,5 @@
 // profile.tsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -11,26 +12,21 @@ import {
   useWindowDimensions,
   View
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
-import { getUserProfileByAuthId, getUserSandDollars } from '../../utils/db';
 import { styles } from '../../styles/profile.style';
-import { MOBILE_BREAKPOINT, NAV_ITEMS, StoreItem } from '../../utils/store';
+import { getUserProfileByAuthId, getUserSandDollars } from '../../utils/db';
+import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
 
-const DEFAULT_EQUIPPED: StoreItem = {
-  id: 'featured',
-  name: 'Traje de Buzo Leyenda',
-  price: '10,000',
-  image: require('../../assets/images/octavioExplorador.png'),
-};
+const DEFAULT_EQUIPPED: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
 export default function ProfileScreen() {
   const [coins, setCoins] = useState<number>(0);
   const [nombreUsuario, setNombreUsuario] = useState<string>('Explorer Diver');
-  const [email, setEmail] = useState<string>('buzo@pulpoplay.com');
+  const [email, setEmail] = useState<string>('diver@pulpoplay.com');
   const [password, setPassword] = useState<string>('••••••••••••');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [equippedItem, setEquippedItem] = useState<StoreItem>(DEFAULT_EQUIPPED);
+  const [experienceLevel, setExperienceLevel] = useState<number>(0);
 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -39,7 +35,7 @@ export default function ProfileScreen() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        setEmail(user.email || 'buzo@pulpoplay.com');
+        setEmail(user.email || 'diver@pulpoplay.com');
 
         // Consultar perfil y monedas
         const profile = await getUserProfileByAuthId(user.id);
@@ -48,20 +44,30 @@ export default function ProfileScreen() {
         } else {
           setNombreUsuario(user.user_metadata?.nombreUsuario || 'Explorer Diver');
         }
+        setExperienceLevel(profile?.experienceLevel || 0);
 
         const sandDollars = await getUserSandDollars(user.id);
         setCoins(sandDollars);
 
-        // Consultar ítem equipado en AsyncStorage
-        const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
-        if (storedEquipped) {
+        // Consultar ítem equipado
+        const metadata = user.user_metadata || {};
+        if (metadata.equippedItem) {
           try {
-            setEquippedItem(JSON.parse(storedEquipped));
+            setEquippedItem(typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem);
           } catch (e) {
             setEquippedItem(DEFAULT_EQUIPPED);
           }
         } else {
-          setEquippedItem(DEFAULT_EQUIPPED);
+          const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+          if (storedEquipped) {
+            try {
+              setEquippedItem(JSON.parse(storedEquipped));
+            } catch (e) {
+              setEquippedItem(DEFAULT_EQUIPPED);
+            }
+          } else {
+            setEquippedItem(DEFAULT_EQUIPPED);
+          }
         }
 
         // Consultar última contraseña localmente
@@ -104,6 +110,9 @@ export default function ProfileScreen() {
     ? NAV_ITEMS.filter(item => item.key !== 'profile')
     : NAV_ITEMS;
 
+  const currentLevel = Math.floor(experienceLevel / 100) + 1;
+  const progressPercent = experienceLevel % 100;
+
   return (
     <LinearGradient
       colors={['#03245a', '#5a9eff']}
@@ -118,7 +127,13 @@ export default function ProfileScreen() {
           <View style={styles.headerRowMobile}>
             {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              {/* Profile icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => handleNavigation('profile')}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
 
             {/* Monedas (centro) */}
@@ -131,7 +146,13 @@ export default function ProfileScreen() {
 
             {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              {/* Logout icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         ) : (
@@ -164,7 +185,20 @@ export default function ProfileScreen() {
                 <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              {/* Icons removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -175,7 +209,7 @@ export default function ProfileScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.profileCard}>
-            
+
             {/* AVATAR DE PERFIL (OBJETO EN USO) */}
             <View style={styles.avatarCircle}>
               <Image source={equippedItem.image} style={styles.avatarImage} />
@@ -184,27 +218,36 @@ export default function ProfileScreen() {
               <Text style={styles.equippedBadgeText}>In Use: {equippedItem.name}</Text>
             </View>
 
+            {/* SISTEMA DE NIVELES */}
+            <View style={styles.levelSection}>
+              <Text style={styles.levelTitle}>Level {currentLevel}</Text>
+              <View style={styles.progressBarBackground}>
+                <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+              </View>
+              <Text style={styles.levelProgressText}>{progressPercent} / 100 XP until level {currentLevel + 1}</Text>
+            </View>
+
             {/* CAMPOS DE INFORMACIÓN DEL USUARIO */}
             <View style={styles.infoSection}>
-              
+
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Diver Name</Text>
+                <Text style={styles.fieldLabel}>Name</Text>
                 <Text style={styles.fieldValue} testID="profile-username-text" id="profile-username-text">
                   {nombreUsuario}
                 </Text>
               </View>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Email Address</Text>
+                <Text style={styles.fieldLabel}>Email</Text>
                 <Text style={styles.fieldValue} testID="profile-email-text" id="profile-email-text">
                   {email}
                 </Text>
               </View>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Current Balance</Text>
+                <Text style={styles.fieldLabel}>Current balance</Text>
                 <Text style={styles.fieldValue}>
-                  {coins} Sand Dollars 🪙
+                  {coins} Sand Dollars
                 </Text>
               </View>
 
@@ -222,7 +265,7 @@ export default function ProfileScreen() {
                     onPress={() => setShowPassword(!showPassword)}
                   >
                     <Text style={styles.toggleBtnText}>
-                      {showPassword ? '🙈 Hide' : '👁️ Show'}
+                      {showPassword ? 'Hide' : 'Show'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -238,7 +281,7 @@ export default function ProfileScreen() {
               activeOpacity={0.85}
               onPress={handleLogout}
             >
-              <Text style={styles.logoutButtonText}>Log Out 🚪</Text>
+              <Text style={styles.logoutButtonText}>Logout</Text>
             </TouchableOpacity>
 
           </View>

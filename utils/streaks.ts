@@ -13,8 +13,8 @@ export interface NavItem {
 }
 
 export interface DayData {
-  day: string;
-  active: boolean;
+  name: string;
+  completed: boolean;
 }
 
 export interface MilestoneData {
@@ -27,18 +27,9 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'worlds', label: 'Worlds', icon: require('../assets/images/Worlds.png') },
   { key: 'streak', label: 'Streak', icon: require('../assets/images/Streak.png') },
   { key: 'store', label: 'Store', icon: require('../assets/images/Store.png') },
-  { key: 'profile', label: 'Profile', icon: require('../assets/images/Perfil.png') },
 ];
 
-export const DAYS_DATA = [
-  { day: 'Lun', active: true },
-  { day: 'Mar', active: true },
-  { day: 'Mié', active: false },
-  { day: 'Jue', active: false },
-  { day: 'Vie', active: false },
-  { day: 'Sáb', active: false },
-  { day: 'Dom', active: false },
-];
+
 
 export const MILESTONES = [
   { id: '1', days: 2, reward: 10 },
@@ -50,24 +41,79 @@ export const MILESTONES = [
 
 export const useStreaksLogic = () => {
   const [coins, setCoins] = useState<number>(0);
+  const [streakTotal, setStreakTotal] = useState<number>(0);
+  const [daysData, setDaysData] = useState<DayData[]>([]);
+
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
 
-  const fetchUserCoins = async () => {
+  const calculateStreak = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const sandDollars = await getUserSandDollars(user.id);
-        setCoins(sandDollars);
+      if (!user) return;
+
+      const sandDollars = await getUserSandDollars(user.id);
+      setCoins(sandDollars);
+
+      let currentStreak = user.user_metadata?.streakTotal || 0;
+      let lastDate = user.user_metadata?.lastStreakDate || '';
+
+      const today = new Date();
+      const offset = today.getTimezoneOffset();
+      const localTodayDate = new Date(today.getTime() - (offset * 60 * 1000));
+      const todayStr = localTodayDate.toISOString().split('T')[0];
+
+      let needsUpdate = false;
+
+      if (lastDate === todayStr) {
+        // Already logged in today
+      } else {
+        if (lastDate) {
+          const last = new Date(lastDate);
+          const todayObj = new Date(todayStr);
+          const diffTime = Math.abs(todayObj.getTime() - last.getTime());
+          const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+          
+          if (diffDays === 1) {
+            currentStreak += 1;
+          } else {
+            currentStreak = 1;
+          }
+        } else {
+          currentStreak = 1;
+        }
+        lastDate = todayStr;
+        needsUpdate = true;
       }
+
+      setStreakTotal(currentStreak);
+
+      if (needsUpdate) {
+        await supabase.auth.updateUser({
+          data: {
+            streakTotal: currentStreak,
+            lastStreakDate: lastDate
+          }
+        });
+      }
+
+      const currentWeekProgress = currentStreak % 7 === 0 && currentStreak > 0 ? 7 : currentStreak % 7;
+      
+      const newDaysData = Array.from({ length: 7 }).map((_, idx) => ({
+        name: `Day ${idx + 1}`,
+        completed: idx < currentWeekProgress
+      }));
+
+      setDaysData(newDaysData);
+
     } catch (err) {
-      console.error('Error cargando monedas en streaks:', err);
+      console.error('Error in streak logic:', err);
     }
   };
 
   useFocusEffect(
     useCallback(() => {
-      fetchUserCoins();
+      calculateStreak();
     }, [])
   );
 
@@ -77,9 +123,10 @@ export const useStreaksLogic = () => {
 
   return {
     coins,
+    streakTotal,
     isMobile,
     visibleNavItems,
-    DAYS_DATA,
+    DAYS_DATA: daysData.length > 0 ? daysData : Array.from({length: 7}).map((_, i) => ({name: `Day ${i+1}`, completed: false})),
     MILESTONES,
   };
 };

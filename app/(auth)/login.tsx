@@ -9,22 +9,23 @@ import {
   Text,
   TextInput, TouchableOpacity,
   useWindowDimensions,
-  View,
-  Modal
+  View
 } from 'react-native';
 
 // la logica en utils y el estilo en style
 import { styles } from '../../styles/login.style';
 import { handleLoginLogic } from '../../utils/login';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
+import { supabase } from '../../lib/supabase';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [modalMessage, setModalMessage] = useState('');
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -36,13 +37,28 @@ export default function LoginScreen() {
       name,
       password,
       setLoading,
-      onSuccess: () => router.replace('/(tabs)/homepage' as any),
-      onError: (title: string, message: string) => {
-        setModalTitle(title);
-        setModalMessage(message);
-        setModalVisible(true);
-      }
+      onSuccess: () => router.replace('/(tabs)/homepage' as any)
     });
+  };
+
+  const handleGoogleAuth = async () => {
+    try {
+      setLoading(true);
+      const redirectUrl = Linking.createURL('/(tabs)/homepage');
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+        },
+      });
+      if (data?.url) {
+        await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+      }
+    } catch (err) {
+      console.error('Google Auth Error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formContent = (
@@ -95,26 +111,27 @@ export default function LoginScreen() {
             <Text style={styles.buttonText}>¡Submerge!</Text>
           )}
         </TouchableOpacity>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+          <View style={{ flex: 1, height: 1, backgroundColor: '#E2E8F0' }} />
+          <Text style={{ marginHorizontal: 10, color: '#94A3B8' }}>OR</Text>
+          <View style={{ flex: 1, height: 1, backgroundColor: '#E2E8F0' }} />
+        </View>
+
+        <TouchableOpacity
+          testID="login-google-btn"
+          id="login-google-btn"
+          style={[styles.button, { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', marginTop: 0 }]}
+          onPress={handleGoogleAuth}
+          disabled={loading}
+        >
+          <Text style={[styles.buttonText, { color: '#475569' }]}>🇬 Sign in with Google</Text>
+        </TouchableOpacity>
       </View>
 
       <Link testID="login-to-signup-link" id="login-to-signup-link" href="/signup" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
         Don't have an account? Sign up
       </Link>
-
-      {modalVisible && (
-        <Modal transparent animationType="fade" visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalCard}>
-              <Text style={styles.modalEmoji}>🫧</Text>
-              <Text style={styles.modalTitle}>{modalTitle}</Text>
-              <Text style={styles.modalSubtitle}>{modalMessage}</Text>
-              <TouchableOpacity style={styles.modalBtn} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalBtnText}>Aceptar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      )}
     </>
   );
 

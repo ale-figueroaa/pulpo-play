@@ -8,22 +8,20 @@ interface SignUpParams {
   password: string;
   setLoading: (loading: boolean) => void;
   onSuccess: () => void; // Función para navegar cuando termine
-  onError: (title: string, message: string) => void;
-  onSuccessMsg: (title: string, message: string, cb: () => void) => void;
 }
 
-export const handleSignUpLogic = async ({ name, email, password, setLoading, onSuccess, onError, onSuccessMsg }: SignUpParams) => {
+export const handleSignUpLogic = async ({ name, email, password, setLoading, onSuccess }: SignUpParams) => {
   if (!name.trim() || !email.trim() || !password.trim()) {
-    onError('Oops!', 'Please complete all fields for your new character 🐙');
+    Alert.alert('¡Ups!', 'Please complete all fields for your new character 🐙');
     return;
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email.trim())) {
-    onError('Invalid email!', 'Please enter a valid email address 📧');
+    Alert.alert('Invalid email!', 'Please enter a valid email address 📧');
     return;
   }
   if (password.trim().length < 6) {
-    onError('Too short!', 'The password must be at least 6 characters long 🔒');
+    Alert.alert('Too short!', 'The password must be at least 6 characters long 🔒');
     return;
   }
 
@@ -37,7 +35,7 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
       .maybeSingle();
 
     if (existingUser) {
-      onError('Unavailable!', `That diver's name is already taken. Try another one! 🐬`);
+      Alert.alert('Unavailable!', `That diver's name is already taken. Try another one! 🐬`);
       setLoading(false);
       return;
     }
@@ -64,14 +62,14 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
     }
 
     // 3. Éxito
-    onSuccessMsg(
+    Alert.alert(
       'Success!',
       'Your account has been created! Check your email to confirm it before logging in. 🌊',
-      onSuccess
+      [{ text: 'Brilliant!', onPress: onSuccess }]
     );
   } catch (err: any) {
     console.log('Error completo:', JSON.stringify(err, null, 2));
-    onError('Error', err.message + '\n\nCode: ' + err.code + '\n\nDetails: ' + err.details);
+    Alert.alert('Error', err.message + '\n\nCode: ' + err.code + '\n\nDetails: ' + err.details);
   } finally {
     setLoading(false);
   }

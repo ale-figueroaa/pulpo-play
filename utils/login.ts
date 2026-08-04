@@ -7,12 +7,11 @@ interface LoginParams {
   password: string;
   setLoading: (loading: boolean) => void;
   onSuccess: () => void;
-  onError: (title: string, message: string) => void;
 }
 
-export const handleLoginLogic = async ({ name, password, setLoading, onSuccess, onError }: LoginParams) => {
+export const handleLoginLogic = async ({ name, password, setLoading, onSuccess }: LoginParams) => {
   if (!name.trim() || !password.trim()) {
-    onError('Oops!', 'Please fill in all required fields 🐙');
+    Alert.alert('¡Ups!', 'Please fill in all required fields 🐙');
     return;
   }
 
@@ -21,7 +20,7 @@ export const handleLoginLogic = async ({ name, password, setLoading, onSuccess, 
     const { userId, error } = await loginWithUsernameOrEmail(name, password);
 
     if (error || !userId) {
-      onError('Uncharted Ocean!', error || 'We could not verify your account. 🌊');
+      Alert.alert('¡Océano Inexplorado!', error || 'No pudimos verificar tu cuenta. 🌊');
       return;
     }
 
@@ -34,7 +33,7 @@ export const handleLoginLogic = async ({ name, password, setLoading, onSuccess, 
     // 4. Success!
     onSuccess();
   } catch (err: any) {
-    onError('Error', 'There was a problem connecting to the reef.');
+    Alert.alert('Error', 'There was a problem connecting to the reef.');
   } finally {
     setLoading(false);
   }
