@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useEffect, useState, useRef } from 'react';
-import { Image, SafeAreaView, Text, TouchableOpacity, View, Animated, Easing } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
 // 1. Importamos la lógica y estilos originales
@@ -34,6 +34,11 @@ export default function HomeScreenWeb() {
   const bubbleAnim3B = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    const randomDelay = (min: number, max: number) => Math.floor(Math.random() * (max - min) + min);
+    const bubbleDelayA = randomDelay(1800, 3200);
+    const bubbleDelayB = randomDelay(2200, 3800);
+    const bubbleDelayC = randomDelay(2600, 4200);
+
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, { toValue: 1, duration: 2500, useNativeDriver: true, easing: Easing.inOut(Easing.sin) }),
@@ -51,38 +56,66 @@ export default function HomeScreenWeb() {
     swayLoop.start();
 
     const bubbleLoop = Animated.loop(
-      Animated.timing(bubbleAnim, { toValue: 1, duration: 4000, useNativeDriver: true, easing: Easing.linear })
+      Animated.sequence([
+        Animated.timing(bubbleAnim, { toValue: 1, duration: 4200 + randomDelay(400, 1200), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnim, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
     );
     bubbleLoop.start();
-    const timer1 = setTimeout(() => {
-      Animated.loop(Animated.timing(bubbleAnimB, { toValue: 1, duration: 4000, useNativeDriver: true, easing: Easing.linear })).start();
-    }, 2000);
+
+    const bubbleLoopB = Animated.loop(
+      Animated.sequence([
+        Animated.delay(bubbleDelayA),
+        Animated.timing(bubbleAnimB, { toValue: 1, duration: 4500 + randomDelay(300, 1100), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnimB, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
+    );
+    bubbleLoopB.start();
     
     const bubbleLoop2 = Animated.loop(
-      Animated.timing(bubbleAnim2, { toValue: 1, duration: 5500, useNativeDriver: true, easing: Easing.linear })
+      Animated.sequence([
+        Animated.timing(bubbleAnim2, { toValue: 1, duration: 5200 + randomDelay(500, 1300), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnim2, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
     );
     bubbleLoop2.start();
-    const timer2 = setTimeout(() => {
-      Animated.loop(Animated.timing(bubbleAnim2B, { toValue: 1, duration: 5500, useNativeDriver: true, easing: Easing.linear })).start();
-    }, 2750);
+    
+    const bubbleLoop2B = Animated.loop(
+      Animated.sequence([
+        Animated.delay(bubbleDelayB),
+        Animated.timing(bubbleAnim2B, { toValue: 1, duration: 5400 + randomDelay(300, 1200), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnim2B, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
+    );
+    bubbleLoop2B.start();
 
     const bubbleLoop3 = Animated.loop(
-      Animated.timing(bubbleAnim3, { toValue: 1, duration: 4800, useNativeDriver: true, easing: Easing.linear })
+      Animated.sequence([
+        Animated.delay(bubbleDelayC),
+        Animated.timing(bubbleAnim3, { toValue: 1, duration: 4800 + randomDelay(400, 1300), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnim3, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
     );
     bubbleLoop3.start();
-    const timer3 = setTimeout(() => {
-      Animated.loop(Animated.timing(bubbleAnim3B, { toValue: 1, duration: 4800, useNativeDriver: true, easing: Easing.linear })).start();
-    }, 2400);
+    
+    const bubbleLoop3B = Animated.loop(
+      Animated.sequence([
+        Animated.delay(bubbleDelayC + randomDelay(800, 1600)),
+        Animated.timing(bubbleAnim3B, { toValue: 1, duration: 5000 + randomDelay(300, 1400), useNativeDriver: true, easing: Easing.linear }),
+        Animated.timing(bubbleAnim3B, { toValue: 0, duration: 0, useNativeDriver: true })
+      ])
+    );
+    bubbleLoop3B.start();
     
     return () => {
       floatLoop.stop();
       swayLoop.stop();
       bubbleLoop.stop();
+      bubbleLoopB.stop();
       bubbleLoop2.stop();
+      bubbleLoop2B.stop();
       bubbleLoop3.stop();
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
+      bubbleLoop3B.stop();
     };
   }, []);
 
@@ -90,20 +123,39 @@ export default function HomeScreenWeb() {
   const seaweedRotate1 = swayAnim.interpolate({ inputRange: [0, 1], outputRange: ['-5deg', '5deg'] });
   const seaweedRotate2 = swayAnim.interpolate({ inputRange: [0, 1], outputRange: ['3deg', '-3deg'] });
   
-  const bubbleTranslateY = bubbleAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -50] });
-  const bubbleOpacity = bubbleAnim.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.65, 0.65, 0] });
-  const bubbleTranslateYB = bubbleAnimB.interpolate({ inputRange: [0, 1], outputRange: [0, -50] });
-  const bubbleOpacityB = bubbleAnimB.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.65, 0.65, 0] });
-  
-  const bubbleTranslateY2 = bubbleAnim2.interpolate({ inputRange: [0, 1], outputRange: [0, -60] });
-  const bubbleOpacity2 = bubbleAnim2.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.5, 0.5, 0] });
-  const bubbleTranslateY2B = bubbleAnim2B.interpolate({ inputRange: [0, 1], outputRange: [0, -60] });
-  const bubbleOpacity2B = bubbleAnim2B.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.5, 0.5, 0] });
+  const bubbleTranslateY = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.15, 0.85, 1], outputRange: [0, 0, -40, -58, 0] });
+  const bubbleTranslateX = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, 8, -5] });
+  const bubbleScale = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.95, 0.95, 1.08, 0.9] });
+  const bubbleRotate = bubbleAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '5deg'] });
+  const bubbleOpacity = bubbleAnim.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.75, 0.85, 0] });
 
-  const bubbleTranslateY3 = bubbleAnim3.interpolate({ inputRange: [0, 1], outputRange: [0, -40] });
-  const bubbleOpacity3 = bubbleAnim3.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.4, 0.4, 0] });
-  const bubbleTranslateY3B = bubbleAnim3B.interpolate({ inputRange: [0, 1], outputRange: [0, -40] });
-  const bubbleOpacity3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 0.4, 0.4, 0] });
+  const bubbleTranslateYB = bubbleAnimB.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -35, -50] });
+  const bubbleTranslateXB = bubbleAnimB.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -10, 6] });
+  const bubbleScaleB = bubbleAnimB.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.9, 0.9, 1.05, 0.92] });
+  const bubbleRotateB = bubbleAnimB.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-4deg'] });
+  const bubbleOpacityB = bubbleAnimB.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.72, 0.85, 0] });
+  
+  const bubbleTranslateY2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -50, -65] });
+  const bubbleTranslateX2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, 6, -8] });
+  const bubbleScale2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.92, 0.92, 1.1, 0.88] });
+  const bubbleRotate2 = bubbleAnim2.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '4deg'] });
+  const bubbleOpacity2 = bubbleAnim2.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.62, 0.72, 0] });
+  const bubbleTranslateY2B = bubbleAnim2B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -45, -60] });
+  const bubbleTranslateX2B = bubbleAnim2B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -6, 7] });
+  const bubbleScale2B = bubbleAnim2B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.9, 0.9, 1.03, 0.94] });
+  const bubbleRotate2B = bubbleAnim2B.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-3deg'] });
+  const bubbleOpacity2B = bubbleAnim2B.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.62, 0.72, 0] });
+
+  const bubbleTranslateY3 = bubbleAnim3.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -30, -45] });
+  const bubbleTranslateX3 = bubbleAnim3.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, 4, -6] });
+  const bubbleScale3 = bubbleAnim3.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.94, 0.94, 1.03, 0.9] });
+  const bubbleRotate3 = bubbleAnim3.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '3deg'] });
+  const bubbleOpacity3 = bubbleAnim3.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.62, 0.7, 0] });
+  const bubbleTranslateY3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -32, -47] });
+  const bubbleTranslateX3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -8, 8] });
+  const bubbleScale3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.9, 0.9, 1.05, 0.93] });
+  const bubbleRotate3B = bubbleAnim3B.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-2deg'] });
+  const bubbleOpacity3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.6, 0.65, 0] });
 
   const handleLogout = async () => {
     try {
@@ -237,47 +289,36 @@ export default function HomeScreenWeb() {
             style={[styles.backgroundOctavio, { transform: [{ translateY: octavioTranslateY }] }]} 
           />
           <Animated.Image 
-            source={require('../../assets/images/bubbles.png')} 
-            pointerEvents="none"
-            style={[styles.bubblesDecoration, { transform: [{ translateY: bubbleTranslateY }], opacity: bubbleOpacity }]} 
-          />
-          <Animated.Image 
-            source={require('../../assets/images/bubbles.png')} 
-            pointerEvents="none"
-            style={[styles.bubblesDecoration, { transform: [{ translateY: bubbleTranslateYB }], opacity: bubbleOpacityB }]} 
-          />
-
-          <Animated.Image 
-            source={require('../../assets/images/bubbles.png')} 
-            pointerEvents="none"
-            style={[styles.bubblesDecorationLeft, { transform: [{ translateY: bubbleTranslateY3 }], opacity: bubbleOpacity3 }]} 
-          />
-          <Animated.Image 
-            source={require('../../assets/images/bubbles.png')} 
-            pointerEvents="none"
-            style={[styles.bubblesDecorationLeft, { transform: [{ translateY: bubbleTranslateY3B }], opacity: bubbleOpacity3B }]} 
-          />
-
-          <Animated.Image 
             source={require('../../assets/images/bubbleSingle.png')} 
             pointerEvents="none"
-            style={[styles.bubbleSingleLeft, { transform: [{ translateY: bubbleTranslateY }], opacity: bubbleOpacity }]} 
+            style={[styles.bubbleSingleTopLeft, { transform: [{ translateY: bubbleTranslateY }, { translateX: bubbleTranslateX }, { scale: bubbleScale }, { rotate: bubbleRotate }], opacity: bubbleOpacity }]} 
           />
           <Animated.Image 
             source={require('../../assets/images/bubbleSingle.png')} 
             pointerEvents="none"
-            style={[styles.bubbleSingleLeft, { transform: [{ translateY: bubbleTranslateYB }], opacity: bubbleOpacityB }]} 
+            style={[styles.bubbleSingleTopRight, { transform: [{ translateY: bubbleTranslateYB }, { translateX: bubbleTranslateXB }, { scale: bubbleScaleB }, { rotate: bubbleRotateB }], opacity: bubbleOpacityB }]} 
+          />
+
+          <Animated.Image 
+            source={require('../../assets/images/bubblesThree.png')} 
+            pointerEvents="none"
+            style={[styles.bubbleThreeCenter, { transform: [{ translateY: bubbleTranslateY3 }, { translateX: bubbleTranslateX3 }, { scale: bubbleScale3 }, { rotate: bubbleRotate3 }], opacity: bubbleOpacity3 }]} 
+          />
+          <Animated.Image 
+            source={require('../../assets/images/bubblesThree.png')} 
+            pointerEvents="none"
+            style={[styles.bubbleThreeLeft, { transform: [{ translateY: bubbleTranslateY3B }, { translateX: bubbleTranslateX3B }, { scale: bubbleScale3B }, { rotate: bubbleRotate3B }], opacity: bubbleOpacity3B }]} 
           />
 
           <Animated.Image 
             source={require('../../assets/images/bubbleSingle.png')} 
             pointerEvents="none"
-            style={[styles.bubbleSingleRight, { transform: [{ translateY: bubbleTranslateY2 }], opacity: bubbleOpacity2 }]} 
+            style={[styles.bubbleSingleBottomLeft, { transform: [{ translateY: bubbleTranslateY2 }, { translateX: bubbleTranslateX2 }, { scale: bubbleScale2 }, { rotate: bubbleRotate2 }], opacity: bubbleOpacity2 }]} 
           />
           <Animated.Image 
             source={require('../../assets/images/bubbleSingle.png')} 
             pointerEvents="none"
-            style={[styles.bubbleSingleRight, { transform: [{ translateY: bubbleTranslateY2B }], opacity: bubbleOpacity2B }]} 
+            style={[styles.bubbleSingleBottomRight, { transform: [{ translateY: bubbleTranslateY2B }, { translateX: bubbleTranslateX2B }, { scale: bubbleScale2B }, { rotate: bubbleRotate2B }], opacity: bubbleOpacity2B }]} 
           />
           <Animated.Image 
             source={require('../../assets/images/seaweed.png')} 
