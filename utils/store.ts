@@ -21,12 +21,12 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const STORE_ITEMS_DATA: StoreItem[] = [
   { id: 'basic', name: 'Basic Octavio', price: '0', image: require('../assets/images/OctavioBasic.png') },
-  { id: 'fit', name: 'Fit Octavio', price: '100', image: require('../assets/images/OcatvioFit.png') },
-  { id: 'paint', name: 'Painter Octavio', price: '100', image: require('../assets/images/OcatvioPaint.png') },
-  { id: 'funny', name: 'Funny Octavio', price: '100', image: require('../assets/images/OctavioFunny.png') },
-  { id: 'intelectual', name: 'Intellectual Octavio', price: '150', image: require('../assets/images/OctavioIntelectual.png') },
-  { id: 'music', name: 'Musician Octavio', price: '150', image: require('../assets/images/OctavioMusic.png') },
-  { id: 'travel', name: 'Traveler Octavio', price: '150', image: require('../assets/images/OctavioTravel.png') },
+  { id: 'fit', name: 'Fit Octavio', price: '1000', image: require('../assets/images/OcatvioFit.png') },
+  { id: 'paint', name: 'Painter Octavio', price: '1000', image: require('../assets/images/OcatvioPaint.png') },
+  { id: 'funny', name: 'Funny Octavio', price: '1000', image: require('../assets/images/OctavioFunny.png') },
+  { id: 'intelectual', name: 'Intellectual Octavio', price: '1500', image: require('../assets/images/OctavioIntelectual.png') },
+  { id: 'music', name: 'Musician Octavio', price: '1500', image: require('../assets/images/OctavioMusic.png') },
+  { id: 'travel', name: 'Traveler Octavio', price: '1500', image: require('../assets/images/OctavioTravel.png') },
 ];
 
 export const MOBILE_BREAKPOINT = 768; 

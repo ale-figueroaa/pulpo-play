@@ -1,5 +1,5 @@
 // profile.style.ts
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   gradientContainer: {
@@ -289,7 +289,7 @@ export const styles = StyleSheet.create({
     fontWeight: '900',
     fontSize: 14,
   },
-  
+
   // ================= SISTEMA DE NIVELES =================
   levelSection: {
     width: '100%',

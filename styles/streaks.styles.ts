@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   gradientContainer: {
@@ -33,10 +33,10 @@ export const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 30,
-    marginBottom: 40,
     zIndex: 50,
-    paddingHorizontal: '5%',
+    paddingHorizontal: '3%',
   },
   headerSide: {
     flex: 1,
@@ -208,8 +208,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
-    paddingHorizontal: 22,
-    marginHorizontal: 10,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
     ...Platform.select({
       web: { cursor: 'pointer' },
     }),
