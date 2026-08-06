@@ -285,49 +285,49 @@ export default function HomeScreenWeb() {
         <View style={styles.mainContent}>
           <Animated.Image
             source={equippedItem?.image}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.backgroundOctavio, { transform: [{ translateY: octavioTranslateY }] }]}
           />
           <Animated.Image
             source={require('../../assets/images/bubbleSingle.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleSingleTopLeft, { transform: [{ translateY: bubbleTranslateY }, { translateX: bubbleTranslateX }, { scale: bubbleScale }, { rotate: bubbleRotate }], opacity: bubbleOpacity }]}
           />
           <Animated.Image
             source={require('../../assets/images/bubbleSingle.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleSingleTopRight, { transform: [{ translateY: bubbleTranslateYB }, { translateX: bubbleTranslateXB }, { scale: bubbleScaleB }, { rotate: bubbleRotateB }], opacity: bubbleOpacityB }]}
           />
 
           <Animated.Image
             source={require('../../assets/images/bubblesThree.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleThreeCenter, { transform: [{ translateY: bubbleTranslateY3 }, { translateX: bubbleTranslateX3 }, { scale: bubbleScale3 }, { rotate: bubbleRotate3 }], opacity: bubbleOpacity3 }]}
           />
           <Animated.Image
             source={require('../../assets/images/bubblesThree.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleThreeLeft, { transform: [{ translateY: bubbleTranslateY3B }, { translateX: bubbleTranslateX3B }, { scale: bubbleScale3B }, { rotate: bubbleRotate3B }], opacity: bubbleOpacity3B }]}
           />
 
           <Animated.Image
             source={require('../../assets/images/bubbleSingle.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleSingleBottomLeft, { transform: [{ translateY: bubbleTranslateY2 }, { translateX: bubbleTranslateX2 }, { scale: bubbleScale2 }, { rotate: bubbleRotate2 }], opacity: bubbleOpacity2 }]}
           />
           <Animated.Image
             source={require('../../assets/images/bubbleSingle.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.bubbleSingleBottomRight, { transform: [{ translateY: bubbleTranslateY2B }, { translateX: bubbleTranslateX2B }, { scale: bubbleScale2B }, { rotate: bubbleRotate2B }], opacity: bubbleOpacity2B }]}
           />
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.seaweedDecorationRight1, { transform: [{ rotate: seaweedRotate1 }] }]}
           />
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
-            pointerEvents="none"
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.seaweedDecorationRight2, { transform: [{ rotate: seaweedRotate2 }] }]}
           />
 
