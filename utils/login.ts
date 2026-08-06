@@ -7,11 +7,12 @@ interface LoginParams {
   password: string;
   setLoading: (loading: boolean) => void;
   onSuccess: () => void;
+  onError: (msg: string) => void;
 }
 
-export const handleLoginLogic = async ({ name, password, setLoading, onSuccess }: LoginParams) => {
+export const handleLoginLogic = async ({ name, password, setLoading, onSuccess, onError }: LoginParams) => {
   if (!name.trim() || !password.trim()) {
-    Alert.alert('¡Ups!', 'Please fill in all required fields 🐙');
+    onError('Please fill in all required fields 🐙');
     return;
   }
 
@@ -20,20 +21,20 @@ export const handleLoginLogic = async ({ name, password, setLoading, onSuccess }
     const { userId, error } = await loginWithUsernameOrEmail(name, password);
 
     if (error || !userId) {
-      Alert.alert('¡Océano Inexplorado!', error || 'No pudimos verificar tu cuenta. 🌊');
+      onError(error || 'We could not verify your account. 🌊');
       return;
     }
 
     try {
       await AsyncStorage.setItem(`pulpo_last_password_${userId}`, password.trim());
     } catch (e) {
-      console.log('No se pudo guardar la contraseña localmente:', e);
+      console.log('Could not save password locally:', e);
     }
 
     // 4. Success!
     onSuccess();
   } catch (err: any) {
-    Alert.alert('Error', 'There was a problem connecting to the reef.');
+    onError('There was a problem connecting to the reef.');
   } finally {
     setLoading(false);
   }

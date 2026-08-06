@@ -38,7 +38,7 @@ export const loginWithUsernameOrEmail = async (
       if (userError || !usuario) {
         return {
           userId: null,
-          error: 'No se encontró ningún buzo con ese nombre de usuario.',
+          error: 'No diver found with that username.',
         };
       }
 
@@ -51,7 +51,7 @@ export const loginWithUsernameOrEmail = async (
       if (rpcError || !authEmail) {
         return {
           userId: null,
-          error: 'No se pudo verificar la cuenta asociada a este usuario.',
+          error: 'Could not verify the account associated with this user.',
         };
       }
 
@@ -68,14 +68,14 @@ export const loginWithUsernameOrEmail = async (
     if (signInError || !authData.user) {
       return {
         userId: null,
-        error: signInError?.message || 'Contraseña o usuario incorrecto.',
+        error: signInError?.message || 'Incorrect username or password.',
       };
     }
 
     return { userId: authData.user.id, error: null };
   } catch (err: any) {
-    console.error('Error en loginWithUsernameOrEmail:', err);
-    return { userId: null, error: 'Error de conexión con la base de datos.' };
+    console.error('Error in loginWithUsernameOrEmail:', err);
+    return { userId: null, error: 'Database connection error.' };
   }
 };
 

@@ -26,6 +26,7 @@ export default function LoginScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -33,11 +34,13 @@ export default function LoginScreen() {
 
   // The button triggers this, which passes the data to your logic file
   const onLoginPress = () => {
+    setErrorMessage('');
     handleLoginLogic({
       name,
       password,
       setLoading,
-      onSuccess: () => router.replace('/(tabs)/homepage' as any)
+      onSuccess: () => router.replace('/(tabs)/homepage' as any),
+      onError: setErrorMessage
     });
   };
 
@@ -97,6 +100,12 @@ export default function LoginScreen() {
           placeholder="Your password"
           placeholderTextColor="#A0AEC0"
         />
+
+        {errorMessage ? (
+          <Text style={{ color: '#EF4444', marginBottom: 15, textAlign: 'center', fontWeight: '500' }}>
+            {errorMessage}
+          </Text>
+        ) : null}
 
         <TouchableOpacity
           testID="login-submit-btn"

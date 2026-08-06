@@ -57,7 +57,7 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
       try {
         await AsyncStorage.setItem(`pulpo_last_password_${data.user.id}`, password.trim());
       } catch (e) {
-        console.log('No se pudo guardar la contraseña localmente en registro:', e);
+        console.log('Could not save password locally during signup:', e);
       }
     }
 
@@ -68,7 +68,7 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
       [{ text: 'Brilliant!', onPress: onSuccess }]
     );
   } catch (err: any) {
-    console.log('Error completo:', JSON.stringify(err, null, 2));
+    console.log('Full error:', JSON.stringify(err, null, 2));
     Alert.alert('Error', err.message + '\n\nCode: ' + err.code + '\n\nDetails: ' + err.details);
   } finally {
     setLoading(false);
