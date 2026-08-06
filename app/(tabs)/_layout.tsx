@@ -44,6 +44,12 @@ export default function TabLayout() {
           href: null, // 👈 oculta esta pantalla de cualquier listado de tabs
         }}
       />
+      <Tabs.Screen
+        name="SunkenShip"
+        options={{
+          href: null, // 👈 oculta esta pantalla de cualquier listado de tabs
+        }}
+      />
     </Tabs>
   );
 }
