@@ -10,7 +10,9 @@ import {
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
+  TextInput,
+  ActivityIndicator
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/profile.style';
@@ -25,6 +27,12 @@ export default function ProfileScreen() {
   const [email, setEmail] = useState<string>('diver@pulpoplay.com');
   const [password, setPassword] = useState<string>('••••••••••••');
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [savingName, setSavingName] = useState(false);
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
   const [equippedItem, setEquippedItem] = useState<StoreItem>(DEFAULT_EQUIPPED);
   const [experienceLevel, setExperienceLevel] = useState<number>(0);
 
@@ -103,6 +111,42 @@ export default function ProfileScreen() {
       console.error('Error logging out:', err);
     } finally {
       router.replace('/login' as any);
+    }
+  };
+
+  const handleSaveName = async () => {
+    if (!newName.trim()) return setIsEditingName(false);
+    setSavingName(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('Usuario').update({ nombreUsuario: newName.trim() }).eq('idUsuario', user.id);
+        await supabase.auth.updateUser({ data: { nombreUsuario: newName.trim() } });
+        setNombreUsuario(newName.trim());
+      }
+    } catch (err) {
+      console.error('Error updating name:', err);
+    } finally {
+      setSavingName(false);
+      setIsEditingName(false);
+    }
+  };
+
+  const handleSavePassword = async () => {
+    if (!newPassword.trim()) return setIsEditingPassword(false);
+    setSavingPassword(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.auth.updateUser({ password: newPassword });
+        await AsyncStorage.setItem(`pulpo_last_password_${user.id}`, newPassword);
+        setPassword(newPassword);
+      }
+    } catch (err) {
+      console.error('Error updating password:', err);
+    } finally {
+      setSavingPassword(false);
+      setIsEditingPassword(false);
     }
   };
 
@@ -231,10 +275,35 @@ export default function ProfileScreen() {
             <View style={styles.infoSection}>
 
               <View style={styles.fieldBox}>
-                <Text style={styles.fieldLabel}>Name</Text>
-                <Text style={styles.fieldValue} testID="profile-username-text" id="profile-username-text">
-                  {nombreUsuario}
-                </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={styles.fieldLabel}>Name</Text>
+                  {!isEditingName && (
+                    <TouchableOpacity onPress={() => { setIsEditingName(true); setNewName(nombreUsuario); }}>
+                      <Text style={{ color: '#00897b', fontWeight: 'bold' }}>Edit</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                {!isEditingName ? (
+                  <Text style={styles.fieldValue} testID="profile-username-text" id="profile-username-text">
+                    {nombreUsuario}
+                  </Text>
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                    <TextInput
+                      style={[styles.fieldValue, { flex: 1, borderBottomWidth: 1, borderBottomColor: '#ccc', paddingVertical: 4, marginRight: 8 }]}
+                      value={newName}
+                      onChangeText={setNewName}
+                      autoFocus
+                    />
+                    <TouchableOpacity
+                      onPress={handleSaveName}
+                      disabled={savingName}
+                      style={{ backgroundColor: '#00897b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}
+                    >
+                      {savingName ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Confirm</Text>}
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
 
               <View style={styles.fieldBox}>
@@ -253,22 +322,48 @@ export default function ProfileScreen() {
 
               <View style={styles.fieldBox}>
                 <Text style={styles.fieldLabel}>Password</Text>
-                <View style={styles.passwordRow}>
-                  <Text style={styles.fieldValue} testID="profile-password-text" id="profile-password-text">
-                    {showPassword ? password : '••••••••••••'}
-                  </Text>
-                  <TouchableOpacity
-                    testID="profile-toggle-password-btn"
-                    id="profile-toggle-password-btn"
-                    style={styles.toggleBtn}
-                    activeOpacity={0.8}
-                    onPress={() => setShowPassword(!showPassword)}
-                  >
-                    <Text style={styles.toggleBtnText}>
-                      {showPassword ? 'Hide' : 'Show'}
+                {!isEditingPassword ? (
+                  <View style={styles.passwordRow}>
+                    <Text style={styles.fieldValue} testID="profile-password-text" id="profile-password-text">
+                      {showPassword ? password : '••••••••••••'}
                     </Text>
-                  </TouchableOpacity>
-                </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      <TouchableOpacity
+                        testID="profile-toggle-password-btn"
+                        id="profile-toggle-password-btn"
+                        style={styles.toggleBtn}
+                        activeOpacity={0.8}
+                        onPress={() => setShowPassword(!showPassword)}
+                      >
+                        <Text style={styles.toggleBtnText}>
+                          {showPassword ? 'Hide' : 'Show'}
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => { setIsEditingPassword(true); setNewPassword(''); }}>
+                        <Text style={{ color: '#00897b', fontWeight: 'bold' }}>Edit</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                    <TextInput
+                      style={[styles.fieldValue, { flex: 1, borderBottomWidth: 1, borderBottomColor: '#ccc', paddingVertical: 4, marginRight: 8 }]}
+                      value={newPassword}
+                      onChangeText={setNewPassword}
+                      placeholder="Enter new password"
+                      placeholderTextColor="#999"
+                      secureTextEntry
+                      autoFocus
+                    />
+                    <TouchableOpacity
+                      onPress={handleSavePassword}
+                      disabled={savingPassword}
+                      style={{ backgroundColor: '#00897b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}
+                    >
+                      {savingPassword ? <ActivityIndicator size="small" color="#FFF" /> : <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Confirm</Text>}
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
 
             </View>

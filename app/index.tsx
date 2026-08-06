@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import { styles } from '../styles/landing.style';
 
@@ -36,8 +37,12 @@ export default function WebLandingScreen() {
         <View style={styles.navbar}>
           {/* Contenedor izquierdo del logo (Marca / Identidad visual) */}
           <View style={styles.navBrand}>
-            {/* Text: Componente para renderizar cualquier texto o emoji */}
-            <Text style={styles.navEmoji}>🐙</Text>
+            {/* Logo image replacing emoji */}
+            <Image 
+              source={require('../assets/images/OctavioBasic.png')} 
+              style={{ width: 32, height: 32, marginRight: 10 }} 
+              resizeMode="contain" 
+            />
             <Text style={styles.navTitle}>Pulpo Play</Text>
           </View>
 
@@ -118,7 +123,11 @@ export default function WebLandingScreen() {
             {/* Tarjeta 1: Interactive Quests */}
             <View style={styles.featureCard}>
               <View style={styles.featureIconContainer}>
-                <Text style={styles.featureIcon}>🐙</Text>
+                <Image 
+                  source={require('../assets/images/OctavioBasic.png')} 
+                  style={{ width: 32, height: 32 }} 
+                  resizeMode="contain" 
+                />
               </View>
               <Text style={styles.featureTitle}>Interactive Quests</Text>
               <Text style={styles.featureDesc}>

@@ -9,7 +9,8 @@ import {
   Text,
   TextInput, TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
+  Image
 } from 'react-native';
 
 // la logica en utils y el estilo en style
@@ -148,7 +149,11 @@ export default function LoginScreen() {
     return (
       <SafeAreaView style={styles.containerWeb}>
         <View style={styles.webLeftPanel}>
-          <Text style={styles.webPanelEmoji}>🐙</Text>
+          <Image 
+            source={require('../../assets/images/OctavioBasic.png')} 
+            style={{ width: 64, height: 64, marginBottom: 16 }} 
+            resizeMode="contain" 
+          />
           <Text style={styles.webPanelTitle}>Pulpo Play</Text>
           <Text style={styles.webPanelSub}>Dive into the undersea{'\n'}adventure world</Text>
           <View style={styles.webBubble1} />
@@ -166,7 +171,11 @@ export default function LoginScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <View style={styles.iconCircle}>
-          <Text style={styles.iconEmoji}>🐙</Text>
+          <Image 
+            source={require('../../assets/images/OctavioBasic.png')} 
+            style={{ width: 48, height: 48 }} 
+            resizeMode="contain" 
+          />
         </View>
         <Text style={styles.title}>Pulpo Play</Text>
         <Text style={styles.subtitle}>Your adventure starts here!</Text>
