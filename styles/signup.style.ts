@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#004d7a',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 48,
+    padding: 32,
     overflow: 'hidden',
   },
   webPanelEmoji: { fontSize: 72, marginBottom: 20 },
@@ -65,14 +65,16 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f0f4ff',
     justifyContent: 'center',
-    padding: 64,
-    alignItems: 'flex-start',
+    padding: 32,
+    alignItems: 'center',
   },
   webFormTitle: {
     fontSize: 30, fontWeight: 'bold', color: '#004d7a', marginBottom: 6,
+    width: '100%', maxWidth: 420,
   },
   webFormSub: {
     fontSize: 15, color: '#7a8aaa', marginBottom: 28,
+    width: '100%', maxWidth: 420,
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -87,6 +89,7 @@ export const styles = StyleSheet.create({
     borderRadius: 20,
     boxShadow: '0px 6px 16px rgba(0, 0, 0, 0.08)', 
     marginBottom: 20,
+    width: '100%', maxWidth: 420,
   },
   label: {
     fontSize: 13, fontWeight: '600', color: '#7a8aaa',

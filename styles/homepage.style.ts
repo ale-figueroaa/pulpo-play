@@ -102,9 +102,10 @@ export const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: 30,
     zIndex: 50,
-    paddingHorizontal: '5%',
+    paddingHorizontal: '3%',
   },
   headerSide: {
     flex: 1,
@@ -118,9 +119,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   headerCenter: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 15,
   },
 
   // ================= MOBILE =================
@@ -250,7 +251,7 @@ export const styles = StyleSheet.create({
     height: 70,
     ...Platform.select({
       web: {
-        boxShadow: '0px 6px 0px rgba(0,0,0,0.05)', // Actualizado
+        boxShadow: '0px 6px 0px rgba(0,0,0,0.05)', 
       }
     })
   },
@@ -266,8 +267,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
-    paddingHorizontal: 22,
-    marginHorizontal: 10,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
     ...Platform.select({
       web: { cursor: 'pointer' }
     })
@@ -305,19 +306,17 @@ export const styles = StyleSheet.create({
 
   // --- Diálogos estables ---
   dialogWrapper: {
-    alignSelf: 'flex-start',
+    position: 'absolute',
+    top: 120,
+    left: 280,
     width: 380,
-    marginTop: 20,
-    marginLeft: 180,
-    position: 'relative',
     zIndex: 20,
   },
   dialogWrapperMobile: {
+    position: 'absolute',
+    top: 10,
     alignSelf: 'center',
-    width: '100%',
-    marginTop: 40,
-    marginRight: 0,
-    marginLeft: 0,
+    width: '90%',
   },
   dialogBubble: {
     backgroundColor: '#FFFFFF',
@@ -358,18 +357,20 @@ export const styles = StyleSheet.create({
   },
   dialogTail: {
     position: 'absolute',
-    bottom: -15,
-    left: 80,
+    top: '50%',
+    left: -16,
+    marginTop: -10,
     width: 0,
     height: 0,
     backgroundColor: 'transparent',
     borderStyle: 'solid',
-    borderLeftWidth: 12,
-    borderRightWidth: 12,
-    borderTopWidth: 16,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#FFFFFF',
+    borderTopWidth: 12,
+    borderBottomWidth: 12,
+    borderRightWidth: 16,
+    borderLeftWidth: 0,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderRightColor: '#FFFFFF',
   },
 
   // ================= MUNDOS / PLANETAS DESKTOP =================
@@ -378,8 +379,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -140,
-    marginBottom: 40,
+    marginTop: 20,
+    marginBottom: 20,
   },
   worldCircle: {
     justifyContent: 'center',
@@ -389,14 +390,14 @@ export const styles = StyleSheet.create({
     })
   },
   centerWorld: {
-    width: 320,
-    height: 320,
+    width: 240,
+    height: 240,
     marginHorizontal: 10,
     zIndex: 10,
   },
   sideWorld: {
-    width: 200,
-    height: 200,
+    width: 140,
+    height: 140,
     zIndex: 5,
     opacity: 0.85,
     marginHorizontal: 15,
@@ -446,7 +447,7 @@ export const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 3 },
     textShadowRadius: 6,
-    marginBottom: -5,
+    marginBottom: 15,
     zIndex: 20,
     textAlign: 'center',
   },
@@ -503,8 +504,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: 300,
-    marginTop: -150,
-    marginBottom: -20,
+    marginTop: 20,
+    marginBottom: 20,
   },
   centerWorldContainerMobile: {
     alignItems: 'center',
@@ -520,7 +521,7 @@ export const styles = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
-    marginBottom: -5,
+    marginBottom: 10,
     zIndex: 20,
     textAlign: 'center',
   },
