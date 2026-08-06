@@ -11,19 +11,14 @@ import { styles } from '../../styles/store.style';
 
 import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
 
-const FEATURED_ITEM: StoreItem = {
-  id: 'featured',
-  name: 'Traje de Buzo Leyenda',
-  price: '10,000',
-  image: require('../../assets/images/octavioExplorador.png'),
-};
+const BASIC_ITEM: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
 export default function StoreScreen() {
   const [coins, setCoins] = useState<number>(0);
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [purchasing, setPurchasing] = useState<boolean>(false);
-  const [equippedItem, setEquippedItem] = useState<StoreItem>(FEATURED_ITEM);
-  const [ownedItems, setOwnedItems] = useState<string[]>(['featured']);
+  const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
+  const [ownedItems, setOwnedItems] = useState<string[]>(['basic']);
   const [userId, setUserId] = useState<string | null>(null);
 
   const { width } = useWindowDimensions();
@@ -37,31 +32,45 @@ export default function StoreScreen() {
         const sandDollars = await getUserSandDollars(user.id);
         setCoins(sandDollars);
 
-        const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
-        if (storedEquipped) {
+        const metadata = user.user_metadata || {};
+
+        if (metadata.equippedItem) {
           try {
-            setEquippedItem(JSON.parse(storedEquipped));
+            setEquippedItem(typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem);
           } catch (e) {
-            setEquippedItem(FEATURED_ITEM);
+            setEquippedItem(BASIC_ITEM);
           }
         } else {
-          setEquippedItem(FEATURED_ITEM);
+          const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+          if (storedEquipped) {
+            try {
+              setEquippedItem(JSON.parse(storedEquipped));
+            } catch (e) {
+              setEquippedItem(BASIC_ITEM);
+            }
+          } else {
+            setEquippedItem(BASIC_ITEM);
+          }
         }
 
-        const storedOwned = await AsyncStorage.getItem(`pulpo_owned_items_${user.id}`);
-        if (storedOwned) {
-          try {
-            const parsedOwned = JSON.parse(storedOwned);
-            setOwnedItems(Array.isArray(parsedOwned) ? parsedOwned : ['featured']);
-          } catch (e) {
-            setOwnedItems(['featured']);
-          }
+        if (metadata.ownedItems) {
+          setOwnedItems(metadata.ownedItems);
         } else {
-          setOwnedItems(['featured']);
+          const storedOwned = await AsyncStorage.getItem(`pulpo_owned_items_${user.id}`);
+          if (storedOwned) {
+            try {
+              const parsedOwned = JSON.parse(storedOwned);
+              setOwnedItems(Array.isArray(parsedOwned) ? parsedOwned : ['basic']);
+            } catch (e) {
+              setOwnedItems(['basic']);
+            }
+          } else {
+            setOwnedItems(['basic']);
+          }
         }
       }
     } catch (err) {
-      console.error('Error cargando datos en la tienda:', err);
+      console.error('Error loading store data:', err);
     }
   };
 
@@ -82,7 +91,7 @@ export default function StoreScreen() {
     try {
       await supabase.auth.signOut();
     } catch (err) {
-      console.error('Error al cerrar sesión:', err);
+      console.error('Error logging out:', err);
     } finally {
       router.replace('/login' as any);
     }
@@ -100,6 +109,9 @@ export default function StoreScreen() {
     setEquippedItem(item);
     if (userId) {
       await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(item));
+      await supabase.auth.updateUser({
+        data: { equippedItem: item }
+      });
     }
     Alert.alert('Item Equipped!', `You are now wearing: ${item.name} 🐙✨`);
   };
@@ -124,14 +136,20 @@ export default function StoreScreen() {
       if (userId) {
         await AsyncStorage.setItem(`pulpo_owned_items_${userId}`, JSON.stringify(newOwned));
         await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(selectedItem));
+        await supabase.auth.updateUser({
+          data: {
+            ownedItems: newOwned,
+            equippedItem: selectedItem
+          }
+        });
       }
 
       const purchasedName = selectedItem.name;
       setSelectedItem(null);
-      Alert.alert('Purchase Successful!', `You have acquired "${purchasedName}" and it has been automatically equipped! 🐙✨`);
+      Alert.alert('Purchase Successful!', `You have acquired "${purchasedName}" and it has been equipped automatically! 🐙✨`);
     } catch (err) {
       console.error('Error confirming purchase:', err);
-      Alert.alert('Error', 'Could not complete the purchase. Please try again.');
+      Alert.alert('Error', 'Could not complete the purchase. Try again.');
     } finally {
       setPurchasing(false);
     }
@@ -195,8 +213,15 @@ export default function StoreScreen() {
         {/* --- NAVBAR SUPERIOR --- */}
         {isMobile ? (
           <View style={styles.headerRowMobile}>
+            {/* Perfil (izquierda) */}
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              {/* Perfil icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
 
             {/* Monedas (centro) */}
@@ -207,8 +232,15 @@ export default function StoreScreen() {
               </View>
             </View>
 
+            {/* Logout (derecha) */}
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              {/* Logout icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         ) : (
@@ -241,7 +273,20 @@ export default function StoreScreen() {
                 <Image source={require('../../assets/images/SandDollars.png')} style={styles.coinIcon} />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              {/* Icons removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -275,7 +320,7 @@ export default function StoreScreen() {
                 contentContainerStyle={styles.mobileItemsScrollContent}
               >
                 <View style={styles.mobileGrid}>
-                  {STORE_ITEMS_DATA.map((item) => (
+                  {STORE_ITEMS_DATA.filter(item => item.id !== equippedItem.id).map((item) => (
                     <View key={item.id} style={styles.smallItemCardMobile}>
                       <Image source={item.image} style={styles.itemImage} resizeMode="contain" />
                       {renderItemCardAction(item, 'store-price-mobile')}
@@ -313,7 +358,7 @@ export default function StoreScreen() {
                   showsVerticalScrollIndicator={false}
                 >
                   <View style={styles.webGrid}>
-                    {STORE_ITEMS_DATA.map((item) => (
+                    {STORE_ITEMS_DATA.filter(item => item.id !== equippedItem.id).map((item) => (
                       <View key={item.id} style={styles.smallItemCardWeb}>
                         <Image
                           source={item.image}
@@ -354,7 +399,7 @@ export default function StoreScreen() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>Confirm Purchase 🛒</Text>
-              <Text style={styles.modalSubtitle}>Do you want to buy this marine item?</Text>
+              <Text style={styles.modalSubtitle}>Do you want to acquire this marine item?</Text>
 
               <View style={styles.modalItemBox}>
                 <Image source={selectedItem.image} style={styles.modalItemImage} />
@@ -373,7 +418,7 @@ export default function StoreScreen() {
                   <>
                     {!canAfford && (
                       <Text style={styles.modalWarningText}>
-                        ⚠️ Not enough Sand Dollars! You need {itemCost - coins} more Sand Dollars.
+                        ⚠️ Not enough Sand Dollars! You need {itemCost - coins} more.
                       </Text>
                     )}
 
@@ -402,7 +447,7 @@ export default function StoreScreen() {
                           <ActivityIndicator color="#FFFFFF" />
                         ) : (
                           <Text style={styles.confirmBuyButtonText}>
-                            {canAfford ? 'Confirm Purchase' : 'Insufficient funds'}
+                            {canAfford ? 'Confirm purchase' : 'Insufficient balance'}
                           </Text>
                         )}
                       </TouchableOpacity>

@@ -11,7 +11,7 @@ import { styles } from '../../styles/streaks.styles';
 
 export default function StreaksScreenWeb() {
   // Con esta línea, conectamos la vista con el "cerebro"
-  const { coins, isMobile, visibleNavItems, DAYS_DATA, MILESTONES } = useStreaksLogic();
+  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES } = useStreaksLogic();
 
   const handleLogout = async () => {
     try {
@@ -36,7 +36,16 @@ export default function StreaksScreenWeb() {
         {isMobile ? (
           <View style={styles.headerRowMobile}>
             <View style={[styles.headerSideMobile, styles.headerSideLeftMobile]}>
-              {/* Profile icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image
+                  source={require('../../assets/images/Perfil.png')}
+                  style={styles.profileIconImage}
+                />
+              </TouchableOpacity>
             </View>
 
             <View style={styles.headerCenterMobile}>
@@ -50,7 +59,16 @@ export default function StreaksScreenWeb() {
             </View>
 
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
-              {/* Logout icon removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image
+                  source={require('../../assets/images/LogOut.png')}
+                  style={styles.profileIconImage}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         ) : (
@@ -101,7 +119,20 @@ export default function StreaksScreenWeb() {
                 />
                 <Text style={styles.coinsText}>{coins}</Text>
               </View>
-              {/* Icons removed */}
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={() => router.push('/(tabs)/profile' as any)}
+              >
+                <Image source={require('../../assets/images/Perfil.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.profileIconMobile}
+                activeOpacity={0.8}
+                onPress={handleLogout}
+              >
+                <Image source={require('../../assets/images/LogOut.png')} style={styles.profileIconImage} />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -114,7 +145,7 @@ export default function StreaksScreenWeb() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.weeklyCard}>
-              <Text style={styles.sectionTitleMobile}>Weekly Streak</Text>
+              <Text style={styles.sectionTitleMobile}>Weekly Streak: {streakTotal} Days!</Text>
               <View style={styles.daysRowMobile}>
                 {DAYS_DATA.slice(0, 4).map((day, idx) => (
                   <View key={idx} style={styles.dayItem}>
@@ -157,7 +188,7 @@ export default function StreaksScreenWeb() {
               
               {/* Columna Izquierda: Racha Semanal (COMPLETAMENTE ESTÁTICA) */}
               <View style={[styles.weeklyCard, styles.weeklyCardWeb]}>
-                <Text style={styles.sectionTitleWeb}>Your Weekly Splash Streak</Text>
+                <Text style={styles.sectionTitleWeb}>Your Splash Streak: {streakTotal} Days!</Text>
                 <Text style={styles.sectionSubTitleWeb}>Keep the momentum going to unlock chest rewards!</Text>
                 
                 <View style={styles.daysRowWeb}>
@@ -215,9 +246,13 @@ export default function StreaksScreenWeb() {
                   style={[styles.navPill, isMobile && styles.navPillMobile]}
                   onPress={() => {
                     if (item.key === 'streak') {
-                      router.push('/streaks');  
+                      router.push('/(tabs)/streaks' as any);  
                     } else if (item.key === 'worlds') {
-                      router.push('/homepage'); 
+                      router.push('/(tabs)/homepage' as any); 
+                    } else if (item.key === 'store') {
+                      router.push('/(tabs)/store' as any);
+                    } else if (item.key === 'profile') {
+                      router.push('/(tabs)/profile' as any);
                     }
                   }}
                 >

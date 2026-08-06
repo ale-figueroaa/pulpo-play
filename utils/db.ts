@@ -165,3 +165,33 @@ export const addSandDollars = async (
     return { success: false, newTotal: 0 };
   }
 };
+
+/**
+ * Incrementa la experiencia del buzo en la tabla Usuario (por FK idUsuario)
+ */
+export const addExperience = async (
+  userId: string,
+  amount: number
+): Promise<{ success: boolean; newTotal: number }> => {
+  try {
+    const profile = await getUserProfileByAuthId(userId);
+    const current = profile?.experienceLevel || 0;
+    const newTotal = current + amount;
+
+    const { error } = await supabase
+      .from('Usuario')
+      .update({ experienceLevel: newTotal })
+      .eq('idUsuario', userId);
+
+    if (error) {
+      console.error('Error de Supabase al agregar XP:', error);
+      return { success: false, newTotal: current };
+    }
+
+    return { success: true, newTotal };
+  } catch (error) {
+    console.error('Error al agregar experiencia:', error);
+    return { success: false, newTotal: 0 };
+  }
+};
+

@@ -1,10 +1,100 @@
-import { StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     justifyContent: 'center',
-    position: 'relative', 
+    position: 'relative',
+  },
+  seaweedDecorationRight1: {
+    position: 'absolute',
+    bottom: -15,
+    right: 0,
+    width: 200,
+    height: 250,
+    resizeMode: 'contain',
+    zIndex: 2,
+    opacity: 0.85,
+  },
+  seaweedDecorationRight2: {
+    position: 'absolute',
+    bottom: -30,
+    right: 80,
+    width: 230,
+    height: 280,
+    resizeMode: 'contain',
+    zIndex: 1,
+    opacity: 0.6,
+  },
+  bubbleSingleTopLeft: {
+    position: 'absolute',
+    top: 40,
+    left: 10,
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+    zIndex: 4,
+    opacity: 0.75,
+  },
+  bubbleSingleTopRight: {
+    position: 'absolute',
+    top: 60,
+    right: 20,
+    width: 22,
+    height: 22,
+    resizeMode: 'contain',
+    zIndex: 4,
+    opacity: 0.7,
+  },
+  bubbleThreeCenter: {
+    position: 'absolute',
+    top: 190,
+    right: 80,
+    width: 110,
+    height: 110,
+    resizeMode: 'contain',
+    zIndex: 2,
+    opacity: 0.35,
+  },
+  bubbleThreeLeft: {
+    position: 'absolute',
+    top: 240,
+    left: 40,
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+    zIndex: 1,
+    opacity: 0.3,
+  },
+  bubbleSingleBottomLeft: {
+    position: 'absolute',
+    bottom: 120,
+    left: 30,
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
+    zIndex: 3,
+    opacity: 0.65,
+  },
+  bubbleSingleBottomRight: {
+    position: 'absolute',
+    bottom: 90,
+    right: 30,
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
+    zIndex: 4,
+    opacity: 0.7,
+  },
+  backgroundOctavio: {
+    position: 'absolute',
+    top: 80,
+    left: 40,
+    width: 250,
+    height: 250,
+    resizeMode: 'contain',
+    zIndex: 5,
+    opacity: 0.9,
   },
 
   // ================= DESKTOP =================
@@ -12,9 +102,9 @@ export const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 30, 
-    zIndex: 50, 
-    paddingHorizontal: '5%', 
+    marginTop: 30,
+    zIndex: 50,
+    paddingHorizontal: '5%',
   },
   headerSide: {
     flex: 1,
@@ -48,16 +138,16 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   headerSideRightMobile: {
-    alignItems: 'flex-end', 
+    alignItems: 'flex-end',
   },
   headerCenterMobile: {
-    flex: 2, 
+    flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   bottomNavbarMobile: {
     width: '100%',
-    marginBottom: Platform.OS === 'ios' ? 10 : 15, 
+    marginBottom: Platform.OS === 'ios' ? 10 : 15,
     zIndex: 30,
   },
 
@@ -105,14 +195,14 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     paddingVertical: 12,
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
     height: 70,
     borderWidth: 3,
     borderColor: '#B0CFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 150, 
+    width: 150,
     ...Platform.select({
       web: {
         boxShadow: '0px 6px 0px rgba(0,0,0,0.05)', // Actualizado
@@ -122,7 +212,7 @@ export const styles = StyleSheet.create({
   },
   coinsCardMobile: {
     height: 54,
-    width: '105%', 
+    width: '105%',
     paddingHorizontal: 16,
     borderRadius: 14,
   },
@@ -165,16 +255,16 @@ export const styles = StyleSheet.create({
     })
   },
   navIslandMobile: {
-    width: '100%',        
-    alignSelf: 'center', 
+    width: '100%',
+    alignSelf: 'center',
     height: 80,
     paddingHorizontal: 6,
     borderRadius: 22,
   },
   navPill: {
-    flexDirection: 'row',     
-    alignItems: 'center',    
-    justifyContent: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 4,
     paddingHorizontal: 22,
     marginHorizontal: 10,
@@ -183,9 +273,9 @@ export const styles = StyleSheet.create({
     })
   },
   navPillMobile: {
-    flexDirection: 'column',  
-    alignItems: 'center',     
-    justifyContent: 'center', 
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 1,
     marginHorizontal: 1,
   },
@@ -199,7 +289,7 @@ export const styles = StyleSheet.create({
     width: 55,
     height: 55,
     resizeMode: 'contain',
-    marginBottom: -8, 
+    marginBottom: -8,
   },
   pillText: {
     color: '#3B629B',
@@ -210,24 +300,24 @@ export const styles = StyleSheet.create({
     color: '#3B629B',
     fontSize: 14,
     fontWeight: '900',
-    lineHeight: 16, 
+    lineHeight: 16,
   },
 
   // --- Diálogos estables ---
   dialogWrapper: {
-    alignSelf: 'center',       
-    width: 480,
-    marginTop: 35,             
-    marginLeft: 320,           
+    alignSelf: 'flex-start',
+    width: 380,
+    marginTop: 20,
+    marginLeft: 180,
     position: 'relative',
     zIndex: 20,
   },
   dialogWrapperMobile: {
     alignSelf: 'center',
     width: '100%',
-    marginTop: 40,   
+    marginTop: 40,
     marginRight: 0,
-    marginLeft: 0, 
+    marginLeft: 0,
   },
   dialogBubble: {
     backgroundColor: '#FFFFFF',
@@ -269,7 +359,7 @@ export const styles = StyleSheet.create({
   dialogTail: {
     position: 'absolute',
     bottom: -15,
-    right: 35,
+    left: 80,
     width: 0,
     height: 0,
     backgroundColor: 'transparent',
@@ -288,7 +378,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -140, 
+    marginTop: -140,
     marginBottom: 40,
   },
   worldCircle: {
@@ -299,18 +389,18 @@ export const styles = StyleSheet.create({
     })
   },
   centerWorld: {
-    width: 320,           
-    height: 320,         
-    marginHorizontal: 10, 
+    width: 320,
+    height: 320,
+    marginHorizontal: 10,
     zIndex: 10,
   },
   sideWorld: {
-    width: 200,           
-    height: 200,         
+    width: 200,
+    height: 200,
     zIndex: 5,
     opacity: 0.85,
-    marginHorizontal: 15, 
-    transform: [{ translateY: -25 }], 
+    marginHorizontal: 15,
+    transform: [{ translateY: -25 }],
   },
   worldImage: {
     width: '100%',
@@ -335,32 +425,40 @@ export const styles = StyleSheet.create({
     paddingHorizontal: '4%',
     paddingTop: 20,
     width: '100%',
-    alignSelf: 'center',    
-    maxWidth: 1400,          
+    alignSelf: 'center',
+    maxWidth: 1400,
   },
   containerMobile: {
     paddingHorizontal: '5%',
-    paddingTop: 55, 
+    paddingTop: 55,
   },
-   
+
   // ================= CONTENEDORES Y BOTÓN PLAY =================
   centerWorldContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
   },
+  gameTitleWeb: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 3 },
+    textShadowRadius: 6,
+    marginBottom: -5,
+    zIndex: 20,
+    textAlign: 'center',
+  },
   playButton: {
-    backgroundColor: '#3B629B', 
-    borderRadius: 20,
-    paddingVertical: 10,
+    backgroundColor: '#3B82F6', // Solid blue without shadows
+    borderRadius: 40,
+    paddingVertical: 14,
     paddingHorizontal: 45,
-    borderWidth: 3,
-    borderColor: '#B0CFFF', 
     marginTop: 15,
     ...Platform.select({
       web: {
-        boxShadow: '0px 4px 0px rgba(0,0,0,0.15)', // Actualizado
-        cursor: 'pointer', 
+        cursor: 'pointer',
       },
     }),
   },
@@ -370,6 +468,33 @@ export const styles = StyleSheet.create({
     fontWeight: '900',
     textAlign: 'center',
   },
+  difficultyContainer: {
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 4,
+  },
+  starIcon: {
+    fontSize: 32,
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 3,
+  },
+  starActive: {
+    color: '#FCD34D', // Gold
+  },
+  starInactive: {
+    color: 'rgba(255,255,255,0.4)',
+  },
+  difficultyLabel: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
 
   // ================= ESTILOS DEL CARRUSEL CONTROLADO MOBILE =================
   carouselWrapperMobile: {
@@ -377,37 +502,46 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 300, 
-    marginTop: -150,    
-    marginBottom: -20, 
+    height: 300,
+    marginTop: -150,
+    marginBottom: -20,
   },
   centerWorldContainerMobile: {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
-    marginHorizontal: -25, 
-    transform: [{ translateY: 15 }], 
+    marginHorizontal: -25,
+    transform: [{ translateY: 15 }],
+  },
+  gameTitleMobile: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    marginBottom: -5,
+    zIndex: 20,
+    textAlign: 'center',
   },
   centerWorldMobile: {
-    width: 225, 
+    width: 225,
     height: 225,
     zIndex: 10,
   },
   sideWorldMobile: {
-    width: 135, 
-    height: 135, 
-    marginHorizontal: 8, 
+    width: 135,
+    height: 135,
+    marginHorizontal: 8,
     zIndex: 5,
-    opacity: 0.70, 
-    transform: [{ translateY: -35 }], 
+    opacity: 0.70,
+    transform: [{ translateY: -35 }],
   },
   playButtonMobile: {
-    backgroundColor: '#3B629B',
-    borderRadius: 16,
-    paddingVertical: 8, 
-    paddingHorizontal: 35,
-    borderWidth: 2,
-    borderColor: '#B0CFFF',
+    backgroundColor: '#3B82F6',
+    borderRadius: 30,
+    paddingVertical: 12, 
+    paddingHorizontal: 40,
     marginTop: 15, 
   },
   playButtonTextMobile: {
@@ -415,24 +549,25 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '900',
   },
-  worldNameText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10
+  difficultyContainerMobile: {
+    alignItems: 'center',
+    marginTop: 12,
   },
-  worldNameTextMobile: {
+  starsRowMobile: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 2,
+  },
+  starIconMobile: {
+    fontSize: 26,
+    textShadowColor: 'rgba(0,0,0,0.2)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 2,
+  },
+  difficultyLabelMobile: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 4,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10
-  }
+    fontSize: 13,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
 });
