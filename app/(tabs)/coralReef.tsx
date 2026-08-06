@@ -1,18 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Animated,
   SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
-  Animated,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/coralReef.style';
 import { addExperience, addSandDollars } from '../../utils/db';
+import OctavioHelper from '../../components/OctavioHelper';
 
 interface Creature {
   id: string;
@@ -35,7 +36,7 @@ const MARINE_CREATURES: Creature[] = [
   { id: 'ballena', emoji: '🐋', name: 'Whale' },
 ];
 
-const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress }: any) => {
+const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, cardSize }: any) => {
   const scale = useRef(new Animated.Value(1)).current;
   const wasMatched = useRef(isCardMatched);
 
@@ -58,6 +59,7 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress }:
         style={[
           styles.card,
           isMobile && styles.cardMobile,
+          { width: cardSize, height: cardSize },
           isCardMatched ? styles.cardMatched : isCardFlipped ? styles.cardUp : styles.cardDown,
         ]}
         onPress={() => onPress(card)}
@@ -80,7 +82,7 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress }:
 };
 
 export default function CoralReefScreen() {
-  const { width } = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
   const isMobile = width < 640;
 
   const [difficulty, setDifficulty] = useState<number>(2);
@@ -146,7 +148,7 @@ export default function CoralReefScreen() {
         setMoves(0);
         setShowWinModal(false);
         setRewardGranted(false);
-        
+
         // Start sequence
         setIsProcessing(true);
         setPreviewMode(false);
@@ -217,6 +219,7 @@ export default function CoralReefScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <OctavioHelper />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Barra superior con botón de regreso y contador */}
         <View style={styles.header}>
@@ -268,21 +271,35 @@ export default function CoralReefScreen() {
             </View>
           )}
 
-          {cards.map((card) => {
-            const isCardFlipped = flipped.includes(card.uniqueId);
-            const isCardMatched = matched.includes(card.id);
+          {(() => {
+            const columns = 4;
+            const rows = (numPairs * 2) / columns;
+            const availableWidth = Math.min(width - 48, 680);
+            const availableHeight = windowHeight - (isMobile ? 220 : 280);
 
-            return (
-              <MemoramaCard
-                key={card.uniqueId}
-                card={card}
-                isMobile={isMobile}
-                isCardFlipped={isCardFlipped || previewMode}
-                isCardMatched={isCardMatched}
-                onPress={handleCardPress}
-              />
-            );
-          })}
+            const maxCardWidth = Math.floor((availableWidth - ((columns - 1) * 16)) / columns);
+            const maxCardHeight = Math.floor((availableHeight - ((rows - 1) * 16)) / rows);
+
+            const defaultSize = isMobile ? 100 : 140;
+            const cardSize = Math.max(Math.min(defaultSize, maxCardWidth, maxCardHeight), 50);
+
+            return cards.map((card) => {
+              const isCardFlipped = flipped.includes(card.uniqueId);
+              const isCardMatched = matched.includes(card.id);
+
+              return (
+                <MemoramaCard
+                  key={card.uniqueId}
+                  card={card}
+                  isMobile={isMobile}
+                  isCardFlipped={isCardFlipped || previewMode}
+                  isCardMatched={isCardMatched}
+                  onPress={handleCardPress}
+                  cardSize={cardSize}
+                />
+              );
+            });
+          })()}
         </View>
 
         {/* Botón de Reinicio Rápido */}

@@ -71,7 +71,7 @@ export default function HomeScreenWeb() {
       ])
     );
     bubbleLoopB.start();
-    
+
     const bubbleLoop2 = Animated.loop(
       Animated.sequence([
         Animated.timing(bubbleAnim2, { toValue: 1, duration: 5200 + randomDelay(500, 1300), useNativeDriver: true, easing: Easing.linear }),
@@ -79,7 +79,7 @@ export default function HomeScreenWeb() {
       ])
     );
     bubbleLoop2.start();
-    
+
     const bubbleLoop2B = Animated.loop(
       Animated.sequence([
         Animated.delay(bubbleDelayB),
@@ -97,7 +97,7 @@ export default function HomeScreenWeb() {
       ])
     );
     bubbleLoop3.start();
-    
+
     const bubbleLoop3B = Animated.loop(
       Animated.sequence([
         Animated.delay(bubbleDelayC + randomDelay(800, 1600)),
@@ -106,7 +106,7 @@ export default function HomeScreenWeb() {
       ])
     );
     bubbleLoop3B.start();
-    
+
     return () => {
       floatLoop.stop();
       swayLoop.stop();
@@ -122,7 +122,7 @@ export default function HomeScreenWeb() {
   const octavioTranslateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -20] });
   const seaweedRotate1 = swayAnim.interpolate({ inputRange: [0, 1], outputRange: ['-5deg', '5deg'] });
   const seaweedRotate2 = swayAnim.interpolate({ inputRange: [0, 1], outputRange: ['3deg', '-3deg'] });
-  
+
   const bubbleTranslateY = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.15, 0.85, 1], outputRange: [0, 0, -40, -58, 0] });
   const bubbleTranslateX = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, 8, -5] });
   const bubbleScale = bubbleAnim.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.95, 0.95, 1.08, 0.9] });
@@ -134,7 +134,7 @@ export default function HomeScreenWeb() {
   const bubbleScaleB = bubbleAnimB.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.9, 0.9, 1.05, 0.92] });
   const bubbleRotateB = bubbleAnimB.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-4deg'] });
   const bubbleOpacityB = bubbleAnimB.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.72, 0.85, 0] });
-  
+
   const bubbleTranslateY2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, -50, -65] });
   const bubbleTranslateX2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0, 0, 6, -8] });
   const bubbleScale2 = bubbleAnim2.interpolate({ inputRange: [0, 0.1, 0.5, 1], outputRange: [0.92, 0.92, 1.1, 0.88] });
@@ -283,52 +283,52 @@ export default function HomeScreenWeb() {
 
         {/* --- CONTENIDO CENTRAL --- */}
         <View style={styles.mainContent}>
-          <Animated.Image 
-            source={equippedItem?.image} 
+          <Animated.Image
+            source={equippedItem?.image}
             pointerEvents="none"
-            style={[styles.backgroundOctavio, { transform: [{ translateY: octavioTranslateY }] }]} 
+            style={[styles.backgroundOctavio, { transform: [{ translateY: octavioTranslateY }] }]}
           />
-          <Animated.Image 
-            source={require('../../assets/images/bubbleSingle.png')} 
+          <Animated.Image
+            source={require('../../assets/images/bubbleSingle.png')}
             pointerEvents="none"
-            style={[styles.bubbleSingleTopLeft, { transform: [{ translateY: bubbleTranslateY }, { translateX: bubbleTranslateX }, { scale: bubbleScale }, { rotate: bubbleRotate }], opacity: bubbleOpacity }]} 
+            style={[styles.bubbleSingleTopLeft, { transform: [{ translateY: bubbleTranslateY }, { translateX: bubbleTranslateX }, { scale: bubbleScale }, { rotate: bubbleRotate }], opacity: bubbleOpacity }]}
           />
-          <Animated.Image 
-            source={require('../../assets/images/bubbleSingle.png')} 
+          <Animated.Image
+            source={require('../../assets/images/bubbleSingle.png')}
             pointerEvents="none"
-            style={[styles.bubbleSingleTopRight, { transform: [{ translateY: bubbleTranslateYB }, { translateX: bubbleTranslateXB }, { scale: bubbleScaleB }, { rotate: bubbleRotateB }], opacity: bubbleOpacityB }]} 
-          />
-
-          <Animated.Image 
-            source={require('../../assets/images/bubblesThree.png')} 
-            pointerEvents="none"
-            style={[styles.bubbleThreeCenter, { transform: [{ translateY: bubbleTranslateY3 }, { translateX: bubbleTranslateX3 }, { scale: bubbleScale3 }, { rotate: bubbleRotate3 }], opacity: bubbleOpacity3 }]} 
-          />
-          <Animated.Image 
-            source={require('../../assets/images/bubblesThree.png')} 
-            pointerEvents="none"
-            style={[styles.bubbleThreeLeft, { transform: [{ translateY: bubbleTranslateY3B }, { translateX: bubbleTranslateX3B }, { scale: bubbleScale3B }, { rotate: bubbleRotate3B }], opacity: bubbleOpacity3B }]} 
+            style={[styles.bubbleSingleTopRight, { transform: [{ translateY: bubbleTranslateYB }, { translateX: bubbleTranslateXB }, { scale: bubbleScaleB }, { rotate: bubbleRotateB }], opacity: bubbleOpacityB }]}
           />
 
-          <Animated.Image 
-            source={require('../../assets/images/bubbleSingle.png')} 
+          <Animated.Image
+            source={require('../../assets/images/bubblesThree.png')}
             pointerEvents="none"
-            style={[styles.bubbleSingleBottomLeft, { transform: [{ translateY: bubbleTranslateY2 }, { translateX: bubbleTranslateX2 }, { scale: bubbleScale2 }, { rotate: bubbleRotate2 }], opacity: bubbleOpacity2 }]} 
+            style={[styles.bubbleThreeCenter, { transform: [{ translateY: bubbleTranslateY3 }, { translateX: bubbleTranslateX3 }, { scale: bubbleScale3 }, { rotate: bubbleRotate3 }], opacity: bubbleOpacity3 }]}
           />
-          <Animated.Image 
-            source={require('../../assets/images/bubbleSingle.png')} 
+          <Animated.Image
+            source={require('../../assets/images/bubblesThree.png')}
             pointerEvents="none"
-            style={[styles.bubbleSingleBottomRight, { transform: [{ translateY: bubbleTranslateY2B }, { translateX: bubbleTranslateX2B }, { scale: bubbleScale2B }, { rotate: bubbleRotate2B }], opacity: bubbleOpacity2B }]} 
+            style={[styles.bubbleThreeLeft, { transform: [{ translateY: bubbleTranslateY3B }, { translateX: bubbleTranslateX3B }, { scale: bubbleScale3B }, { rotate: bubbleRotate3B }], opacity: bubbleOpacity3B }]}
           />
-          <Animated.Image 
-            source={require('../../assets/images/seaweed.png')} 
+
+          <Animated.Image
+            source={require('../../assets/images/bubbleSingle.png')}
             pointerEvents="none"
-            style={[styles.seaweedDecorationRight1, { transform: [{ rotate: seaweedRotate1 }] }]} 
+            style={[styles.bubbleSingleBottomLeft, { transform: [{ translateY: bubbleTranslateY2 }, { translateX: bubbleTranslateX2 }, { scale: bubbleScale2 }, { rotate: bubbleRotate2 }], opacity: bubbleOpacity2 }]}
           />
-          <Animated.Image 
-            source={require('../../assets/images/seaweed.png')} 
+          <Animated.Image
+            source={require('../../assets/images/bubbleSingle.png')}
             pointerEvents="none"
-            style={[styles.seaweedDecorationRight2, { transform: [{ rotate: seaweedRotate2 }] }]} 
+            style={[styles.bubbleSingleBottomRight, { transform: [{ translateY: bubbleTranslateY2B }, { translateX: bubbleTranslateX2B }, { scale: bubbleScale2B }, { rotate: bubbleRotate2B }], opacity: bubbleOpacity2B }]}
+          />
+          <Animated.Image
+            source={require('../../assets/images/seaweed.png')}
+            pointerEvents="none"
+            style={[styles.seaweedDecorationRight1, { transform: [{ rotate: seaweedRotate1 }] }]}
+          />
+          <Animated.Image
+            source={require('../../assets/images/seaweed.png')}
+            pointerEvents="none"
+            style={[styles.seaweedDecorationRight2, { transform: [{ rotate: seaweedRotate2 }] }]}
           />
 
           {/* --- VENTANA FLOTANTE --- */}

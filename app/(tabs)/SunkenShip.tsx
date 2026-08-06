@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import {
   Animated,
   Image,
@@ -11,10 +11,15 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  Platform,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/sunkenShip.style';
 import { addExperience, addSandDollars } from '../../utils/db';
+import OctavioHelper from '../../components/OctavioHelper';
+import { STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
+
+const BASIC_ITEM = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
 // ─────────────────────────────────────────────────────────────────
 // Types
@@ -76,7 +81,7 @@ function buildMaze(rows: number, cols: number): Grid {
 // Config per difficulty
 // ─────────────────────────────────────────────────────────────────
 const DIFFICULTY_CONFIG = {
-  1: { rows: 9,  cols: 9,  reward: 30, xp: 10, label: '⭐ Easy'    },
+  1: { rows: 9, cols: 9, reward: 30, xp: 10, label: '⭐ Easy' },
   2: { rows: 13, cols: 13, reward: 50, xp: 20, label: '⭐⭐ Medium' },
   3: { rows: 17, cols: 17, reward: 80, xp: 30, label: '⭐⭐⭐ Hard' },
 } as const;
@@ -89,20 +94,21 @@ export default function SunkenShipScreen() {
   const isMobile = width < 640;
 
   const [difficulty, setDifficulty] = useState<1 | 2 | 3>(2);
-  const [grid, setGrid]             = useState<Grid>([]);
-  const [playerPos, setPlayerPos]   = useState<Pos>({ row: 1, col: 1 });
-  const [visited, setVisited]       = useState<Set<string>>(new Set(['1,1']));
-  const [moves, setMoves]           = useState(0);
+  const [grid, setGrid] = useState<Grid>([]);
+  const [playerPos, setPlayerPos] = useState<Pos>({ row: 1, col: 1 });
+  const [visited, setVisited] = useState<Set<string>>(new Set(['1,1']));
+  const [moves, setMoves] = useState(0);
   const [showWinModal, setShowWinModal] = useState(false);
   const [rewardGranted, setRewardGranted] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
 
   // Use a ref for the timer so it's always stable across renders
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Octavio bounce/scale animation
   const bounceAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim  = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   // Keep difficulty accessible inside timer callbacks without stale closures
   const difficultyRef = useRef<1 | 2 | 3>(2);
@@ -148,12 +154,12 @@ export default function SunkenShipScreen() {
     Animated.parallel([
       Animated.sequence([
         Animated.timing(bounceAnim, { toValue: -7, duration: 70, useNativeDriver: true }),
-        Animated.timing(bounceAnim, { toValue: 3,  duration: 70, useNativeDriver: true }),
-        Animated.timing(bounceAnim, { toValue: 0,  duration: 60, useNativeDriver: true }),
+        Animated.timing(bounceAnim, { toValue: 3, duration: 70, useNativeDriver: true }),
+        Animated.timing(bounceAnim, { toValue: 0, duration: 60, useNativeDriver: true }),
       ]),
       Animated.sequence([
         Animated.timing(scaleAnim, { toValue: 1.15, duration: 70, useNativeDriver: true }),
-        Animated.timing(scaleAnim, { toValue: 1,    duration: 130, useNativeDriver: true }),
+        Animated.timing(scaleAnim, { toValue: 1, duration: 130, useNativeDriver: true }),
       ]),
     ]).start();
   }, [bounceAnim, scaleAnim]);
@@ -169,7 +175,23 @@ export default function SunkenShipScreen() {
             const parsed = parseInt(stored, 10);
             if (parsed === 1 || parsed === 2 || parsed === 3) diff = parsed;
           }
+        } catch (_) { }
+
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const metadata = user.user_metadata || {};
+            if (metadata.equippedItem) {
+              setEquippedItem(typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem);
+            } else {
+              const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
+              if (storedEquipped) {
+                setEquippedItem(JSON.parse(storedEquipped));
+              }
+            }
+          }
         } catch (_) {}
+
         initGame(diff);
       };
       load();
@@ -212,84 +234,141 @@ export default function SunkenShipScreen() {
       // Valid move
       triggerBounce();
       setMoves(m => m + 1);
-      setVisited(v => new Set([...v, `${nr},${nc}`]));
 
-      // Win condition
+      // Check win condition
       if (nr === dcfg.rows - 2 && nc === dcfg.cols - 2) {
         stopTimer();
         setShowWinModal(true);
-        setRewardGranted(alreadyGranted => {
-          if (!alreadyGranted) grantReward(diff);
-          return true;
-        });
+        if (!rewardGranted) {
+          setRewardGranted(true);
+          grantReward(diff);
+        }
+        return { row: -1, col: -1 };
       }
 
+      setVisited(v => new Set(v).add(`${nr},${nc}`));
       return { row: nr, col: nc };
     });
-  }, [triggerBounce, stopTimer, grantReward]);
+  }, [triggerBounce, stopTimer, rewardGranted, grantReward]);
+
+  // ── Keyboard Support for Web ─────────────────────────────────
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (showWinModal || gridRef.current.length === 0) return;
+
+      switch (e.key) {
+        case 'ArrowUp':
+          handleMove(-1, 0);
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+          handleMove(1, 0);
+          e.preventDefault();
+          break;
+        case 'ArrowLeft':
+          handleMove(0, -1);
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          handleMove(0, 1);
+          e.preventDefault();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleMove, showWinModal]);
 
   // ── Helpers ──────────────────────────────────────────────────
   const formatTime = (s: number) => {
-    const m   = Math.floor(s / 60);
+    const m = Math.floor(s / 60);
     const sec = s % 60;
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
   const cfg = DIFFICULTY_CONFIG[difficulty];
 
+  const { height: windowHeight } = useWindowDimensions();
+
   // Cell sizing: reserve space for d-pad panel on the right
-  const dpadPanelWidth = isMobile ? 76 : 90;
-  const maxMazeWidth   = Math.min(isMobile ? width - dpadPanelWidth - 24 : 460, 460);
-  const cellSize       = grid.length > 0
-    ? Math.floor(maxMazeWidth / cfg.cols)
-    : 0;
+  const dpadPanelWidth = isMobile ? 180 : 260;
+  // Increase reserved width for larger gap, allow up to 700px on larger screens
+  const maxMazeWidth = Math.min(width - dpadPanelWidth - 40, isMobile ? 460 : 700);
+  const maxMazeHeight = Math.max(isMobile ? windowHeight - 160 : windowHeight - 180, 200);
+
+  let cellSize = 0;
+  if (grid.length > 0) {
+    const cellSizeW = Math.floor(maxMazeWidth / cfg.cols);
+    const cellSizeH = Math.floor(maxMazeHeight / cfg.rows);
+    cellSize = Math.min(cellSizeW, cellSizeH);
+  }
 
   // ── Cell rendering ───────────────────────────────────────────
-  const isStart  = (r: number, c: number) => r === 1 && c === 1;
-  const isEnd    = (r: number, c: number) => r === cfg.rows - 2 && c === cfg.cols - 2;
+  const isStart = (r: number, c: number) => r === 1 && c === 1;
+  const isEnd = (r: number, c: number) => r === cfg.rows - 2 && c === cfg.cols - 2;
   const isPlayerCell = (r: number, c: number) =>
     playerPos.row === r && playerPos.col === c;
 
   const getCellBg = (r: number, c: number) => {
-    if (grid[r]?.[c] === 'wall')      return styles.cellWall;
-    if (isPlayerCell(r, c))            return styles.cellPlayer;
+    if (grid[r]?.[c] === 'wall') return styles.cellWall;
+    if (isPlayerCell(r, c)) return styles.cellPlayer;
     if (isStart(r, c) || isEnd(r, c)) return styles.cellStart;
-    if (visited.has(`${r},${c}`))     return styles.cellVisited;
+    if (visited.has(`${r},${c}`)) return styles.cellVisited;
     return styles.cellPath;
   };
 
   const renderCellContent = (r: number, c: number) => {
     const imgSize = Math.max(cellSize * 0.78, 8);
+    const elements = [];
 
-    // Octavio at player position (with bounce animation)
-    if (isPlayerCell(r, c)) {
-      return (
-        <Animated.Image
-          source={require('../../assets/images/octavio.png')}
-          style={{
-            width: imgSize,
-            height: imgSize,
-            resizeMode: 'contain',
-            transform: [{ translateY: bounceAnim }, { scale: scaleAnim }],
-          }}
-        />
-      );
-    }
-
-    // Sunken ship always shown at start (even after Octavio leaves)
+    // Sunken ship always shown at start
     if (isStart(r, c)) {
-      return (
+      elements.push(
         <Image
-          source={require('../../assets/images/SunkenShip.png')}
-          style={{ width: imgSize, height: imgSize, resizeMode: 'contain', opacity: 0.85 }}
+          key="start-ship"
+          source={require('../../assets/images/mazesunkenShip.png')}
+          style={{ width: imgSize, height: imgSize, resizeMode: 'contain', opacity: 0.85, position: 'absolute' }}
         />
       );
     }
 
     // Treasure chest at end
     if (isEnd(r, c)) {
+      elements.push(
+        <Image
+          key="end-chest"
+          source={require('../../assets/images/tresureChest.png')}
+          style={{ width: imgSize * 0.9, height: imgSize * 0.9, resizeMode: 'cover', borderRadius: 4, position: 'absolute' }}
+        />
+      );
+    }
+
+    // Octavio at player position
+    if (isPlayerCell(r, c)) {
+      elements.push(
+        <Animated.Image
+          key="player-octavio"
+          source={equippedItem?.image || require('../../assets/images/octavio.png')}
+          style={{
+            width: imgSize,
+            height: imgSize,
+            resizeMode: 'contain',
+            position: 'absolute',
+            zIndex: 10,
+            transform: [{ translateY: bounceAnim }, { scale: scaleAnim }],
+          }}
+        />
+      );
+    }
+
+    if (elements.length > 0) {
       return (
-        <Text style={{ fontSize: imgSize * 0.72, textAlign: 'center' }}>💰</Text>
+        <View style={{ width: cellSize, height: cellSize, alignItems: 'center', justifyContent: 'center' }}>
+          {elements}
+        </View>
       );
     }
 
@@ -307,6 +386,7 @@ export default function SunkenShipScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
+        <OctavioHelper />
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
           {/* ── Header ── */}
@@ -319,17 +399,6 @@ export default function SunkenShipScreen() {
             >
               <Text style={styles.backButtonText}>← Back to Home</Text>
             </TouchableOpacity>
-
-            <View style={styles.statsRow}>
-              <View style={styles.statBadge}>
-                <Text style={styles.statLabel}>Moves</Text>
-                <Text style={styles.statValue}>{moves}</Text>
-              </View>
-              <View style={styles.statBadge}>
-                <Text style={styles.statLabel}>Time</Text>
-                <Text style={styles.statValue}>{formatTime(elapsedSeconds)}</Text>
-              </View>
-            </View>
           </View>
 
           {/* ── Title ── */}
@@ -369,6 +438,18 @@ export default function SunkenShipScreen() {
 
               {/* D-Pad — right side panel */}
               <View style={[styles.dpadPanel, { width: dpadPanelWidth }]}>
+                {/* Stats */}
+                <View style={[styles.statsRow, { marginBottom: 8 }]}>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>Moves</Text>
+                    <Text style={styles.statValue}>{moves}</Text>
+                  </View>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>Time</Text>
+                    <Text style={styles.statValue}>{formatTime(elapsedSeconds)}</Text>
+                  </View>
+                </View>
+
                 {/* UP */}
                 <TouchableOpacity
                   testID="ctrl-up"
@@ -417,36 +498,39 @@ export default function SunkenShipScreen() {
                 <View style={styles.legendContainer}>
                   <View style={styles.legendRow}>
                     <Image
-                      source={require('../../assets/images/SunkenShip.png')}
+                      source={require('../../assets/images/mazesunkenShip.png')}
                       style={styles.legendImg}
                     />
                     <Text style={styles.legendText}>Start</Text>
                   </View>
                   <View style={styles.legendRow}>
-                    <Text style={styles.legendEmoji}>💰</Text>
+                    <Image
+                      source={require('../../assets/images/tresureChest.png')}
+                      style={[styles.legendImg, { borderRadius: 4 }]}
+                    />
                     <Text style={styles.legendText}>Goal</Text>
                   </View>
                   <View style={styles.legendRow}>
                     <Image
-                      source={require('../../assets/images/octavio.png')}
+                      source={equippedItem?.image || require('../../assets/images/octavio.png')}
                       style={styles.legendImg}
                     />
                     <Text style={styles.legendText}>You</Text>
                   </View>
                 </View>
+
+                {/* ── New Maze button ── */}
+                <TouchableOpacity
+                  testID="sunken-restart-btn"
+                  id="sunken-restart-btn"
+                  style={styles.resetButton}
+                  onPress={() => initGame(difficulty)}
+                >
+                  <Text style={styles.resetButtonText}>🔄 New Maze</Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
-
-          {/* ── New Maze button ── */}
-          <TouchableOpacity
-            testID="sunken-restart-btn"
-            id="sunken-restart-btn"
-            style={styles.resetButton}
-            onPress={() => initGame(difficulty)}
-          >
-            <Text style={styles.resetButtonText}>🔄 New Maze</Text>
-          </TouchableOpacity>
 
         </ScrollView>
 
