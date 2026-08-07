@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/coralReef.style';
-import { addExperience, addSandDollars } from '../../utils/db';
+import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
 import OctavioHelper from '../../components/OctavioHelper';
 
 interface Creature {
@@ -210,6 +210,9 @@ export default function CoralReefScreen() {
         if (user) {
           await addSandDollars(user.id, rewardAmount);
           await addExperience(user.id, xpReward);
+          
+          const minutes = 2; // Coral reef doesn't track time, mocking 2 minutes
+          await saveGameSession(user.id, 'Coral Reef Memory', minutes, numPairs, xpReward);
         }
       } catch (err) {
         console.error('Error granting rewards:', err);

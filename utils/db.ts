@@ -195,3 +195,113 @@ export const addExperience = async (
   }
 };
 
+/**
+ * Guarda los resultados de una sesión de juego en la tabla GameSession.
+ */
+export const saveGameSession = async (
+  userId: string,
+  gameName: string,
+  minutesPlayed: number,
+  correctAnswers: number,
+  xpEarned: number
+): Promise<{ success: boolean }> => {
+  try {
+    const { error } = await supabase.from('GameSession').insert({
+      idUsuario: userId,
+      gameName,
+      minutesPlayed,
+      correctAnswers,
+      xpEarned,
+    });
+    if (error) {
+      console.error('Error saving game session:', error);
+      return { success: false };
+    }
+    return { success: true };
+  } catch (err) {
+    console.error('Exception saving game session:', err);
+    return { success: false };
+  }
+};
+
+/**
+ * Obtiene y agrega el progreso (minutesPlayed y correctAnswers) de los últimos 7 días.
+ * Devuelve un arreglo de 7 elementos, ordenado de más antiguo (ayer-6) a hoy (índice 6).
+ */
+export const getWeeklyProgress = async (userId: string) => {
+  try {
+    // Calcular el rango de fechas (últimos 7 días)
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 6);
+    lastWeek.setHours(0, 0, 0, 0);
+
+    // Inicializar los últimos 7 días con 0s
+    const daysArr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const result = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      result.push({
+        day: daysArr[d.getDay()],
+        dateStr: d.toISOString().split('T')[0],
+        minutes: 0,
+        correct: 0
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('GameSession')
+      .select('createdAt, minutesPlayed, correctAnswers')
+      .eq('idUsuario', userId)
+      .neq('gameName', 'Debug Game')
+      .gte('createdAt', lastWeek.toISOString());
+
+    if (error || !data) {
+      console.error('Error fetching weekly progress:', error);
+      return result; // Always return the default 7 days structure
+    }
+
+    // Agregar la data a los días
+    data.forEach((session) => {
+      // Ajuste local simple de fecha
+      const sessionDate = new Date(session.createdAt).toISOString().split('T')[0];
+      const targetDay = result.find(r => r.dateStr === sessionDate);
+      if (targetDay) {
+        targetDay.minutes += (session.minutesPlayed || 0);
+        targetDay.correct += (session.correctAnswers || 0);
+      }
+    });
+
+    return result;
+  } catch (err) {
+    console.error('Exception fetching weekly progress:', err);
+    return [];
+  }
+};
+
+/**
+ * Obtiene la actividad reciente del buzo (últimas X sesiones de juego)
+ */
+export const getRecentActivity = async (userId: string, limit: number = 5) => {
+  try {
+    const { data, error } = await supabase
+      .from('GameSession')
+      .select('gameName, minutesPlayed, correctAnswers, xpEarned, createdAt')
+      .eq('idUsuario', userId)
+      .neq('gameName', 'Debug Game')
+      .order('createdAt', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) {
+      console.error('Error fetching recent activity:', error);
+      return [];
+    }
+
+    return data;
+  } catch (err) {
+    console.error('Exception fetching recent activity:', err);
+    return [];
+  }
+};

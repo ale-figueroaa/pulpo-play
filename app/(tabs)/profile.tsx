@@ -267,6 +267,14 @@ export default function ProfileScreen() {
                 <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
               </View>
               <Text style={styles.levelProgressText}>{progressPercent} / 100 XP until level {currentLevel + 1}</Text>
+              
+              <TouchableOpacity
+                style={{ marginTop: 15, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#EAF2FF', borderRadius: 20, alignSelf: 'center', borderWidth: 2, borderColor: '#B0CFFF' }}
+                onPress={() => router.push('/adult-dashboard' as any)}
+                activeOpacity={0.7}
+              >
+                <Text style={{ color: '#3B629B', fontWeight: 'bold', fontSize: 16 }}>📈 See Progress</Text>
+              </TouchableOpacity>
             </View>
 
             {/* CAMPOS DE INFORMACIÓN DEL USUARIO */}

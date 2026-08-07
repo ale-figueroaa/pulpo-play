@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/sunkenShip.style';
-import { addExperience, addSandDollars } from '../../utils/db';
+import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
 import OctavioHelper from '../../components/OctavioHelper';
 import { STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
 
@@ -208,6 +208,11 @@ export default function SunkenShipScreen() {
         const dcfg = DIFFICULTY_CONFIG[diff];
         await addSandDollars(user.id, dcfg.reward);
         await addExperience(user.id, dcfg.xp);
+        
+        // Save game session to backend table for progress tracking
+        const minutes = Math.max(1, Math.ceil(elapsedSeconds / 60));
+        const correct = diff * 5; // e.g. 5, 10, 15 "correct" answers equivalents based on difficulty
+        await saveGameSession(user.id, 'Sunken Ship Maze', minutes, correct, dcfg.xp);
       }
     } catch (err) {
       console.error('Error granting reward:', err);
