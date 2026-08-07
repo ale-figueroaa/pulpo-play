@@ -177,6 +177,16 @@ export const styles = StyleSheet.create({
     fontWeight: '900',
     lineHeight: 16,
   },
+  navPillActive: {
+    backgroundColor: '#cde0ff',
+    borderRadius: 16,
+  },
+  pillIconActive: {
+    opacity: 0.8,
+  },
+  pillTextActive: {
+    color: '#1e40af',
+  },
 
   coinsCard: {
     backgroundColor: '#FFFFFF',
