@@ -24,7 +24,7 @@ export const NAV_ITEMS: NavItem[] = [
 export const WORLDS_ARRAY = [
   { id: 0, name: 'Sunken Ship Maze', image: require('../assets/images/SunkenShip.png'), route: '/SunkenShip' },
   { id: 1, name: 'Coral Reef Memory', image: require('../assets/images/CoralReef.png'), route: '/coralReef' },
-  { id: 2, name: 'Submarine Alphabet', image: require('../assets/images/SubmarineWorld.png'), route: '/SubmarineWorld' },
+  { id: 2, name: 'Submarine Sort', image: require('../assets/images/SubmarineWorld.png'), route: '/SubmarineWorld' },
 ];
 
 export const useHomeLogic = () => {

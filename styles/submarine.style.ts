@@ -1,0 +1,255 @@
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gradientContainer: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 20,
+  },
+  backButton: {
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  backButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  statBadge: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  statLabel: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statValue: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  difficultyScreen: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  difficultyTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginBottom: 40,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
+  },
+  diffButton: {
+    backgroundColor: '#00897b',
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    marginBottom: 20,
+    minWidth: 200,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#00bca8',
+  },
+  diffButtonText: {
+    color: '#FFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  gameArea: {
+    flex: 1,
+  },
+  monstersContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginTop: 40,
+    paddingHorizontal: 20,
+    zIndex: 1, // Stay behind dragging shapes if possible, or drag shapes should have higher zIndex
+  },
+  monsterZone: {
+    alignItems: 'center',
+    width: width * 0.4,
+  },
+  monsterImage: {
+    width: 140,
+    height: 140,
+    resizeMode: 'contain',
+  },
+  heartBubble: {
+    position: 'absolute',
+    top: 35,
+    right: 45,
+    backgroundColor: '#FFF',
+    padding: 14,
+    borderRadius: 30,
+    borderWidth: 3,
+    borderColor: '#ff4081',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+    boxShadow: '0px 4px 6px rgba(0,0,0,0.2)',
+    elevation: 4,
+  },
+  heartEmoji: {
+    position: 'absolute',
+    top: -12,
+    left: -12,
+    fontSize: 26,
+  },
+  shapesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'flex-start',
+    gap: 10,
+    zIndex: 10,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  shapeWrapper: {
+    zIndex: 20,
+  },
+  
+  // Basic CSS Shapes
+  circle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.5)',
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.3)',
+    elevation: 5,
+  },
+  square: {
+    width: 60,
+    height: 60,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.5)',
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.3)',
+    elevation: 5,
+  },
+
+  // ── Win modal ───────────────────────────────────────────────
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(2,14,46,0.88)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    zIndex: 1000,
+  },
+  modalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    padding: 30,
+    alignItems: 'center',
+    maxWidth: 420,
+    width: '100%',
+  },
+  modalEmoji: {
+    fontSize: 60,
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#0a3d8f',
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  rewardBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    borderWidth: 1.5,
+    borderColor: '#f59e0b',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+    marginBottom: 10,
+    width: '100%',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  rewardBadgeXP: {
+    backgroundColor: '#e0f2fe',
+    borderColor: '#3b82f6',
+  },
+  rewardEmoji: {
+    fontSize: 22,
+  },
+  rewardText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#b45309',
+  },
+  rewardTextXP: {
+    color: '#0369a1',
+  },
+  modalPrimaryBtn: {
+    backgroundColor: '#00897b',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalPrimaryBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalSecondaryBtn: {
+    backgroundColor: '#eff6ff',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  modalSecondaryBtnText: {
+    color: '#1e3a8a',
+    fontSize: 16,
+    fontWeight: 'bold',
+  }
+});
