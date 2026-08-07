@@ -247,6 +247,13 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '900',
     color: '#FFFFFF',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  timerTextMobile: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#C0D4F0',
     marginBottom: 15,
     textAlign: 'center',
   },
@@ -350,6 +357,12 @@ export const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '900',
     color: '#0a3575',
+    marginBottom: 5,
+  },
+  timerTextWeb: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#5A9EFF',
     marginBottom: 5,
   },
   sectionSubTitleWeb: {

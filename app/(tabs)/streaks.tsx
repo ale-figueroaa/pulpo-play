@@ -11,7 +11,7 @@ import { styles } from '../../styles/streaks.styles';
 
 export default function StreaksScreenWeb() {
   // Con esta línea, conectamos la vista con el "cerebro"
-  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES } = useStreaksLogic();
+  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft } = useStreaksLogic();
 
   const handleLogout = async () => {
     try {
@@ -146,6 +146,7 @@ export default function StreaksScreenWeb() {
           >
             <View style={styles.weeklyCard}>
               <Text style={styles.sectionTitleMobile}>Weekly Streak: {streakTotal} Days!</Text>
+              <Text style={styles.timerTextMobile}>Next day in: {timeLeft}</Text>
               <View style={styles.daysRowMobile}>
                 {DAYS_DATA.slice(0, 4).map((day, idx) => (
                   <View key={idx} style={styles.dayItem}>
@@ -189,6 +190,7 @@ export default function StreaksScreenWeb() {
               {/* Columna Izquierda: Racha Semanal (COMPLETAMENTE ESTÁTICA) */}
               <View style={[styles.weeklyCard, styles.weeklyCardWeb]}>
                 <Text style={styles.sectionTitleWeb}>Your Splash Streak: {streakTotal} Days!</Text>
+                <Text style={styles.timerTextWeb}>Next day in: {timeLeft}</Text>
                 <Text style={styles.sectionSubTitleWeb}>Keep the momentum going to unlock chest rewards!</Text>
                 
                 <View style={styles.daysRowWeb}>

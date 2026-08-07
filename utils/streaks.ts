@@ -43,6 +43,7 @@ export const useStreaksLogic = () => {
   const [coins, setCoins] = useState<number>(0);
   const [streakTotal, setStreakTotal] = useState<number>(0);
   const [daysData, setDaysData] = useState<DayData[]>([]);
+  const [timeLeft, setTimeLeft] = useState<string>('');
 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -114,6 +115,20 @@ export const useStreaksLogic = () => {
   useFocusEffect(
     useCallback(() => {
       calculateStreak();
+      
+      const timer = setInterval(() => {
+        const now = new Date();
+        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const diff = tomorrow.getTime() - now.getTime();
+
+        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${h}h ${m}m ${s}s`);
+      }, 1000);
+
+      return () => clearInterval(timer);
     }, [])
   );
 
@@ -128,5 +143,6 @@ export const useStreaksLogic = () => {
     visibleNavItems,
     DAYS_DATA: daysData.length > 0 ? daysData : Array.from({length: 7}).map((_, i) => ({name: `Day ${i+1}`, completed: false})),
     MILESTONES,
+    timeLeft,
   };
 };
