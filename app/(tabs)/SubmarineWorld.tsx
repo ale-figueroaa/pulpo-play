@@ -8,7 +8,7 @@ import { styles } from '../../styles/submarine.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import OctavioHelper from '../../components/OctavioHelper';
-import { addExperience, addSandDollars } from '../../utils/db';
+import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
 
 const DIFFICULTY_CONFIG = {
   easy: { reward: 10, xp: 20 },
@@ -128,6 +128,14 @@ export default function SubmarineWorld() {
         const dcfg = DIFFICULTY_CONFIG[diff];
         await addSandDollars(user.id, dcfg.reward);
         await addExperience(user.id, dcfg.xp);
+        
+        let numShapes = 10;
+        if (diff === 'easy') numShapes = 10;
+        else if (diff === 'medium') numShapes = 15;
+        else if (diff === 'hard') numShapes = 20;
+
+        const minutesPlayed = Math.max(1, Math.round(elapsedSeconds / 60));
+        await saveGameSession(user.id, 'Submarine Sort', minutesPlayed, numShapes, dcfg.xp);
       }
     } catch (err) {
       console.error('Error granting reward:', err);
