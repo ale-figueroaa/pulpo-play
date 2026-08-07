@@ -97,9 +97,7 @@ export default function StoreScreen() {
     }
   };
 
-  const visibleNavItems = isMobile
-    ? NAV_ITEMS.filter(item => item.key !== 'profile')
-    : NAV_ITEMS;
+  const visibleNavItems = NAV_ITEMS;
 
   const handlePriceClick = (item: StoreItem) => {
     setSelectedItem(item);
@@ -258,11 +256,11 @@ export default function StoreScreen() {
                   <TouchableOpacity
                     key={item.key}
                     activeOpacity={0.8}
-                    style={[styles.navPill, isMobile && styles.navPillMobile]}
+                    style={[styles.navPill, isMobile && styles.navPillMobile, item.key === 'store' && styles.navPillActive]}
                     onPress={() => handleNavigation(item.key)}
                   >
-                    <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
-                    <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
+                    <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile, item.key === 'store' && styles.pillIconActive]} />
+                    <Text style={[styles.pillText, isMobile && styles.pillTextMobile, item.key === 'store' && styles.pillTextActive]}>{item.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -298,7 +296,6 @@ export default function StoreScreen() {
 
             {/* PARTE DE ARRIBA: OBJETO EQUIPADO / EN USO */}
             <View style={styles.mobileStaticTopSection}>
-              <Text style={styles.storeTitle}>Store</Text>
               <View style={[styles.featuredItemCard, styles.featuredItemCardMobile]}>
                 <Image source={equippedItem.image} style={styles.itemImage} resizeMode="contain" />
                 <Text style={styles.featuredItemTitle}>{equippedItem.name}</Text>
@@ -333,7 +330,6 @@ export default function StoreScreen() {
         ) : (
           /* --- DISEÑO ESCRITORIO WEB (DOS COLUMNAS PARALELAS) --- */
           <View style={styles.mainContentWeb}>
-            <Text style={styles.storeTitleWeb}>Store</Text>
 
             <View style={styles.webDashboardLayout}>
               {/* Izquierda Estática: OBJETO EQUIPADO / EN USO */}
@@ -383,11 +379,11 @@ export default function StoreScreen() {
                 <TouchableOpacity
                   key={item.key}
                   activeOpacity={0.8}
-                  style={[styles.navPill, isMobile && styles.navPillMobile]}
+                  style={[styles.navPill, isMobile && styles.navPillMobile, item.key === 'store' && styles.navPillActive]}
                   onPress={() => handleNavigation(item.key)}
                 >
-                  <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
-                  <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
+                  <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile, item.key === 'store' && styles.pillIconActive]} />
+                  <Text style={[styles.pillText, isMobile && styles.pillTextMobile, item.key === 'store' && styles.pillTextActive]}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>

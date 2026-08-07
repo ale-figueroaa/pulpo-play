@@ -50,9 +50,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   headerCenter: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 15,
   },
 
   // ================= MOBILE NAV =================
@@ -97,12 +97,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 150,
     ...Platform.select({
-      web: {
-        shadowColor: 'rgba(0,0,0,0.05)',
-        shadowOffset: { width: 0, height: 6 },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-      },
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
       default: { elevation: 3 },
     }),
   },
@@ -140,12 +135,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 150,
     ...Platform.select({
-      web: {
-        shadowColor: 'rgba(0,0,0,0.05)',
-        shadowOffset: { width: 0, height: 6 },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-      },
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
       default: { elevation: 3 },
     }),
   },
@@ -188,12 +178,8 @@ export const styles = StyleSheet.create({
     borderColor: '#B0CFFF',
     height: 70,
     ...Platform.select({
-      web: {
-        shadowColor: 'rgba(0,0,0,0.05)',
-        shadowOffset: { width: 0, height: 6 },
-        shadowRadius: 0,
-        shadowOpacity: 1,
-      },
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
+      default: { elevation: 3 }
     }),
   },
   navIslandMobile: {

@@ -7,10 +7,15 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? 30 : 0,
+    paddingHorizontal: '4%',
+    paddingTop: 20,
+    width: '100%',
+    alignSelf: 'center',
+    maxWidth: 1400,
   },
   containerMobile: {
-    paddingHorizontal: 16,
+    paddingHorizontal: '5%',
+    paddingTop: 45,
   },
 
   // ================= NAVBAR SUPERIOR (MÓVIL) =================
@@ -36,48 +41,41 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   profileIconMobile: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 4,
+    width: 54,
+    height: 54,
   },
   profileIconImage: {
-    width: 24,
-    height: 24,
+    marginTop: 3,
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
   },
 
   // ================= NAVBAR SUPERIOR (WEB ESCRITORIO) =================
   topNavbar: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 40,
-    paddingVertical: 20,
-    zIndex: 10,
+    marginTop: 30,
+    zIndex: 50,
+    paddingHorizontal: '3%',
   },
   headerSide: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerSideLeft: {
-    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   headerSideRight: {
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
   },
   headerCenter: {
-    flex: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 15,
   },
   logoCard: {
     backgroundColor: '#FFFFFF',
@@ -129,9 +127,8 @@ export const styles = StyleSheet.create({
     borderColor: '#B0CFFF',
     height: 70,
     ...Platform.select({
-      web: {
-        boxShadow: '0px 6px 0px rgba(0,0,0,0.05)',
-      }
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
+      default: { elevation: 3 }
     })
   },
   navIslandMobile: {
@@ -146,8 +143,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
-    paddingHorizontal: 22,
-    marginHorizontal: 10,
+    paddingHorizontal: 12,
+    marginHorizontal: 5,
     ...Platform.select({
       web: { cursor: 'pointer' }
     })

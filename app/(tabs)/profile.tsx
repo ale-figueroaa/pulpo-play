@@ -150,9 +150,7 @@ export default function ProfileScreen() {
     }
   };
 
-  const visibleNavItems = isMobile
-    ? NAV_ITEMS.filter(item => item.key !== 'profile')
-    : NAV_ITEMS;
+  const visibleNavItems = NAV_ITEMS;
 
   const currentLevel = Math.floor(experienceLevel / 100) + 1;
   const progressPercent = experienceLevel % 100;
@@ -214,11 +212,11 @@ export default function ProfileScreen() {
                   <TouchableOpacity
                     key={item.key}
                     activeOpacity={0.8}
-                    style={[styles.navPill, isMobile && styles.navPillMobile]}
+                    style={[styles.navPill, isMobile && styles.navPillMobile, item.key === 'profile' && styles.navPillActive]}
                     onPress={() => handleNavigation(item.key)}
                   >
-                    <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
-                    <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
+                    <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile, item.key === 'profile' && styles.pillIconActive]} />
+                    <Text style={[styles.pillText, isMobile && styles.pillTextMobile, item.key === 'profile' && styles.pillTextActive]}>{item.label}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -390,11 +388,11 @@ export default function ProfileScreen() {
                 <TouchableOpacity
                   key={item.key}
                   activeOpacity={0.8}
-                  style={[styles.navPill, isMobile && styles.navPillMobile]}
+                  style={[styles.navPill, isMobile && styles.navPillMobile, item.key === 'profile' && styles.navPillActive]}
                   onPress={() => handleNavigation(item.key)}
                 >
-                  <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile]} />
-                  <Text style={[styles.pillText, isMobile && styles.pillTextMobile]}>{item.label}</Text>
+                  <Image source={item.icon} style={[styles.pillIcon, isMobile && styles.pillIconMobile, item.key === 'profile' && styles.pillIconActive]} />
+                  <Text style={[styles.pillText, isMobile && styles.pillTextMobile, item.key === 'profile' && styles.pillTextActive]}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>

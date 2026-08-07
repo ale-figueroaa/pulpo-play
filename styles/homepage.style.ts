@@ -1,6 +1,21 @@
 import { Platform, StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: '4%',
+    paddingTop: 20,
+    width: '100%',
+    alignSelf: 'center',
+    maxWidth: 1400,
+  },
+  containerMobile: {
+    paddingHorizontal: '5%',
+    paddingTop: 45,
+  },
   mainContent: {
     flex: 1,
     justifyContent: 'center',

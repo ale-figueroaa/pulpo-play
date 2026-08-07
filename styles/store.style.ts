@@ -19,7 +19,8 @@ export const styles = StyleSheet.create({
   },
   mainContentWeb: {
     flex: 1,
-    paddingVertical: 10,
+    paddingTop: 50,
+    paddingBottom: 20,
     paddingHorizontal: 32,
     marginBottom: 20,
   },
@@ -37,7 +38,7 @@ export const styles = StyleSheet.create({
   headerSide: { flex: 1, flexDirection: 'row', alignItems: 'center' },
   headerSideLeft: { justifyContent: 'flex-start' },
   headerSideRight: { justifyContent: 'flex-end' },
-  headerCenter: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  headerCenter: { alignItems: 'center', justifyContent: 'center', marginHorizontal: 15 },
   headerRowMobile: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -68,6 +69,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 150,
+    ...Platform.select({
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
+      default: { elevation: 3 }
+    })
   },
   logoTextTitle: { fontSize: 20, fontWeight: '900', color: '#3B629B', lineHeight: 30 },
   logoTextSub: { fontSize: 20, fontWeight: '900', color: '#3B629B', lineHeight: 30 },
@@ -83,6 +88,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 150,
+    ...Platform.select({
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
+      default: { elevation: 3 }
+    })
   },
   coinsCardMobile: { height: 52, width: '105%', paddingHorizontal: 16, borderRadius: 14 },
   coinIcon: { width: 32, height: 32, resizeMode: 'contain', marginRight: 10 },
@@ -100,6 +109,10 @@ export const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: '#B0CFFF',
     height: 70,
+    ...Platform.select({
+      web: { boxShadow: '0px 6px 0px rgba(0,0,0,0.05)' },
+      default: { elevation: 3 }
+    })
   },
   navIslandMobile: { width: '100%', alignSelf: 'center', height: 80, paddingHorizontal: 6, borderRadius: 22 },
   navPill: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 4, paddingHorizontal: 12, marginHorizontal: 5 },
@@ -237,12 +250,13 @@ export const styles = StyleSheet.create({
     gap: 30,
   },
   featuredItemCardWeb: {
-    flex: 1.2,
-    height: '100%',
+    flex: 1,
+    height: 360,
     marginBottom: 0,
+    maxWidth: 450,
   },
   smallItemsContainerWeb: {
-    flex: 1.5,
+    flex: 2,
     height: '100%',
   },
   smallItemsScrollWeb: { flex: 1 },
@@ -258,7 +272,7 @@ export const styles = StyleSheet.create({
     borderRadius: 28,
     width: '30%',
     minWidth: 150,
-    height: 210,
+    height: 170, // Reduced from 210 to prevent cutoff
     padding: 14,
     justifyContent: 'flex-end',
     alignItems: 'center',
