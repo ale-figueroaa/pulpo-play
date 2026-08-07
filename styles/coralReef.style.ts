@@ -74,17 +74,17 @@ export const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 16,
-    maxWidth: 680,
     width: '100%',
   },
   card: {
-    width: 140,
-    height: 140,
-    borderRadius: 20,
+    width: 110,
+    height: 110,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 12,
+    padding: 8,
     boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.25)',
+    flexShrink: 0,
   },
   cardMobile: {
     width: 100,
@@ -107,16 +107,16 @@ export const styles = StyleSheet.create({
     borderColor: '#10b981',
   },
   cardEmoji: {
-    fontSize: 44,
+    fontSize: 38,
   },
   cardEmojiMobile: {
     fontSize: 32,
   },
   cardLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#1e293b',
-    marginTop: 6,
+    marginTop: 4,
     textAlign: 'center',
   },
   cardLabelMatched: {

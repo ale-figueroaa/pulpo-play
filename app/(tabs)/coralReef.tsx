@@ -34,6 +34,8 @@ const MARINE_CREATURES: Creature[] = [
   { id: 'cangrejo', emoji: '🦀', name: 'Crab' },
   { id: 'tiburon', emoji: '🦈', name: 'Shark' },
   { id: 'ballena', emoji: '🐋', name: 'Whale' },
+  { id: 'medusa', emoji: '🪼', name: 'Jellyfish' },
+  { id: 'estrella', emoji: '⭐', name: 'Starfish' },
 ];
 
 const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, cardSize }: any) => {
@@ -59,7 +61,6 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, c
         style={[
           styles.card,
           isMobile && styles.cardMobile,
-          { width: cardSize, height: cardSize },
           isCardMatched ? styles.cardMatched : isCardFlipped ? styles.cardUp : styles.cardDown,
         ]}
         onPress={() => onPress(card)}
@@ -87,7 +88,7 @@ export default function CoralReefScreen() {
 
   const [difficulty, setDifficulty] = useState<number>(2);
 
-  const numPairs = difficulty === 1 ? 4 : difficulty === 3 ? 8 : 6;
+  const numPairs = difficulty === 1 ? 4 : difficulty === 3 ? 7 : 6;
   const rewardAmount = difficulty === 1 ? 30 : difficulty === 3 ? 80 : 50;
   const xpReward = difficulty === 1 ? 10 : difficulty === 3 ? 30 : 20;
 
@@ -130,7 +131,7 @@ export default function CoralReefScreen() {
         } catch (e) { }
         setDifficulty(diff);
 
-        const activeNumPairs = diff === 1 ? 4 : diff === 3 ? 8 : 6;
+        const activeNumPairs = diff === 1 ? 4 : diff === 3 ? 7 : 6;
 
         const deck: CardItem[] = [];
         const activeCreatures = MARINE_CREATURES.slice(0, activeNumPairs);
@@ -259,7 +260,10 @@ export default function CoralReefScreen() {
         </View>
 
         {/* Cuadrícula de Memorama */}
-        <View style={[styles.gridContainer, { position: 'relative' }]}>
+        <View style={[
+          styles.gridContainer, 
+          { position: 'relative', maxWidth: difficulty === 1 ? 614 : 866 }
+        ]}>
           {countdown !== null && countdown > 0 && (
             <View style={{
               position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
