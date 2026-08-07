@@ -26,6 +26,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -89,18 +90,28 @@ export default function LoginScreen() {
         />
 
         <Text style={styles.label}>Password</Text>
-        <TextInput
-          testID="login-password-input"
-          id="login-password-input"
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!loading}
-          autoCapitalize="none"
-          placeholder="Your password"
-          placeholderTextColor="#A0AEC0"
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            testID="login-password-input"
+            id="login-password-input"
+            style={[styles.input, { paddingRight: 50 }]}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            editable={!loading}
+            autoCapitalize="none"
+            placeholder="Your password"
+            placeholderTextColor="#A0AEC0"
+          />
+          <TouchableOpacity 
+            style={{ position: 'absolute', right: 15, top: 14 }} 
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#475569' }}>
+              {showPassword ? 'Hide' : 'Show'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {errorMessage ? (
           <Text style={{ color: '#EF4444', marginBottom: 15, textAlign: 'center', fontWeight: '500' }}>

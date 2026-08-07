@@ -64,8 +64,21 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
     // 3. Éxito
     Alert.alert(
       'Success!',
-      'Your account has been created! Check your email to confirm it before logging in. 🌊',
-      [{ text: 'Brilliant!', onPress: onSuccess }]
+      'Please confirm your email. You can either go to login or resend the email. 🌊',
+      [
+        { 
+          text: 'Resend email', 
+          onPress: async () => {
+            try {
+              await supabase.auth.resend({ type: 'signup', email: email.trim() });
+              Alert.alert('Sent!', 'We have resent the confirmation email.', [{ text: 'Go to login', onPress: onSuccess }]);
+            } catch (e) {
+              Alert.alert('Error', 'Could not resend email.', [{ text: 'Go to login', onPress: onSuccess }]);
+            }
+          } 
+        },
+        { text: 'Go to login', onPress: onSuccess }
+      ]
     );
   } catch (err: any) {
     console.log('Full error:', JSON.stringify(err, null, 2));

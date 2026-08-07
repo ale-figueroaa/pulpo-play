@@ -20,6 +20,7 @@ export default function SignUpScreen() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const { width } = useWindowDimensions();
@@ -91,16 +92,26 @@ export default function SignUpScreen() {
         />
 
         <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          editable={!loading}
-          autoCapitalize="none"
-          placeholder="Mínimo 6 caracteres"
-          placeholderTextColor="#A0AEC0"
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            style={[styles.input, { paddingRight: 50 }]}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            editable={!loading}
+            autoCapitalize="none"
+            placeholder="Mínimo 6 caracteres"
+            placeholderTextColor="#A0AEC0"
+          />
+          <TouchableOpacity 
+            style={{ position: 'absolute', right: 15, top: 14 }} 
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#475569' }}>
+              {showPassword ? 'Hide' : 'Show'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={onSignUpPress} disabled={loading}>
           {loading ? (

@@ -97,7 +97,7 @@ export default function SubmarineWorld() {
   const [rewardGranted, setRewardGranted] = useState(false);
   
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -145,8 +145,8 @@ export default function SubmarineWorld() {
   const greenShake = useRef(new Animated.Value(0)).current;
   const pinkShake = useRef(new Animated.Value(0)).current;
   
-  const greenTimeout = useRef<NodeJS.Timeout | null>(null);
-  const pinkTimeout = useRef<NodeJS.Timeout | null>(null);
+  const greenTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startGame = (diff: Difficulty) => {
     let numShapes = 10;
@@ -256,7 +256,7 @@ export default function SubmarineWorld() {
     }
   };
 
-  const winTimeout = useRef<NodeJS.Timeout | null>(null);
+  const winTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isGameWon(shapes)) {
