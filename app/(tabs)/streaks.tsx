@@ -11,7 +11,7 @@ import { styles } from '../../styles/streaks.styles';
 
 export default function StreaksScreenWeb() {
   // Con esta línea, conectamos la vista con el "cerebro"
-  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft } = useStreaksLogic();
+  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft, claimedMilestones, claimMilestone } = useStreaksLogic();
 
   const handleLogout = async () => {
     try {
@@ -171,15 +171,42 @@ export default function StreaksScreenWeb() {
 
             <View style={styles.milestonesContainer}>
               <Text style={styles.sectionTitleMobile}>Milestones Rewards</Text>
-              {MILESTONES.map((milestone) => (
-                <View key={milestone.id} style={styles.milestoneCard}>
+              {MILESTONES.map((milestone) => {
+                const isUnlocked = streakTotal >= milestone.days;
+                const isClaimed = claimedMilestones.includes(milestone.id);
+                
+                let badgeText = 'Locked';
+                let badgeColor = '#94a3b8';
+                let cardOpacity = 0.5;
+
+                if (isClaimed) {
+                  badgeText = 'Claimed';
+                  badgeColor = '#64748b';
+                  cardOpacity = 0.8;
+                } else if (isUnlocked) {
+                  badgeText = 'Collect';
+                  badgeColor = '#4ADE80';
+                  cardOpacity = 1;
+                }
+
+                return (
+                <TouchableOpacity 
+                  key={milestone.id} 
+                  style={[styles.milestoneCard, { opacity: cardOpacity }]}
+                  activeOpacity={0.8}
+                  disabled={!isUnlocked || isClaimed}
+                  onPress={() => claimMilestone(milestone.id)}
+                >
                   <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
                   <View style={styles.milestoneTextContainer}>
                     <Text style={styles.milestoneTitle}>{milestone.days} Days Streak</Text>
                     <Text style={styles.milestoneReward}>+{milestone.reward} Sand Dollars</Text>
                   </View>
-                </View>
-              ))}
+                  <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
+                    <Text style={styles.claimBadgeText}>{badgeText}</Text>
+                  </View>
+                </TouchableOpacity>
+              )})}
             </View>
           </ScrollView>
         ) : (
@@ -218,18 +245,42 @@ export default function StreaksScreenWeb() {
                   contentContainerStyle={styles.milestonesScrollContentWeb}
                   showsVerticalScrollIndicator={false}
                 >
-                  {MILESTONES.map((milestone) => (
-                    <View key={milestone.id} style={[styles.milestoneCard, styles.milestoneCardWeb]}>
+                  {MILESTONES.map((milestone) => {
+                    const isUnlocked = streakTotal >= milestone.days;
+                    const isClaimed = claimedMilestones.includes(milestone.id);
+
+                    let badgeText = 'Locked';
+                    let badgeColor = '#94a3b8';
+                    let cardOpacity = 0.5;
+
+                    if (isClaimed) {
+                      badgeText = 'Claimed';
+                      badgeColor = '#64748b';
+                      cardOpacity = 0.8;
+                    } else if (isUnlocked) {
+                      badgeText = 'Collect';
+                      badgeColor = '#4ADE80';
+                      cardOpacity = 1;
+                    }
+
+                    return (
+                    <TouchableOpacity 
+                      key={milestone.id} 
+                      style={[styles.milestoneCard, styles.milestoneCardWeb, { opacity: cardOpacity }]}
+                      activeOpacity={0.8}
+                      disabled={!isUnlocked || isClaimed}
+                      onPress={() => claimMilestone(milestone.id)}
+                    >
                       <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
                       <View style={styles.milestoneTextContainer}>
                         <Text style={styles.milestoneTitleWeb}>{milestone.days} Days Milestone</Text>
                         <Text style={styles.milestoneRewardWeb}>{milestone.reward} Sand Dollars Reward</Text>
                       </View>
-                      <View style={styles.claimBadgeWeb}>
-                        <Text style={styles.claimBadgeText}>Locked</Text>
+                      <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
+                        <Text style={styles.claimBadgeText}>{badgeText}</Text>
                       </View>
-                    </View>
-                  ))}
+                    </TouchableOpacity>
+                  )})}
                 </ScrollView>
               </View>
 

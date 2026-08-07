@@ -7,14 +7,11 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: '4%',
     paddingTop: 20,
     width: '100%',
     alignSelf: 'center',
-    maxWidth: 1400,
   },
   containerMobile: {
-    paddingHorizontal: '5%',
     paddingTop: 45,
   },
 
@@ -25,6 +22,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingVertical: 12,
+    paddingHorizontal: '5%',
   },
   headerSideMobile: {
     flex: 1,
@@ -229,6 +227,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     marginBottom: Platform.OS === 'ios' ? 10 : 15,
     zIndex: 30,
+    paddingHorizontal: '5%',
   },
 
   // ================= CONTENIDO PERFIL =================

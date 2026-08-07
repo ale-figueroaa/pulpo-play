@@ -260,10 +260,7 @@ export default function CoralReefScreen() {
         </View>
 
         {/* Cuadrícula de Memorama */}
-        <View style={[
-          styles.gridContainer, 
-          { position: 'relative', maxWidth: difficulty === 1 ? 614 : 866 }
-        ]}>
+        <View style={[styles.gridContainer, { position: 'relative' }]}>
           {countdown !== null && countdown > 0 && (
             <View style={{
               position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,

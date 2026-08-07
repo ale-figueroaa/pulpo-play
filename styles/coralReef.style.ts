@@ -74,6 +74,7 @@ export const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 16,
+    maxWidth: 900,
     width: '100%',
   },
   card: {

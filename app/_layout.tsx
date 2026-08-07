@@ -2,17 +2,39 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { Platform } from 'react-native';
+import { useEffect } from 'react';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-// 1. Cambiamos el anchor para que la app sepa que el punto de partida 
-// cuando se gestionen redirecciones iniciales pueda considerar el flujo de auth.
 export const unstable_settings = {
   initialRouteName: 'index',
 };
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      let styleEl = document.getElementById('dynamic-zoom-style');
+      if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'dynamic-zoom-style';
+        document.head.appendChild(styleEl);
+      }
+      
+      // Inject CSS zoom based on 1024px virtual canvas for wide screens.
+      // The DOM layout will always act as if the screen is 1024px wide, 
+      // preventing any overlaps while scaling up perfectly.
+      styleEl.innerHTML = `
+        @media (min-width: 1024px) {
+          html {
+            zoom: calc(100vw / 1024);
+          }
+        }
+      `;
+    }
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

@@ -248,7 +248,7 @@ export default function ProfileScreen() {
         {/* --- CONTENIDO PRINCIPAL DEL PERFIL --- */}
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
         >
           <View style={styles.profileCard}>
 

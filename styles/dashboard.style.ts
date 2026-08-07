@@ -6,9 +6,12 @@ export const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: '5%',
     paddingTop: 40,
     paddingBottom: 40,
+    width: '100%',
+  },
+  scrollContent: {
+    paddingHorizontal: '5%',
     width: '100%',
     alignSelf: 'center',
     maxWidth: 1000,

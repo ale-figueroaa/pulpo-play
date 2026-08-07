@@ -120,7 +120,7 @@ export default function AdultDashboardScreen() {
       {/* --- ADULT DASHBOARD --- */}
       {isUnlocked && (
         <SafeAreaView style={styles.container}>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView showsVerticalScrollIndicator={true} contentContainerStyle={styles.scrollContent}>
             {/* Header */}
             <View style={styles.headerRow}>
               <Text style={styles.headerTitle}>{userName}'s Progress</Text>

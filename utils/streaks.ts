@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { supabase } from '../lib/supabase';
-import { getUserSandDollars } from './db';
+import { getUserSandDollars, addSandDollars } from './db';
 
 export const MOBILE_BREAKPOINT = 768;
 
@@ -44,6 +44,7 @@ export const useStreaksLogic = () => {
   const [streakTotal, setStreakTotal] = useState<number>(0);
   const [daysData, setDaysData] = useState<DayData[]>([]);
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const [claimedMilestones, setClaimedMilestones] = useState<string[]>([]);
 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -58,6 +59,7 @@ export const useStreaksLogic = () => {
 
       let currentStreak = user.user_metadata?.streakTotal || 0;
       let lastDate = user.user_metadata?.lastStreakDate || '';
+      let claimed = user.user_metadata?.claimedMilestones || [];
 
       const today = new Date();
       const offset = today.getTimezoneOffset();
@@ -79,21 +81,25 @@ export const useStreaksLogic = () => {
             currentStreak += 1;
           } else {
             currentStreak = 1;
+            claimed = [];
           }
         } else {
           currentStreak = 1;
+          claimed = [];
         }
         lastDate = todayStr;
         needsUpdate = true;
       }
 
       setStreakTotal(currentStreak);
+      setClaimedMilestones(claimed);
 
       if (needsUpdate) {
         await supabase.auth.updateUser({
           data: {
             streakTotal: currentStreak,
-            lastStreakDate: lastDate
+            lastStreakDate: lastDate,
+            claimedMilestones: claimed
           }
         });
       }
@@ -132,6 +138,35 @@ export const useStreaksLogic = () => {
     }, [])
   );
 
+  const claimMilestone = async (milestoneId: string) => {
+    try {
+      const milestone = MILESTONES.find(m => m.id === milestoneId);
+      if (!milestone) return;
+
+      if (streakTotal < milestone.days) return; // Not unlocked
+      if (claimedMilestones.includes(milestoneId)) return; // Already claimed
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Add sand dollars
+      await addSandDollars(user.id, milestone.reward);
+      setCoins(prev => prev + milestone.reward);
+
+      // Update claimed array
+      const newClaimed = [...claimedMilestones, milestoneId];
+      setClaimedMilestones(newClaimed);
+
+      await supabase.auth.updateUser({
+        data: {
+          claimedMilestones: newClaimed
+        }
+      });
+    } catch (err) {
+      console.error('Error claiming milestone:', err);
+    }
+  };
+
   const visibleNavItems = isMobile
     ? NAV_ITEMS.filter(item => item.key !== 'profile')
     : NAV_ITEMS;
@@ -144,5 +179,7 @@ export const useStreaksLogic = () => {
     DAYS_DATA: daysData.length > 0 ? daysData : Array.from({length: 7}).map((_, i) => ({name: `Day ${i+1}`, completed: false})),
     MILESTONES,
     timeLeft,
+    claimedMilestones,
+    claimMilestone,
   };
 };
