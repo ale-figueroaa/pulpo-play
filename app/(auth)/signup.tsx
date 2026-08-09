@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Text, View, TextInput, TouchableOpacity,
   SafeAreaView, ActivityIndicator, ScrollView,
-  Platform, useWindowDimensions, Image
+  Platform, useWindowDimensions, Image, Modal, Alert
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
@@ -22,6 +22,7 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === 'web';
@@ -34,8 +35,33 @@ export default function SignUpScreen() {
       email,
       password,
       setLoading,
-      onSuccess: () => router.replace('/login')
+      onSuccess: () => router.replace('/login'),
+      onShowConfirmEmail: () => setShowConfirmModal(true)
     });
+  };
+
+  const handleResendEmail = async () => {
+    try {
+      setLoading(true);
+      await supabase.auth.resend({ type: 'signup', email: email.trim() });
+      if (Platform.OS === 'web') {
+        window.alert('Sent! We have resent the confirmation email.');
+      } else {
+        Alert.alert('Sent!', 'We have resent the confirmation email.');
+      }
+      setShowConfirmModal(false);
+      router.replace('/login');
+    } catch (e) {
+      if (Platform.OS === 'web') {
+        window.alert('Error: Could not resend email.');
+      } else {
+        Alert.alert('Error', 'Could not resend email.');
+      }
+      setShowConfirmModal(false);
+      router.replace('/login');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleAuth = async () => {
@@ -141,6 +167,37 @@ export default function SignUpScreen() {
       <Link href="/login" style={[styles.footerText, !isMobile && styles.footerTextWeb]}>
         Already have an account? Log In
       </Link>
+
+      <Modal
+        visible={showConfirmModal}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <View style={{ backgroundColor: 'white', padding: 24, borderRadius: 16, width: '100%', maxWidth: 400, alignItems: 'center' }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16, color: '#1E293B', textAlign: 'center' }}>
+              please confirm email
+            </Text>
+            
+            <TouchableOpacity 
+              style={[styles.button, { width: '100%', marginBottom: 12 }]} 
+              onPress={() => {
+                setShowConfirmModal(false);
+                router.replace('/login');
+              }}
+            >
+              <Text style={styles.buttonText}>login</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.button, { width: '100%', backgroundColor: '#F1F5F9', borderWidth: 1, borderColor: '#E2E8F0', marginTop: 0 }]} 
+              onPress={handleResendEmail}
+            >
+              <Text style={[styles.buttonText, { color: '#475569' }]}>resend email</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 

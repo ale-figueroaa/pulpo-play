@@ -433,21 +433,7 @@ export const styles = StyleSheet.create({
     height: 60,
     resizeMode: 'contain',
   },
-  gradientContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: '4%',
-    paddingTop: 20,
-    width: '100%',
-    alignSelf: 'center',
-    maxWidth: 1400,
-  },
-  containerMobile: {
-    paddingHorizontal: '5%',
-    paddingTop: 55,
-  },
+
 
   // ================= CONTENEDORES Y BOTÓN PLAY =================
   centerWorldContainer: {

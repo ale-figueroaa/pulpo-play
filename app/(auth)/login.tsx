@@ -76,16 +76,17 @@ export default function LoginScreen() {
       )}
 
       <View style={[styles.card, !isMobile && styles.cardWeb]}>
-        <Text style={styles.label}>Diver's Name</Text>
+        <Text style={styles.label}>diver´s email</Text>
         <TextInput
-          testID="login-username-input"
-          id="login-username-input"
+          testID="login-email-input"
+          id="login-email-input"
           style={styles.input}
           value={name}
           onChangeText={setName}
           editable={!loading}
           autoCapitalize="none"
-          placeholder="Your username"
+          keyboardType="email-address"
+          placeholder="diver´s email"
           placeholderTextColor="#A0AEC0"
         />
 

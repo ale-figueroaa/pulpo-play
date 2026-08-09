@@ -93,19 +93,34 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
   },
   cardDown: {
-    backgroundColor: '#0a3d8f',
-    borderWidth: 2,
-    borderColor: '#3b82f6',
+    backgroundColor: '#1E40AF', // Nice rich blue
+    borderWidth: 3,
+    borderColor: '#60A5FA', // Lighter blue border
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8, // For Android shadow
   },
   cardUp: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: '#60a5fa',
+    borderWidth: 3,
+    borderColor: '#93C5FD',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 8,
   },
   cardMatched: {
-    backgroundColor: '#ecfdf5',
-    borderWidth: 2,
-    borderColor: '#10b981',
+    backgroundColor: '#ECFDF5',
+    borderWidth: 3,
+    borderColor: '#34D399',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
   cardEmoji: {
     fontSize: 38,
@@ -124,7 +139,10 @@ export const styles = StyleSheet.create({
     color: '#047857',
   },
   cardBackEmoji: {
-    fontSize: 40,
+    fontSize: 48,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   resetButton: {
     marginTop: 32,

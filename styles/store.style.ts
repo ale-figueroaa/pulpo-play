@@ -121,6 +121,9 @@ export const styles = StyleSheet.create({
   pillIconMobile: { width: 55, height: 55, resizeMode: 'contain', marginBottom: -8 },
   pillText: { color: '#3B629B', fontSize: 22, fontWeight: '900' },
   pillTextMobile: { color: '#3B629B', fontSize: 14, fontWeight: '900', lineHeight: 16 },
+  navPillActive: { backgroundColor: 'rgba(59, 98, 155, 0.15)', borderRadius: 20 },
+  pillIconActive: { opacity: 0.9 },
+  pillTextActive: { color: '#1a365d' },
   profileIconMobile: { width: 54, height: 54 },
   profileIconImage: { marginTop: 3, width: 60, height: 60, resizeMode: 'contain' },
 

@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase'; // Ajusta la ruta si tu carpeta lib está en otro lado
 
@@ -8,20 +8,29 @@ interface SignUpParams {
   password: string;
   setLoading: (loading: boolean) => void;
   onSuccess: () => void; // Función para navegar cuando termine
+  onShowConfirmEmail?: () => void;
 }
 
-export const handleSignUpLogic = async ({ name, email, password, setLoading, onSuccess }: SignUpParams) => {
+export const handleSignUpLogic = async ({ name, email, password, setLoading, onSuccess, onShowConfirmEmail }: SignUpParams) => {
+  const showAlert = (title: string, msg: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}\n\n${msg}`);
+    } else {
+      Alert.alert(title, msg);
+    }
+  };
+
   if (!name.trim() || !email.trim() || !password.trim()) {
-    Alert.alert('¡Ups!', 'Please complete all fields for your new character 🐙');
+    showAlert('¡Ups!', 'Please complete all fields for your new character 🐙');
     return;
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email.trim())) {
-    Alert.alert('Invalid email!', 'Please enter a valid email address 📧');
+    showAlert('Invalid email!', 'Please enter a valid email address 📧');
     return;
   }
   if (password.trim().length < 6) {
-    Alert.alert('Too short!', 'The password must be at least 6 characters long 🔒');
+    showAlert('Too short!', 'The password must be at least 6 characters long 🔒');
     return;
   }
 
@@ -35,7 +44,7 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
       .maybeSingle();
 
     if (existingUser) {
-      Alert.alert('Unavailable!', `That diver's name is already taken. Try another one! 🐬`);
+      showAlert('Unavailable!', `That diver's name is already taken. Try another one! 🐬`);
       setLoading(false);
       return;
     }
@@ -62,27 +71,18 @@ export const handleSignUpLogic = async ({ name, email, password, setLoading, onS
     }
 
     // 3. Éxito
-    Alert.alert(
-      'Success!',
-      'Please confirm your email. You can either go to login or resend the email. 🌊',
-      [
-        { 
-          text: 'Resend email', 
-          onPress: async () => {
-            try {
-              await supabase.auth.resend({ type: 'signup', email: email.trim() });
-              Alert.alert('Sent!', 'We have resent the confirmation email.', [{ text: 'Go to login', onPress: onSuccess }]);
-            } catch (e) {
-              Alert.alert('Error', 'Could not resend email.', [{ text: 'Go to login', onPress: onSuccess }]);
-            }
-          } 
-        },
-        { text: 'Go to login', onPress: onSuccess }
-      ]
-    );
+    if (onShowConfirmEmail) {
+      onShowConfirmEmail();
+    } else {
+      onSuccess();
+    }
   } catch (err: any) {
     console.log('Full error:', JSON.stringify(err, null, 2));
-    Alert.alert('Error', err.message + '\n\nCode: ' + err.code + '\n\nDetails: ' + err.details);
+    if (Platform.OS === 'web') {
+      window.alert(err.message);
+    } else {
+      Alert.alert('Error', err.message);
+    }
   } finally {
     setLoading(false);
   }

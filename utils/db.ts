@@ -238,7 +238,7 @@ export const getWeeklyProgress = async (userId: string) => {
 
     // Inicializar los últimos 7 días con 0s
     const daysArr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const result = [];
+    const result: { day: string; dateStr: string; minutes: number; correct: number }[] = [];
     
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);

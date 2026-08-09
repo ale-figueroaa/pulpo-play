@@ -22,7 +22,7 @@ type Difficulty = 'easy' | 'medium' | 'hard' | null;
 
 interface ShapeData {
   id: number;
-  type: 'circle' | 'square';
+  type: 'circle' | 'square' | 'triangle' | 'star' | 'hexagon' | 'diamond';
   color: string;
   isSorted: boolean;
   targetMonster: 'green' | 'pink';
@@ -76,10 +76,16 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
       {...panResponder.panHandlers}
     >
       <View style={[
-        styles[shape.type], 
-        { backgroundColor: shape.color }, 
-        isSelected && { borderWidth: 4, borderColor: '#FFD700', transform: [{ scale: 1.1 }] }
-      ]} />
+        { width: 60, height: 60, justifyContent: 'center', alignItems: 'center' },
+        isSelected && { borderWidth: 4, borderColor: '#FFD700', borderRadius: 8, transform: [{ scale: 1.1 }] }
+      ]}>
+        {shape.type === 'circle' && <View style={[styles.circle, { backgroundColor: shape.color }]} />}
+        {shape.type === 'square' && <View style={[styles.square, { backgroundColor: shape.color }]} />}
+        {shape.type === 'triangle' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>▲</Text>}
+        {shape.type === 'star' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>★</Text>}
+        {shape.type === 'diamond' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>♦</Text>}
+        {shape.type === 'hexagon' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>⬢</Text>}
+      </View>
     </Animated.View>
   );
 };
@@ -154,14 +160,32 @@ export default function SubmarineWorld() {
     else if (diff === 'medium') numShapes = 15;
     else if (diff === 'hard') numShapes = 20;
 
+    let greenTypes: any[] = ['circle'];
+    let pinkTypes: any[] = ['square'];
+
+    if (diff === 'medium' || diff === 'hard') {
+      greenTypes.push('triangle');
+      pinkTypes.push('star');
+    }
+    if (diff === 'hard') {
+      greenTypes.push('diamond');
+      pinkTypes.push('hexagon');
+    }
+
     let newShapes: ShapeData[] = [];
     for (let i = 0; i < numShapes; i++) {
       const isGreen = i % 2 === 0;
+      const targetMonster = isGreen ? 'green' : 'pink';
+      const color = isGreen ? '#4caf50' : '#f48fb1';
+      
+      const typesList = isGreen ? greenTypes : pinkTypes;
+      const type = typesList[Math.floor(Math.random() * typesList.length)];
+
       newShapes.push({
         id: Date.now() + i + Math.random(),
-        type: isGreen ? 'circle' : 'square',
-        color: isGreen ? '#4caf50' : '#f48fb1',
-        targetMonster: isGreen ? 'green' : 'pink',
+        type,
+        color,
+        targetMonster,
         isSorted: false
       });
     }
@@ -331,7 +355,13 @@ export default function SubmarineWorld() {
             >
               <View style={styles.heartBubble}>
                 <Text style={styles.heartEmoji}>❤️</Text>
-                <View style={[styles.circle, { width: 40, height: 40, backgroundColor: '#4caf50' }]} />
+                <View style={[styles.circle, { width: 28, height: 28, backgroundColor: '#4caf50', marginHorizontal: 2 }]} />
+                {(difficulty === 'medium' || difficulty === 'hard') && (
+                  <Text style={{ fontSize: 24, color: '#4caf50', marginHorizontal: 2 }}>▲</Text>
+                )}
+                {difficulty === 'hard' && (
+                  <Text style={{ fontSize: 24, color: '#4caf50', marginHorizontal: 2 }}>♦</Text>
+                )}
               </View>
               <Animated.Image 
                 source={greenState === 'mad' 
@@ -349,7 +379,13 @@ export default function SubmarineWorld() {
             >
               <View style={styles.heartBubble}>
                 <Text style={styles.heartEmoji}>❤️</Text>
-                <View style={[styles.square, { width: 40, height: 40, backgroundColor: '#f48fb1' }]} />
+                <View style={[styles.square, { width: 28, height: 28, backgroundColor: '#f48fb1', marginHorizontal: 2 }]} />
+                {(difficulty === 'medium' || difficulty === 'hard') && (
+                  <Text style={{ fontSize: 24, color: '#f48fb1', marginHorizontal: 2 }}>★</Text>
+                )}
+                {difficulty === 'hard' && (
+                  <Text style={{ fontSize: 24, color: '#f48fb1', marginHorizontal: 2 }}>⬢</Text>
+                )}
               </View>
               <Animated.Image 
                 source={pinkState === 'mad' 

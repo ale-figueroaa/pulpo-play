@@ -62,6 +62,7 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, c
           styles.card,
           isMobile && styles.cardMobile,
           isCardMatched ? styles.cardMatched : isCardFlipped ? styles.cardUp : styles.cardDown,
+          { width: cardSize, height: cardSize }
         ]}
         onPress={() => onPress(card)}
       >
@@ -88,7 +89,7 @@ export default function CoralReefScreen() {
 
   const [difficulty, setDifficulty] = useState<number>(2);
 
-  const numPairs = difficulty === 1 ? 4 : difficulty === 3 ? 7 : 6;
+  const numPairs = difficulty === 1 ? 4 : difficulty === 3 ? 8 : 6;
   const rewardAmount = difficulty === 1 ? 30 : difficulty === 3 ? 80 : 50;
   const xpReward = difficulty === 1 ? 10 : difficulty === 3 ? 30 : 20;
 
@@ -131,7 +132,7 @@ export default function CoralReefScreen() {
         } catch (e) { }
         setDifficulty(diff);
 
-        const activeNumPairs = diff === 1 ? 4 : diff === 3 ? 7 : 6;
+        const activeNumPairs = diff === 1 ? 4 : diff === 3 ? 8 : 6;
 
         const deck: CardItem[] = [];
         const activeCreatures = MARINE_CREATURES.slice(0, activeNumPairs);
@@ -260,51 +261,51 @@ export default function CoralReefScreen() {
         </View>
 
         {/* Cuadrícula de Memorama */}
-        <View style={[styles.gridContainer, { position: 'relative' }]}>
-          {countdown !== null && countdown > 0 && (
-            <View style={{
-              position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
-              justifyContent: 'center', alignItems: 'center', zIndex: 100
-            }}>
-              <Text style={{
-                fontSize: 120, fontWeight: 'bold', color: '#FFFFFF',
-                textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 10
-              }}>
-                {countdown}
-              </Text>
+        {(() => {
+          // Tamaño de carta fijo para que nunca se vean pequeñas
+          const cardSize = isMobile ? 85 : 115;
+          
+          // En desktop expandimos horizontalmente (2 filas siempre), en móvil usamos 4 columnas
+          const columns = isMobile ? 4 : numPairs;
+          
+          // Fuerza el ancho exacto para que entren exactamente las columnas deseadas sin saltos de línea indeseados
+          const exactContainerWidth = (cardSize * columns) + (16 * (columns - 1));
+
+          return (
+            <View style={[styles.gridContainer, { position: 'relative', width: exactContainerWidth, maxWidth: exactContainerWidth }]}>
+              {countdown !== null && countdown > 0 && (
+                <View style={{
+                  position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
+                  justifyContent: 'center', alignItems: 'center', zIndex: 100
+                }}>
+                  <Text style={{
+                    fontSize: 120, fontWeight: 'bold', color: '#FFFFFF',
+                    textShadowColor: 'rgba(0,0,0,0.5)', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 10
+                  }}>
+                    {countdown}
+                  </Text>
+                </View>
+              )}
+
+              {cards.map((card) => {
+                const isCardFlipped = flipped.includes(card.uniqueId);
+                const isCardMatched = matched.includes(card.id);
+
+                return (
+                  <MemoramaCard
+                    key={card.uniqueId}
+                    card={card}
+                    isMobile={isMobile}
+                    isCardFlipped={isCardFlipped || previewMode}
+                    isCardMatched={isCardMatched}
+                    onPress={handleCardPress}
+                    cardSize={cardSize}
+                  />
+                );
+              })}
             </View>
-          )}
-
-          {(() => {
-            const columns = 4;
-            const rows = (numPairs * 2) / columns;
-            const availableWidth = Math.min(width - 48, 680);
-            const availableHeight = windowHeight - (isMobile ? 220 : 280);
-
-            const maxCardWidth = Math.floor((availableWidth - ((columns - 1) * 16)) / columns);
-            const maxCardHeight = Math.floor((availableHeight - ((rows - 1) * 16)) / rows);
-
-            const defaultSize = isMobile ? 100 : 140;
-            const cardSize = Math.max(Math.min(defaultSize, maxCardWidth, maxCardHeight), 50);
-
-            return cards.map((card) => {
-              const isCardFlipped = flipped.includes(card.uniqueId);
-              const isCardMatched = matched.includes(card.id);
-
-              return (
-                <MemoramaCard
-                  key={card.uniqueId}
-                  card={card}
-                  isMobile={isMobile}
-                  isCardFlipped={isCardFlipped || previewMode}
-                  isCardMatched={isCardMatched}
-                  onPress={handleCardPress}
-                  cardSize={cardSize}
-                />
-              );
-            });
-          })()}
-        </View>
+          );
+        })()}
 
         {/* Botón de Reinicio Rápido */}
         <TouchableOpacity
