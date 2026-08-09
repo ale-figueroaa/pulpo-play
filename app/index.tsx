@@ -164,7 +164,7 @@ export default function WebLandingScreen() {
             ================================================================ */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            © 2026 Pulpo Play. Dive into the undersea adventure world by Bruno.
+            © 2026 Pulpo Play. Dive into the undersea adventure world by Alejandra.
           </Text>
         </View>
       </ScrollView>

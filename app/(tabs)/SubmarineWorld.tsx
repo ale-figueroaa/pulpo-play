@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, PanResponder, Animated, SafeAreaView, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, PanResponder, Animated, SafeAreaView, Dimensions, StyleSheet, Platform } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';

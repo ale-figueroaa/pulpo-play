@@ -89,9 +89,8 @@ const DIFFICULTY_CONFIG = {
 // ─────────────────────────────────────────────────────────────────
 // Component
 // ─────────────────────────────────────────────────────────────────
-export default function SunkenShipScreen() {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 640;
+export default function SunkenShipScreen() {  const { width, height: windowHeight } = useWindowDimensions();
+  const isMobile = Platform.OS !== 'web';
 
   const [difficulty, setDifficulty] = useState<1 | 2 | 3>(2);
   const [grid, setGrid] = useState<Grid>([]);
@@ -296,13 +295,17 @@ export default function SunkenShipScreen() {
 
   const cfg = DIFFICULTY_CONFIG[difficulty];
 
-  const { height: windowHeight } = useWindowDimensions();
+  
 
   // Cell sizing: reserve space for d-pad panel on the right
   const dpadPanelWidth = isMobile ? 180 : 260;
   // Increase reserved width for larger gap, allow up to 700px on larger screens
   const maxMazeWidth = Math.min(width - dpadPanelWidth - 40, isMobile ? 460 : 700);
-  const maxMazeHeight = Math.max(isMobile ? windowHeight - 160 : windowHeight - 180, 200);
+  
+  // Header is ~40px, Title is ~80px. Total top elements ~120px. 
+  // We need game area to fit in the remaining height.
+  const reservedHeight = isMobile ? 140 : 180; // 140 to be safe on iOS
+  const maxMazeHeight = Math.max(windowHeight - reservedHeight, 150);
 
   let cellSize = 0;
   if (grid.length > 0) {
@@ -356,7 +359,7 @@ export default function SunkenShipScreen() {
       elements.push(
         <Animated.Image
           key="player-octavio"
-          source={equippedItem?.image || require('../../assets/images/octavio.png')}
+          source={equippedItem?.image || require('../../assets/images/OctavioBasic.png')}
           style={{
             width: imgSize,
             height: imgSize,
@@ -517,7 +520,7 @@ export default function SunkenShipScreen() {
                   </View>
                   <View style={styles.legendRow}>
                     <Image
-                      source={equippedItem?.image || require('../../assets/images/octavio.png')}
+                      source={equippedItem?.image || require('../../assets/images/OctavioBasic.png')}
                       style={styles.legendImg}
                     />
                     <Text style={styles.legendText}>You</Text>

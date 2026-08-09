@@ -12,7 +12,8 @@ import {
   useWindowDimensions,
   View,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/profile.style';
@@ -21,8 +22,7 @@ import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../..
 
 const DEFAULT_EQUIPPED: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
-export default function ProfileScreen() {
-  const [coins, setCoins] = useState<number>(0);
+export default function ProfileScreen() {  const [coins, setCoins] = useState<number>(0);
   const [nombreUsuario, setNombreUsuario] = useState<string>('Explorer Diver');
   const [email, setEmail] = useState<string>('diver@pulpoplay.com');
   const [password, setPassword] = useState<string>('••••••••••••');

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Text, View, TextInput, TouchableOpacity,
   SafeAreaView, ActivityIndicator, ScrollView,
   Platform, useWindowDimensions, Image, Modal, Alert
 } from 'react-native';
-import { Link, useRouter } from 'expo-router';
+import { Link, useRouter, useFocusEffect } from 'expo-router';
 
 // 1. Importamos la lógica externa y los estilos
 import { handleSignUpLogic } from '../../utils/signup';
@@ -15,8 +15,7 @@ import { supabase } from '../../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function SignUpScreen() {
-  const router = useRouter();
+export default function SignUpScreen() {  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

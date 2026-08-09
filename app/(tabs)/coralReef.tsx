@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  Platform,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/coralReef.style';
@@ -83,9 +84,8 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, c
   );
 };
 
-export default function CoralReefScreen() {
-  const { width, height: windowHeight } = useWindowDimensions();
-  const isMobile = width < 640;
+export default function CoralReefScreen() {  const { width, height: windowHeight } = useWindowDimensions();
+  const isMobile = Platform.OS !== 'web';
 
   const [difficulty, setDifficulty] = useState<number>(2);
 
@@ -262,8 +262,13 @@ export default function CoralReefScreen() {
 
         {/* Cuadrícula de Memorama */}
         {(() => {
-          // Tamaño de carta fijo para que nunca se vean pequeñas
-          const cardSize = isMobile ? 85 : 115;
+          // Calculate dynamic card size based on available height in landscape
+          const headerAndTitleHeight = 160; 
+          const availableHeight = windowHeight - headerAndTitleHeight;
+          const rows = Math.ceil((numPairs * 2) / (isMobile ? 4 : numPairs));
+          const maxCardHeight = Math.floor((availableHeight - (16 * (rows - 1))) / rows);
+          
+          const cardSize = isMobile ? Math.min(85, maxCardHeight) : 115;
           
           // En desktop expandimos horizontalmente (2 filas siempre), en móvil usamos 4 columnas
           const columns = isMobile ? 4 : numPairs;

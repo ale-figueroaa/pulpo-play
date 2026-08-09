@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, TextInput, SafeAreaView, ScrollView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { styles } from '../styles/dashboard.style';
 import { supabase } from '../lib/supabase';
 import { getWeeklyProgress, getUserProfileByAuthId, getRecentActivity } from '../utils/db';

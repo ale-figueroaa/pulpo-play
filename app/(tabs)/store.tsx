@@ -2,7 +2,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View, ActivityIndicator } from 'react-native';
+import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View, ActivityIndicator, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
 import { getUserSandDollars, addSandDollars } from '../../utils/db';
@@ -13,8 +13,7 @@ import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../..
 
 const BASIC_ITEM: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
-export default function StoreScreen() {
-  const [coins, setCoins] = useState<number>(0);
+export default function StoreScreen() {  const [coins, setCoins] = useState<number>(0);
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [purchasing, setPurchasing] = useState<boolean>(false);
   const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
@@ -22,7 +21,7 @@ export default function StoreScreen() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const { width } = useWindowDimensions();
-  const isMobile = width < MOBILE_BREAKPOINT;
+  const isMobile = Platform.OS !== 'web';
 
   const fetchStoreData = async () => {
     try {

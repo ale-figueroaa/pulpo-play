@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, Platform } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { getUserSandDollars, addSandDollars } from './db';
@@ -47,7 +47,7 @@ export const useStreaksLogic = () => {
   const [claimedMilestones, setClaimedMilestones] = useState<string[]>([]);
 
   const { width } = useWindowDimensions();
-  const isMobile = width < MOBILE_BREAKPOINT;
+  const isMobile = Platform.OS !== 'web';
 
   const calculateStreak = async () => {
     try {

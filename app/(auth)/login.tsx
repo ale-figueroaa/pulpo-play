@@ -1,6 +1,6 @@
 
-import { Link, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Link, useRouter, useFocusEffect } from 'expo-router';
+import React, { useState, useCallback } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -22,8 +22,7 @@ import { supabase } from '../../lib/supabase';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen() {
-  const router = useRouter();
+export default function LoginScreen() {  const router = useRouter();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Animated, Easing, Image, SafeAreaView, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
 // 1. Importamos la lógica y estilos originales
@@ -21,8 +21,7 @@ export default function HomeScreenWeb() {
   useEffect(() => {
     const timer = setTimeout(() => setShowDialog(false), 10000);
     return () => clearTimeout(timer);
-  }, [setShowDialog]);
-
+  }, [setShowDialog]);
   // --- ANIMATIONS ---
   const floatAnim = useRef(new Animated.Value(0)).current;
   const swayAnim = useRef(new Animated.Value(0)).current;
@@ -286,7 +285,7 @@ export default function HomeScreenWeb() {
           <Animated.Image
             source={equippedItem?.image}
             {...({ pointerEvents: 'none' } as any)}
-            style={[styles.backgroundOctavio, { transform: [{ translateY: octavioTranslateY }] }]}
+            style={[styles.backgroundOctavio, isMobile && styles.backgroundOctavioMobile, { transform: [{ translateY: octavioTranslateY }] }]}
           />
           <Animated.Image
             source={require('../../assets/images/bubbleSingle.png')}
@@ -323,12 +322,12 @@ export default function HomeScreenWeb() {
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
             {...({ pointerEvents: 'none' } as any)}
-            style={[styles.seaweedDecorationRight1, { transform: [{ rotate: seaweedRotate1 }] }]}
+            style={[styles.seaweedDecorationRight1, isMobile && styles.seaweedDecorationRight1Mobile, { transform: [{ rotate: seaweedRotate1 }] }]}
           />
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
             {...({ pointerEvents: 'none' } as any)}
-            style={[styles.seaweedDecorationRight2, { transform: [{ rotate: seaweedRotate2 }] }]}
+            style={[styles.seaweedDecorationRight2, isMobile && styles.seaweedDecorationRight2Mobile, { transform: [{ rotate: seaweedRotate2 }] }]}
           />
 
           {/* --- VENTANA FLOTANTE --- */}

@@ -41,6 +41,17 @@ export const styles = StyleSheet.create({
     zIndex: 1,
     opacity: 0.6,
   },
+  seaweedDecorationRight1Mobile: {
+    width: 120,
+    height: 150,
+    bottom: -5,
+  },
+  seaweedDecorationRight2Mobile: {
+    width: 140,
+    height: 170,
+    bottom: -15,
+    right: 40,
+  },
   bubbleSingleTopLeft: {
     position: 'absolute',
     top: 40,
@@ -110,6 +121,12 @@ export const styles = StyleSheet.create({
     resizeMode: 'contain',
     zIndex: 5,
     opacity: 0.9,
+  },
+  backgroundOctavioMobile: {
+    width: 120,
+    height: 120,
+    top: 100,
+    left: 10,
   },
 
   // ================= DESKTOP =================

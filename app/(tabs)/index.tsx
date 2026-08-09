@@ -17,7 +17,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('@/assets/images/octavio.png')}
+        source={require('@/assets/images/OctavioBasic.png')}
         style={styles.avatar}
       />
       

@@ -20,8 +20,8 @@ const AFFIRMATIONS = [
 ];
 
 export default function OctavioHelper() {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const { width, height } = useWindowDimensions();
+  const isMobile = Platform.OS !== 'web';
   const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
   const [message, setMessage] = useState(AFFIRMATIONS[0]);
   const floatAnim = useRef(new Animated.Value(0)).current;
@@ -80,7 +80,8 @@ export default function OctavioHelper() {
   const octavioTranslateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -15] });
 
   // On very small screens, maybe hide him so he doesn't block the game
-  if (width < 350) return null;
+  const minDim = Math.min(width, height);
+  if (minDim < 250) return null;
 
   return (
     <View style={styles.container} pointerEvents="none">
@@ -113,15 +114,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   octavioMobile: {
-    width: 90,
-    height: 90,
+    width: 65,
+    height: 65,
   },
   dialogWrapper: {
     marginLeft: 20,
     position: 'relative',
   },
   dialogWrapperMobile: {
-    marginLeft: 10,
+    marginLeft: 6,
+    marginTop: -10, // Adjust vertically so tail aligns with mouth better
   },
   dialogBubble: {
     backgroundColor: '#FFFFFF',

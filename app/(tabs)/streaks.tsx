@@ -1,16 +1,15 @@
-import React from 'react';
-import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import React, { useCallback } from 'react';
+import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 
 import { useStreaksLogic, NavItem, DayData, MilestoneData } from '../../utils/streaks';
 import { styles } from '../../styles/streaks.styles';
 
 
-export default function StreaksScreenWeb() {
-  // Con esta línea, conectamos la vista con el "cerebro"
+export default function StreaksScreenWeb() {  // Con esta línea, conectamos la vista con el "cerebro"
   const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft, claimedMilestones, claimMilestone } = useStreaksLogic();
 
   const handleLogout = async () => {
