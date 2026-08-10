@@ -1,11 +1,32 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { soundManager } from '../../utils/audio';
+import { supabase } from '../../lib/supabase';
 
 export default function TabLayout() {
+  const router = useRouter();
+
   useEffect(() => {
+    // Escuchar cambios de autenticación
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        router.replace('/(auth)/login');
+      }
+    });
+
+    // Revisar sesión inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.replace('/(auth)/login');
+      }
+    });
+
     soundManager.playBgMusic();
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   return (
