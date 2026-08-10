@@ -464,4 +464,65 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 13,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    ...Platform.select({
+      web: { boxShadow: '0px 10px 30px rgba(0,0,0,0.2)' },
+      default: { elevation: 10 }
+    }),
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#0569baff',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalCoinIcon: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+    marginBottom: 16,
+  },
+  modalRewardText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#5A9EFF',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  modalClaimButton: {
+    backgroundColor: '#4ADE80',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 16,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalClaimButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '900',
+  },
+  modalCloseButton: {
+    paddingVertical: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalCloseButtonText: {
+    color: '#94a3b8',
+    fontSize: 16,
+    fontWeight: '700',
+  },
 });

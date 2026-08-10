@@ -65,7 +65,8 @@ export const useHomeLogic = () => {
         const metadata = user.user_metadata || {};
         if (metadata.equippedItem) {
           try {
-            setEquippedItem(typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem);
+            const parsed = typeof metadata.equippedItem === 'string' ? JSON.parse(metadata.equippedItem) : metadata.equippedItem;
+            setEquippedItem(STORE_ITEMS_DATA.find(item => item.id === parsed.id) || BASIC_ITEM);
           } catch (e) {
             setEquippedItem(BASIC_ITEM);
           }
@@ -73,7 +74,8 @@ export const useHomeLogic = () => {
           const storedEquipped = await AsyncStorage.getItem(`pulpo_equipped_item_${user.id}`);
           if (storedEquipped) {
             try {
-              setEquippedItem(JSON.parse(storedEquipped));
+              const parsed = JSON.parse(storedEquipped);
+              setEquippedItem(STORE_ITEMS_DATA.find(item => item.id === parsed.id) || BASIC_ITEM);
             } catch (e) {
               setEquippedItem(BASIC_ITEM);
             }

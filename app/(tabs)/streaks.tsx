@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView, Platform } from 'react-native';
+import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView, Platform, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
@@ -11,7 +11,7 @@ import { styles } from '../../styles/streaks.styles';
 
 export default function StreaksScreenWeb() {
   // Con esta línea, conectamos la vista con el "cerebro"
-  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft, claimedMilestones, claimMilestone } = useStreaksLogic();
+  const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft, claimedMilestones, claimMilestone, selectedMilestone, setSelectedMilestone } = useStreaksLogic();
 
   const handleLogout = async () => {
     try {
@@ -195,7 +195,7 @@ export default function StreaksScreenWeb() {
                   style={[styles.milestoneCard, { opacity: cardOpacity }]}
                   activeOpacity={0.8}
                   disabled={!isUnlocked || isClaimed}
-                  onPress={() => claimMilestone(milestone.id)}
+                  onPress={() => setSelectedMilestone(milestone)}
                 >
                   <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
                   <View style={styles.milestoneTextContainer}>
@@ -269,7 +269,7 @@ export default function StreaksScreenWeb() {
                       style={[styles.milestoneCard, styles.milestoneCardWeb, { opacity: cardOpacity }]}
                       activeOpacity={0.8}
                       disabled={!isUnlocked || isClaimed}
-                      onPress={() => claimMilestone(milestone.id)}
+                      onPress={() => setSelectedMilestone(milestone)}
                     >
                       <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
                       <View style={styles.milestoneTextContainer}>
@@ -321,6 +321,38 @@ export default function StreaksScreenWeb() {
             </View>
           </View>
         )}
+
+        {/* --- MODAL DE RECOMPENSA --- */}
+        <Modal
+          visible={!!selectedMilestone}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setSelectedMilestone(null)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Congratulations!</Text>
+              <Image source={require('../../assets/images/SandDollars.png')} style={styles.modalCoinIcon} />
+              <Text style={styles.modalRewardText}>
+                You earned {selectedMilestone?.reward} Sand Dollars!
+              </Text>
+              <TouchableOpacity
+                style={styles.modalClaimButton}
+                activeOpacity={0.8}
+                onPress={() => selectedMilestone && claimMilestone(selectedMilestone.id)}
+              >
+                <Text style={styles.modalClaimButtonText}>Claim</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                activeOpacity={0.8}
+                onPress={() => setSelectedMilestone(null)}
+              >
+                <Text style={styles.modalCloseButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
       </SafeAreaView>
     </LinearGradient>

@@ -138,6 +138,8 @@ export const useStreaksLogic = () => {
     }, [])
   );
 
+  const [selectedMilestone, setSelectedMilestone] = useState<MilestoneData | null>(null);
+
   const claimMilestone = async (milestoneId: string) => {
     try {
       const milestone = MILESTONES.find(m => m.id === milestoneId);
@@ -162,6 +164,8 @@ export const useStreaksLogic = () => {
           claimedMilestones: newClaimed
         }
       });
+      
+      setSelectedMilestone(null);
     } catch (err) {
       console.error('Error claiming milestone:', err);
     }
@@ -181,5 +185,7 @@ export const useStreaksLogic = () => {
     timeLeft,
     claimedMilestones,
     claimMilestone,
+    selectedMilestone,
+    setSelectedMilestone,
   };
 };
