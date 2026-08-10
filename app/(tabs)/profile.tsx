@@ -4,25 +4,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   SafeAreaView,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   useWindowDimensions,
-  View,
-  TextInput,
-  ActivityIndicator,
-  Platform
+  View
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/profile.style';
 import { getUserProfileByAuthId, getUserSandDollars } from '../../utils/db';
 import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
+import { soundManager } from '../../utils/audio';
 
 const DEFAULT_EQUIPPED: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
-export default function ProfileScreen() {  const [coins, setCoins] = useState<number>(0);
+export default function ProfileScreen() {
+  const [coins, setCoins] = useState<number>(0);
   const [nombreUsuario, setNombreUsuario] = useState<string>('Explorer Diver');
   const [email, setEmail] = useState<string>('diver@pulpoplay.com');
   const [password, setPassword] = useState<string>('••••••••••••');
@@ -35,6 +36,7 @@ export default function ProfileScreen() {  const [coins, setCoins] = useState<n
   const [savingPassword, setSavingPassword] = useState(false);
   const [equippedItem, setEquippedItem] = useState<StoreItem>(DEFAULT_EQUIPPED);
   const [experienceLevel, setExperienceLevel] = useState<number>(0);
+  const [isMuted, setIsMuted] = useState<boolean>(soundManager.getMuted());
 
   const { width } = useWindowDimensions();
   const isMobile = width < MOBILE_BREAKPOINT;
@@ -99,7 +101,14 @@ export default function ProfileScreen() {  const [coins, setCoins] = useState<n
     }, [])
   );
 
+  const handleToggleMute = async () => {
+    const newValue = !isMuted;
+    setIsMuted(newValue);
+    await soundManager.setMuted(newValue);
+  };
+
   const handleNavigation = (key: string) => {
+    soundManager.playSfx('tap');
     if (key === 'streak') router.push('/(tabs)/streaks' as any);
     else if (key === 'worlds') router.push('/(tabs)/homepage' as any);
     else if (key === 'store') router.push('/(tabs)/store' as any);
@@ -269,7 +278,7 @@ export default function ProfileScreen() {  const [coins, setCoins] = useState<n
                 <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
               </View>
               <Text style={styles.levelProgressText}>{progressPercent} / 100 XP until level {currentLevel + 1}</Text>
-              
+
               <TouchableOpacity
                 style={{ marginTop: 15, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#EAF2FF', borderRadius: 20, alignSelf: 'center', borderWidth: 2, borderColor: '#B0CFFF' }}
                 onPress={() => router.push('/adult-dashboard' as any)}
@@ -374,6 +383,20 @@ export default function ProfileScreen() {  const [coins, setCoins] = useState<n
                 )}
               </View>
 
+            </View>
+
+            <View style={styles.infoSection}>
+              <View style={styles.fieldBox}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={styles.fieldLabel}>Sound Effects & Music</Text>
+                  <TouchableOpacity
+                    onPress={handleToggleMute}
+                    style={{ backgroundColor: isMuted ? '#ef4444' : '#4ADE80', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}
+                  >
+                    <Text style={{ color: '#FFF', fontWeight: 'bold' }}>{isMuted ? 'Sound: OFF' : 'Sound: ON'}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
 
             {/* BOTÓN DE LOG OUT */}

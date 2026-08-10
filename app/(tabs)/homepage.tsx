@@ -1,13 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useFocusEffect } from 'expo-router';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Animated, Easing, Image, SafeAreaView, Text, TouchableOpacity, View, Platform } from 'react-native';
+import { router } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
 
 // 1. Importamos la lógica y estilos originales
 import { styles } from '../../styles/homepage.style';
 import { useHomeLogic } from '../../utils/homepage';
+import { soundManager } from '../../utils/audio';
 
 export default function HomeScreenWeb() {
   const [difficulty, setDifficulty] = useState<number>(2);
@@ -21,7 +22,8 @@ export default function HomeScreenWeb() {
   useEffect(() => {
     const timer = setTimeout(() => setShowDialog(false), 10000);
     return () => clearTimeout(timer);
-  }, [setShowDialog]);
+  }, [setShowDialog]);
+
   // --- ANIMATIONS ---
   const floatAnim = useRef(new Animated.Value(0)).current;
   const swayAnim = useRef(new Animated.Value(0)).current;
@@ -231,6 +233,7 @@ export default function HomeScreenWeb() {
                     activeOpacity={0.8}
                     style={[styles.navPill, isMobile && styles.navPillMobile]}
                     onPress={() => {
+                      soundManager.playSfx('tap');
                       if (item.key === 'streak') {
                         router.push('/(tabs)/streaks' as any);
                       } else if (item.key === 'worlds') {
@@ -467,6 +470,7 @@ export default function HomeScreenWeb() {
                   activeOpacity={0.8}
                   style={[styles.navPill, isMobile && styles.navPillMobile]}
                   onPress={() => {
+                    soundManager.playSfx('tap');
                     if (item.key === 'streak') {
                       router.push('/(tabs)/streaks' as any);
                     } else if (item.key === 'worlds') {

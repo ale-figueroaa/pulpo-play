@@ -1,12 +1,13 @@
-import React, { useCallback } from 'react';
-import { Text, View, Image, TouchableOpacity, SafeAreaView, ScrollView, Platform, Modal } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useFocusEffect } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import React from 'react';
+import { Image, Modal, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
+import { soundManager } from '../../utils/audio';
 
-import { useStreaksLogic, NavItem, DayData, MilestoneData } from '../../utils/streaks';
 import { styles } from '../../styles/streaks.styles';
+import { NavItem, useStreaksLogic } from '../../utils/streaks';
 
 
 export default function StreaksScreenWeb() {
@@ -31,7 +32,7 @@ export default function StreaksScreenWeb() {
       style={styles.gradientContainer}
     >
       <SafeAreaView style={[styles.container, isMobile && styles.containerMobile]}>
-        
+
         {/* --- NAVBAR SUPERIOR --- */}
         {isMobile ? (
           <View style={styles.headerRowMobile}>
@@ -88,6 +89,7 @@ export default function StreaksScreenWeb() {
                     activeOpacity={0.8}
                     style={[styles.navPill, isMobile && styles.navPillMobile]}
                     onPress={() => {
+                      soundManager.playSfx('tap');
                       if (item.key === 'streak') {
                         router.push('/(tabs)/streaks' as any);
                       } else if (item.key === 'worlds') {
@@ -174,7 +176,7 @@ export default function StreaksScreenWeb() {
               {MILESTONES.map((milestone) => {
                 const isUnlocked = streakTotal >= milestone.days;
                 const isClaimed = claimedMilestones.includes(milestone.id);
-                
+
                 let badgeText = 'Locked';
                 let badgeColor = '#94a3b8';
                 let cardOpacity = 0.5;
@@ -190,36 +192,37 @@ export default function StreaksScreenWeb() {
                 }
 
                 return (
-                <TouchableOpacity 
-                  key={milestone.id} 
-                  style={[styles.milestoneCard, { opacity: cardOpacity }]}
-                  activeOpacity={0.8}
-                  disabled={!isUnlocked || isClaimed}
-                  onPress={() => setSelectedMilestone(milestone)}
-                >
-                  <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
-                  <View style={styles.milestoneTextContainer}>
-                    <Text style={styles.milestoneTitle}>{milestone.days} Days Streak</Text>
-                    <Text style={styles.milestoneReward}>+{milestone.reward} Sand Dollars</Text>
-                  </View>
-                  <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
-                    <Text style={styles.claimBadgeText}>{badgeText}</Text>
-                  </View>
-                </TouchableOpacity>
-              )})}
+                  <TouchableOpacity
+                    key={milestone.id}
+                    style={[styles.milestoneCard, { opacity: cardOpacity }]}
+                    activeOpacity={0.8}
+                    disabled={!isUnlocked || isClaimed}
+                    onPress={() => setSelectedMilestone(milestone)}
+                  >
+                    <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
+                    <View style={styles.milestoneTextContainer}>
+                      <Text style={styles.milestoneTitle}>{milestone.days} Days Streak</Text>
+                      <Text style={styles.milestoneReward}>+{milestone.reward} Sand Dollars</Text>
+                    </View>
+                    <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
+                      <Text style={styles.claimBadgeText}>{badgeText}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )
+              })}
             </View>
           </ScrollView>
         ) : (
           /* --- CONTENEDOR ESCRITORIO WEB (VISTA DE DOS COLUMNAS INDEPENDIENTES) --- */
           <View style={styles.mainContentWeb}>
             <View style={styles.webDashboardLayout}>
-              
+
               {/* Columna Izquierda: Racha Semanal (COMPLETAMENTE ESTÁTICA) */}
               <View style={[styles.weeklyCard, styles.weeklyCardWeb]}>
                 <Text style={styles.sectionTitleWeb}>Your Splash Streak: {streakTotal} Days!</Text>
                 <Text style={styles.timerTextWeb}>Next day in: {timeLeft}</Text>
                 <Text style={styles.sectionSubTitleWeb}>Keep the momentum going to unlock chest rewards!</Text>
-                
+
                 <View style={styles.daysRowWeb}>
                   {DAYS_DATA.map((day, idx) => (
                     <View key={idx} style={styles.dayItemWeb}>
@@ -239,7 +242,7 @@ export default function StreaksScreenWeb() {
               {/* Columna Derecha: Hitos de Recompensa (CON SCROLL PROPIO) */}
               <View style={styles.milestonesContainerWeb}>
                 <Text style={styles.sectionTitleWeb}>Streak Milestones</Text>
-                
+
                 <ScrollView
                   style={styles.milestonesScrollWeb}
                   contentContainerStyle={styles.milestonesScrollContentWeb}
@@ -264,23 +267,24 @@ export default function StreaksScreenWeb() {
                     }
 
                     return (
-                    <TouchableOpacity 
-                      key={milestone.id} 
-                      style={[styles.milestoneCard, styles.milestoneCardWeb, { opacity: cardOpacity }]}
-                      activeOpacity={0.8}
-                      disabled={!isUnlocked || isClaimed}
-                      onPress={() => setSelectedMilestone(milestone)}
-                    >
-                      <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
-                      <View style={styles.milestoneTextContainer}>
-                        <Text style={styles.milestoneTitleWeb}>{milestone.days} Days Milestone</Text>
-                        <Text style={styles.milestoneRewardWeb}>{milestone.reward} Sand Dollars Reward</Text>
-                      </View>
-                      <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
-                        <Text style={styles.claimBadgeText}>{badgeText}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )})}
+                      <TouchableOpacity
+                        key={milestone.id}
+                        style={[styles.milestoneCard, styles.milestoneCardWeb, { opacity: cardOpacity }]}
+                        activeOpacity={0.8}
+                        disabled={!isUnlocked || isClaimed}
+                        onPress={() => setSelectedMilestone(milestone)}
+                      >
+                        <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
+                        <View style={styles.milestoneTextContainer}>
+                          <Text style={styles.milestoneTitleWeb}>{milestone.days} Days Milestone</Text>
+                          <Text style={styles.milestoneRewardWeb}>{milestone.reward} Sand Dollars Reward</Text>
+                        </View>
+                        <View style={[styles.claimBadgeWeb, { backgroundColor: badgeColor }]}>
+                          <Text style={styles.claimBadgeText}>{badgeText}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )
+                  })}
                 </ScrollView>
               </View>
 
@@ -298,10 +302,11 @@ export default function StreaksScreenWeb() {
                   activeOpacity={0.8}
                   style={[styles.navPill, isMobile && styles.navPillMobile]}
                   onPress={() => {
+                    soundManager.playSfx('tap');
                     if (item.key === 'streak') {
-                      router.push('/(tabs)/streaks' as any);  
+                      router.push('/(tabs)/streaks' as any);
                     } else if (item.key === 'worlds') {
-                      router.push('/(tabs)/homepage' as any); 
+                      router.push('/(tabs)/homepage' as any);
                     } else if (item.key === 'store') {
                       router.push('/(tabs)/store' as any);
                     } else if (item.key === 'profile') {
@@ -339,7 +344,12 @@ export default function StreaksScreenWeb() {
               <TouchableOpacity
                 style={styles.modalClaimButton}
                 activeOpacity={0.8}
-                onPress={() => selectedMilestone && claimMilestone(selectedMilestone.id)}
+                onPress={() => {
+                  if (selectedMilestone) {
+                    soundManager.playSfx('correct');
+                    claimMilestone(selectedMilestone.id);
+                  }
+                }}
               >
                 <Text style={styles.modalClaimButtonText}>Claim</Text>
               </TouchableOpacity>

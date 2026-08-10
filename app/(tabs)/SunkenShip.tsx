@@ -18,6 +18,7 @@ import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/sunkenShip.style';
 import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
 import { STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
+import { soundManager } from '../../utils/audio';
 
 const BASIC_ITEM = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
@@ -244,6 +245,7 @@ export default function SunkenShipScreen() {
 
       // Check win condition
       if (nr === dcfg.rows - 2 && nc === dcfg.cols - 2) {
+        soundManager.playSfx('correct');
         stopTimer();
         setShowWinModal(true);
         if (!rewardGranted) {

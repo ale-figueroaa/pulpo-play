@@ -3,19 +3,20 @@ import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
-  Platform,
-  Image,
 } from 'react-native';
+import OctavioHelper from '../../components/OctavioHelper';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/coralReef.style';
 import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
-import OctavioHelper from '../../components/OctavioHelper';
+import { soundManager } from '../../utils/audio';
 
 interface Creature {
   id: string;
@@ -85,7 +86,8 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, c
   );
 };
 
-export default function CoralReefScreen() {  const { width, height: windowHeight } = useWindowDimensions();
+export default function CoralReefScreen() {
+  const { width, height: windowHeight } = useWindowDimensions();
   const isMobile = Platform.OS !== 'web';
 
   const [difficulty, setDifficulty] = useState<number>(2);
@@ -171,6 +173,7 @@ export default function CoralReefScreen() {  const { width, height: windowHeigh
       return;
     }
 
+    soundManager.playSfx('tap');
     const nextFlipped = [...flipped, card.uniqueId];
     setFlipped(nextFlipped);
 
@@ -183,6 +186,7 @@ export default function CoralReefScreen() {  const { width, height: windowHeigh
 
       if (firstCard && firstCard.id === secondCard.id) {
         // ¡Pareja encontrada!
+        soundManager.playSfx('correct');
         const newMatched = [...matched, firstCard.id];
         setMatched(newMatched);
         setFlipped([]);
@@ -213,7 +217,7 @@ export default function CoralReefScreen() {  const { width, height: windowHeigh
         if (user) {
           await addSandDollars(user.id, rewardAmount);
           await addExperience(user.id, xpReward);
-          
+
           const minutes = 2; // Coral reef doesn't track time, mocking 2 minutes
           await saveGameSession(user.id, 'Coral Reef Memory', minutes, numPairs, xpReward);
         }
@@ -264,16 +268,16 @@ export default function CoralReefScreen() {  const { width, height: windowHeigh
         {/* Cuadrícula de Memorama */}
         {(() => {
           // Calculate dynamic card size based on available height in landscape
-          const headerAndTitleHeight = 160; 
+          const headerAndTitleHeight = 160;
           const availableHeight = windowHeight - headerAndTitleHeight;
           const rows = Math.ceil((numPairs * 2) / (isMobile ? 4 : numPairs));
           const maxCardHeight = Math.floor((availableHeight - (16 * (rows - 1))) / rows);
-          
+
           const cardSize = isMobile ? Math.min(85, maxCardHeight) : 115;
-          
+
           // En desktop expandimos horizontalmente (2 filas siempre), en móvil usamos 4 columnas
           const columns = isMobile ? 4 : numPairs;
-          
+
           // Fuerza el ancho exacto para que entren exactamente las columnas deseadas sin saltos de línea indeseados
           const exactContainerWidth = (cardSize * columns) + (16 * (columns - 1));
 

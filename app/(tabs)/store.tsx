@@ -1,19 +1,21 @@
 // StoreScreen.tsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View, ActivityIndicator, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, Alert, Image, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { supabase } from '../../lib/supabase';
-import { getUserSandDollars, addSandDollars } from '../../utils/db';
+import { addSandDollars, getUserSandDollars } from '../../utils/db';
 
 import { styles } from '../../styles/store.style';
 
 import { MOBILE_BREAKPOINT, NAV_ITEMS, STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
+import { soundManager } from '../../utils/audio';
 
 const BASIC_ITEM: StoreItem = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
 
-export default function StoreScreen() {  const [coins, setCoins] = useState<number>(0);
+export default function StoreScreen() {
+  const [coins, setCoins] = useState<number>(0);
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [purchasing, setPurchasing] = useState<boolean>(false);
   const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
@@ -82,6 +84,7 @@ export default function StoreScreen() {  const [coins, setCoins] = useState<num
   );
 
   const handleNavigation = (key: string) => {
+    soundManager.playSfx('tap');
     if (key === 'streak') router.push('/(tabs)/streaks' as any);
     else if (key === 'worlds') router.push('/(tabs)/homepage' as any);
     else if (key === 'store') router.push('/(tabs)/store' as any);
@@ -127,7 +130,7 @@ export default function StoreScreen() {  const [coins, setCoins] = useState<num
         await addSandDollars(user.id, -cost);
       }
       setCoins(prev => prev - cost);
-      
+
       const newOwned = [...ownedItems, selectedItem.id];
       setOwnedItems(newOwned);
       setEquippedItem(selectedItem);
@@ -144,6 +147,7 @@ export default function StoreScreen() {  const [coins, setCoins] = useState<num
       }
 
       const purchasedName = selectedItem.name;
+      soundManager.playSfx('itemBought');
       setSelectedItem(null);
       Alert.alert('Purchase Successful!', `You have acquired "${purchasedName}" and it has been equipped automatically! 🐙✨`);
     } catch (err) {

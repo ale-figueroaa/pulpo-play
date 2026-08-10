@@ -1,14 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, PanResponder, Animated, SafeAreaView, Dimensions, StyleSheet, Platform } from 'react-native';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { styles } from '../../styles/submarine.style';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '../../lib/supabase';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Dimensions, Image, PanResponder, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import OctavioHelper from '../../components/OctavioHelper';
+import { supabase } from '../../lib/supabase';
+import { styles } from '../../styles/submarine.style';
 import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
+import { soundManager } from '../../utils/audio';
 
 const DIFFICULTY_CONFIG = {
   easy: { reward: 10, xp: 20 },
@@ -30,7 +29,7 @@ interface ShapeData {
 
 const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeData, isSelected: boolean, onDrop: (shape: ShapeData, dropX: number, dropY: number) => void, onClick: (id: number) => void }) => {
   const pan = useRef(new Animated.ValueXY()).current;
-  
+
   const shapeRef = useRef(shape);
   const onDropRef = useRef(onDrop);
   const onClickRef = useRef(onClick);
@@ -40,21 +39,21 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
     onDropRef.current = onDrop;
     onClickRef.current = onClick;
   }, [shape, onDrop, onClick]);
-  
+
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => !shapeRef.current.isSorted,
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], { useNativeDriver: false }),
       onPanResponderRelease: (e, gesture) => {
         if (shapeRef.current.isSorted) return;
-        
+
         // Treat it as a click if it hardly moved
         if (Math.abs(gesture.dx) < 5 && Math.abs(gesture.dy) < 5) {
           onClickRef.current(shapeRef.current.id);
         } else {
           onDropRef.current(shapeRef.current, gesture.moveX, gesture.moveY);
         }
-        
+
         Animated.spring(pan, {
           toValue: { x: 0, y: 0 },
           useNativeDriver: false,
@@ -81,10 +80,10 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
       ]}>
         {shape.type === 'circle' && <View style={[styles.circle, { backgroundColor: shape.color }]} />}
         {shape.type === 'square' && <View style={[styles.square, { backgroundColor: shape.color }]} />}
-        {shape.type === 'triangle' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>▲</Text>}
-        {shape.type === 'star' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>★</Text>}
-        {shape.type === 'diamond' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>♦</Text>}
-        {shape.type === 'hexagon' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: {width: 0, height: 3}, textShadowRadius: 4 }}>⬢</Text>}
+        {shape.type === 'triangle' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 4 }}>▲</Text>}
+        {shape.type === 'star' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 4 }}>★</Text>}
+        {shape.type === 'diamond' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 4 }}>♦</Text>}
+        {shape.type === 'hexagon' && <Text style={{ fontSize: 65, lineHeight: 65, color: shape.color, textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 3 }, textShadowRadius: 4 }}>⬢</Text>}
       </View>
     </Animated.View>
   );
@@ -95,14 +94,14 @@ export default function SubmarineWorld() {
   const [difficulty, setDifficulty] = useState<Difficulty>(null);
   const [shapes, setShapes] = useState<ShapeData[]>([]);
   const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
-  
+
   const [greenState, setGreenState] = useState<'mad' | 'happy'>('mad');
   const [pinkState, setPinkState] = useState<'mad' | 'happy'>('mad');
-  
+
   const [showWinModal, setShowWinModal] = useState(false);
   const [moves, setMoves] = useState(0);
   const [rewardGranted, setRewardGranted] = useState(false);
-  
+
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -135,7 +134,7 @@ export default function SubmarineWorld() {
         const dcfg = DIFFICULTY_CONFIG[diff];
         await addSandDollars(user.id, dcfg.reward);
         await addExperience(user.id, dcfg.xp);
-        
+
         let numShapes = 10;
         if (diff === 'easy') numShapes = 10;
         else if (diff === 'medium') numShapes = 15;
@@ -151,7 +150,7 @@ export default function SubmarineWorld() {
 
   const greenShake = useRef(new Animated.Value(0)).current;
   const pinkShake = useRef(new Animated.Value(0)).current;
-  
+
   const greenTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -178,7 +177,7 @@ export default function SubmarineWorld() {
       const isGreen = i % 2 === 0;
       const targetMonster = isGreen ? 'green' : 'pink';
       const color = isGreen ? '#4caf50' : '#f48fb1';
-      
+
       const typesList = isGreen ? greenTypes : pinkTypes;
       const type = typesList[Math.floor(Math.random() * typesList.length)];
 
@@ -190,9 +189,9 @@ export default function SubmarineWorld() {
         isSorted: false
       });
     }
-    
+
     newShapes.sort(() => Math.random() - 0.5);
-    
+
     setShapes(newShapes);
     setDifficulty(diff);
     setGreenState('mad');
@@ -206,6 +205,7 @@ export default function SubmarineWorld() {
   };
 
   const handleShapeClick = (id: number) => {
+    soundManager.playSfx('tap');
     setSelectedShapeId(id);
   };
 
@@ -217,11 +217,13 @@ export default function SubmarineWorld() {
     setMoves(m => m + 1);
 
     if (shape.targetMonster === monsterType) {
+      soundManager.playSfx('correct');
       const newShapes = shapes.map(s => s.id === shape.id ? { ...s, isSorted: true } : s);
       setShapes(newShapes);
       triggerHappyAnimation(shape.targetMonster, newShapes);
       setSelectedShapeId(null);
     } else {
+      soundManager.playSfx('tap');
       triggerMadShake(monsterType);
       setSelectedShapeId(null);
     }
@@ -260,7 +262,7 @@ export default function SubmarineWorld() {
   const handleDrop = (shape: ShapeData, dropX: number, dropY: number) => {
     // Assuming monsters are in the top 60% of the screen
     const isUpperHalf = dropY < height * 0.6;
-    if (!isUpperHalf) return; 
+    if (!isUpperHalf) return;
 
     const droppedOnGreen = dropX < width / 2;
     const droppedOnPink = dropX >= width / 2;
@@ -292,13 +294,13 @@ export default function SubmarineWorld() {
         setRewardGranted(true);
         grantReward(difficulty);
       }
-      
+
       if (winTimeout.current) clearTimeout(winTimeout.current);
       winTimeout.current = setTimeout(() => {
         setShowWinModal(true);
       }, 500);
     }
-    
+
     return () => {
       if (winTimeout.current) clearTimeout(winTimeout.current);
     };
@@ -314,7 +316,7 @@ export default function SubmarineWorld() {
         startGame(diff);
       };
       initGame();
-      
+
       return () => {
         if (winTimeout.current) clearTimeout(winTimeout.current);
         stopTimer();
@@ -333,7 +335,7 @@ export default function SubmarineWorld() {
             <Text style={styles.backButtonText}>Quit</Text>
           </TouchableOpacity>
           <Text style={styles.title}>Submarine Sort</Text>
-          
+
           <View style={styles.statsRow}>
             <View style={styles.statBadge}>
               <Text style={styles.statLabel}>Moves</Text>
@@ -349,7 +351,7 @@ export default function SubmarineWorld() {
         <View style={styles.gameArea}>
           <View style={[styles.monstersContainer, isMobile && styles.monstersContainerMobile]}>
             {/* Green Monster */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.monsterZone}
               activeOpacity={0.8}
               onPress={() => handleMonsterClick('green')}
@@ -364,16 +366,16 @@ export default function SubmarineWorld() {
                   <Text style={{ fontSize: 24, color: '#4caf50', marginHorizontal: 2 }}>♦</Text>
                 )}
               </View>
-              <Animated.Image 
-                source={greenState === 'mad' 
-                  ? require('../../assets/images/greenMonsterMad.png') 
-                  : require('../../assets/images/greenMonsterHappy.png')} 
-                style={[styles.monsterImage, { transform: [{ translateX: greenShake }] }]} 
+              <Animated.Image
+                source={greenState === 'mad'
+                  ? require('../../assets/images/greenMonsterMad.png')
+                  : require('../../assets/images/greenMonsterHappy.png')}
+                style={[styles.monsterImage, { transform: [{ translateX: greenShake }] }]}
               />
             </TouchableOpacity>
 
             {/* Pink Monster */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.monsterZone}
               activeOpacity={0.8}
               onPress={() => handleMonsterClick('pink')}
@@ -388,22 +390,22 @@ export default function SubmarineWorld() {
                   <Text style={{ fontSize: 24, color: '#f48fb1', marginHorizontal: 2 }}>⬢</Text>
                 )}
               </View>
-              <Animated.Image 
-                source={pinkState === 'mad' 
-                  ? require('../../assets/images/pinkMonsterMad.png') 
-                  : require('../../assets/images/pinkMonsterHappy.png')} 
-                style={[styles.monsterImage, { transform: [{ translateX: pinkShake }] }]} 
+              <Animated.Image
+                source={pinkState === 'mad'
+                  ? require('../../assets/images/pinkMonsterMad.png')
+                  : require('../../assets/images/pinkMonsterHappy.png')}
+                style={[styles.monsterImage, { transform: [{ translateX: pinkShake }] }]}
               />
             </TouchableOpacity>
           </View>
 
           <View style={[styles.shapesContainer, { maxWidth: dynamicMaxWidth }]}>
             {shapes.map((shape) => (
-              <DraggableShape 
-                key={shape.id} 
-                shape={shape} 
+              <DraggableShape
+                key={shape.id}
+                shape={shape}
                 isSelected={shape.id === selectedShapeId}
-                onDrop={handleDrop} 
+                onDrop={handleDrop}
                 onClick={handleShapeClick}
               />
             ))}

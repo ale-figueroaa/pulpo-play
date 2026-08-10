@@ -1,8 +1,13 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { soundManager } from '../../utils/audio';
 
 export default function TabLayout() {
+  useEffect(() => {
+    soundManager.playBgMusic();
+  }, []);
+
   return (
     <Tabs
       screenOptions={{
