@@ -95,19 +95,23 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     zIndex: 1, // Stay behind dragging shapes if possible, or drag shapes should have higher zIndex
   },
+  monstersContainerMobile: {
+    marginTop: 100,
+    marginBottom: 30,
+  },
   monsterZone: {
     alignItems: 'center',
     width: width * 0.4,
   },
   monsterImage: {
-    width: 140,
-    height: 140,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
   },
   heartBubble: {
     position: 'absolute',
-    top: 35,
-    right: 45,
+    top: -20,
+    right: 15,
     backgroundColor: '#FFF',
     padding: 14,
     borderRadius: 30,
@@ -119,6 +123,10 @@ export const styles = StyleSheet.create({
     zIndex: 10,
     boxShadow: '0px 4px 6px rgba(0,0,0,0.2)',
     elevation: 4,
+  },
+  heartBubbleMobile: {
+    top: -45,
+    right: 5,
   },
   heartEmoji: {
     position: 'absolute',
@@ -181,9 +189,11 @@ export const styles = StyleSheet.create({
     maxWidth: 420,
     width: '100%',
   },
-  modalEmoji: {
-    fontSize: 60,
+  modalImage: {
+    width: 80,
+    height: 80,
     marginBottom: 12,
+    resizeMode: 'contain',
   },
   modalTitle: {
     fontSize: 26,
@@ -216,8 +226,13 @@ export const styles = StyleSheet.create({
     backgroundColor: '#e0f2fe',
     borderColor: '#3b82f6',
   },
+  rewardIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+  },
   rewardEmoji: {
-    fontSize: 22,
+    fontSize: 24,
   },
   rewardText: {
     fontSize: 16,

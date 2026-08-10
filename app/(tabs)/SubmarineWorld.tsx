@@ -91,6 +91,7 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
 };
 
 export default function SubmarineWorld() {
+  const isMobile = Platform.OS !== 'web';
   const [difficulty, setDifficulty] = useState<Difficulty>(null);
   const [shapes, setShapes] = useState<ShapeData[]>([]);
   const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
@@ -346,14 +347,14 @@ export default function SubmarineWorld() {
         </View>
 
         <View style={styles.gameArea}>
-          <View style={styles.monstersContainer}>
+          <View style={[styles.monstersContainer, isMobile && styles.monstersContainerMobile]}>
             {/* Green Monster */}
             <TouchableOpacity 
               style={styles.monsterZone}
               activeOpacity={0.8}
               onPress={() => handleMonsterClick('green')}
             >
-              <View style={styles.heartBubble}>
+              <View style={[styles.heartBubble, isMobile && styles.heartBubbleMobile]}>
                 <Text style={styles.heartEmoji}>❤️</Text>
                 <View style={[styles.circle, { width: 28, height: 28, backgroundColor: '#4caf50', marginHorizontal: 2 }]} />
                 {(difficulty === 'medium' || difficulty === 'hard') && (
@@ -377,7 +378,7 @@ export default function SubmarineWorld() {
               activeOpacity={0.8}
               onPress={() => handleMonsterClick('pink')}
             >
-              <View style={styles.heartBubble}>
+              <View style={[styles.heartBubble, isMobile && styles.heartBubbleMobile]}>
                 <Text style={styles.heartEmoji}>❤️</Text>
                 <View style={[styles.square, { width: 28, height: 28, backgroundColor: '#f48fb1', marginHorizontal: 2 }]} />
                 {(difficulty === 'medium' || difficulty === 'hard') && (
@@ -412,14 +413,14 @@ export default function SubmarineWorld() {
         {showWinModal && (
           <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalEmoji}>🎉🐙💰</Text>
+              <Image source={require('../../assets/images/OctavioBasic.png')} style={styles.modalImage} />
               <Text style={styles.modalTitle}>Treasure Found!</Text>
               <Text style={styles.modalSubtitle}>
                 Sorted in {moves} moves • {formatTime(elapsedSeconds)}
               </Text>
 
               <View style={styles.rewardBadge}>
-                <Text style={styles.rewardEmoji}>🪙</Text>
+                <Image source={require('../../assets/images/SandDollars.png')} style={styles.rewardIcon} />
                 <Text style={styles.rewardText}>+{difficulty ? DIFFICULTY_CONFIG[difficulty].reward : 0} Sand Dollars!</Text>
               </View>
 

@@ -19,7 +19,11 @@ const AFFIRMATIONS = [
   "Awesome!",
 ];
 
-export default function OctavioHelper() {
+interface Props {
+  hideMessage?: boolean;
+}
+
+export default function OctavioHelper({ hideMessage = false }: Props) {
   const { width, height } = useWindowDimensions();
   const isMobile = Platform.OS !== 'web';
   const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
@@ -73,7 +77,7 @@ export default function OctavioHelper() {
   useEffect(() => {
     const interval = setInterval(() => {
       setMessage(AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)]);
-    }, 5000); // Change message every 5 seconds
+    }, 15000); // Change message every 15 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -84,17 +88,18 @@ export default function OctavioHelper() {
   if (minDim < 250) return null;
 
   return (
-    <View style={styles.container} pointerEvents="none">
+    <View style={[styles.container, isMobile && styles.containerMobile]} pointerEvents="none">
       <Animated.Image 
         source={equippedItem?.image} 
         style={[styles.octavio, isMobile && styles.octavioMobile, { transform: [{ translateY: octavioTranslateY }] }]} 
       />
-      <View style={[styles.dialogWrapper, isMobile && styles.dialogWrapperMobile]}>
-        <View style={styles.dialogBubble}>
-          <Text style={styles.dialogText}>{message}</Text>
+      {!hideMessage && (
+        <View style={[styles.dialogWrapper, isMobile && styles.dialogWrapperMobile]}>
+          <View style={styles.dialogBubble}>
+            <Text style={styles.dialogText}>{message}</Text>
+          </View>
         </View>
-        <View style={styles.dialogTail} />
-      </View>
+      )}
     </View>
   );
 }
@@ -108,14 +113,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  containerMobile: {
+    bottom: 40,
+    left: 10,
+  },
   octavio: {
     width: 150,
     height: 150,
     resizeMode: 'contain',
   },
   octavioMobile: {
-    width: 65,
-    height: 65,
+    width: 80,
+    height: 80,
   },
   dialogWrapper: {
     marginLeft: 20,

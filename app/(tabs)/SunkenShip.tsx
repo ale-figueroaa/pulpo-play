@@ -1,22 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   View,
-  Platform,
 } from 'react-native';
+import OctavioHelper from '../../components/OctavioHelper';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/sunkenShip.style';
 import { addExperience, addSandDollars, saveGameSession } from '../../utils/db';
-import OctavioHelper from '../../components/OctavioHelper';
 import { STORE_ITEMS_DATA, StoreItem } from '../../utils/store';
 
 const BASIC_ITEM = STORE_ITEMS_DATA.find(item => item.id === 'basic') || STORE_ITEMS_DATA[0];
@@ -89,7 +89,8 @@ const DIFFICULTY_CONFIG = {
 // ─────────────────────────────────────────────────────────────────
 // Component
 // ─────────────────────────────────────────────────────────────────
-export default function SunkenShipScreen() {  const { width, height: windowHeight } = useWindowDimensions();
+export default function SunkenShipScreen() {
+  const { width, height: windowHeight } = useWindowDimensions();
   const isMobile = Platform.OS !== 'web';
 
   const [difficulty, setDifficulty] = useState<1 | 2 | 3>(2);
@@ -189,7 +190,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
               }
             }
           }
-        } catch (_) {}
+        } catch (_) { }
 
         initGame(diff);
       };
@@ -207,7 +208,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
         const dcfg = DIFFICULTY_CONFIG[diff];
         await addSandDollars(user.id, dcfg.reward);
         await addExperience(user.id, dcfg.xp);
-        
+
         // Save game session to backend table for progress tracking
         const minutes = Math.max(1, Math.ceil(elapsedSeconds / 60));
         const correct = diff * 5; // e.g. 5, 10, 15 "correct" answers equivalents based on difficulty
@@ -295,16 +296,16 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
 
   const cfg = DIFFICULTY_CONFIG[difficulty];
 
-  
 
-  // Cell sizing: reserve space for d-pad panel on the right
-  const dpadPanelWidth = isMobile ? 180 : 260;
+
+  // Cell sizing: reserve space for d-pad panel on the right (desktop only)
+  const dpadPanelWidth = isMobile ? 0 : 260;
   // Increase reserved width for larger gap, allow up to 700px on larger screens
-  const maxMazeWidth = Math.min(width - dpadPanelWidth - 40, isMobile ? 460 : 700);
-  
-  // Header is ~40px, Title is ~80px. Total top elements ~120px. 
+  const maxMazeWidth = Math.min(width - dpadPanelWidth - 40, isMobile ? width - 40 : 700);
+
+  // Header is ~40px, Title is ~80px. D-Pad on mobile takes ~150px. Total top/bottom elements.
   // We need game area to fit in the remaining height.
-  const reservedHeight = isMobile ? 140 : 180; // 140 to be safe on iOS
+  const reservedHeight = isMobile ? 300 : 180;
   const maxMazeHeight = Math.max(windowHeight - reservedHeight, 150);
 
   let cellSize = 0;
@@ -394,7 +395,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
       style={{ flex: 1 }}
     >
       <SafeAreaView style={styles.safeArea}>
-        <OctavioHelper />
+        <OctavioHelper hideMessage={true} />
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
           {/* ── Header ── */}
@@ -418,9 +419,9 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
             </View>
           </View>
 
-          {/* ── Maze + Side D-Pad ── */}
+          {/* ── Maze + Side/Bottom D-Pad ── */}
           {grid.length > 0 && cellSize > 0 && (
-            <View style={styles.gameAreaRow}>
+            <View style={[styles.gameAreaRow, isMobile && styles.gameAreaMobile]}>
 
               {/* Maze grid */}
               <View style={styles.mazeWrapper}>
@@ -445,7 +446,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
               </View>
 
               {/* D-Pad — right side panel */}
-              <View style={[styles.dpadPanel, { width: dpadPanelWidth }]}>
+              <View style={[styles.dpadPanel, isMobile ? styles.dpadPanelMobile : { width: dpadPanelWidth }]}>
                 {/* Stats */}
                 <View style={[styles.statsRow, { marginBottom: 8 }]}>
                   <View style={styles.statBadge}>
@@ -462,7 +463,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
                 <TouchableOpacity
                   testID="ctrl-up"
                   id="ctrl-up"
-                  style={styles.controlBtn}
+                  style={[styles.controlBtn, isMobile && styles.controlBtnMobile]}
                   onPress={() => handleMove(-1, 0)}
                   activeOpacity={0.7}
                 >
@@ -470,11 +471,11 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
                 </TouchableOpacity>
 
                 {/* LEFT  DOWN  RIGHT */}
-                <View style={styles.dpadMiddleRow}>
+                <View style={[styles.dpadMiddleRow, isMobile && styles.dpadMiddleRowMobile]}>
                   <TouchableOpacity
                     testID="ctrl-left"
                     id="ctrl-left"
-                    style={styles.controlBtn}
+                    style={[styles.controlBtn, isMobile && styles.controlBtnMobile]}
                     onPress={() => handleMove(0, -1)}
                     activeOpacity={0.7}
                   >
@@ -484,7 +485,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
                   <TouchableOpacity
                     testID="ctrl-down"
                     id="ctrl-down"
-                    style={styles.controlBtn}
+                    style={[styles.controlBtn, isMobile && styles.controlBtnMobile]}
                     onPress={() => handleMove(1, 0)}
                     activeOpacity={0.7}
                   >
@@ -494,7 +495,7 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
                   <TouchableOpacity
                     testID="ctrl-right"
                     id="ctrl-right"
-                    style={styles.controlBtn}
+                    style={[styles.controlBtn, isMobile && styles.controlBtnMobile]}
                     onPress={() => handleMove(0, 1)}
                     activeOpacity={0.7}
                   >
@@ -546,14 +547,14 @@ export default function SunkenShipScreen() {  const { width, height: windowHeig
         {showWinModal && (
           <View style={styles.modalOverlay}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalEmoji}>🎉🐙💰</Text>
+              <Image source={require('../../assets/images/OctavioBasic.png')} style={styles.modalImage} />
               <Text style={styles.modalTitle}>Treasure Found!</Text>
               <Text style={styles.modalSubtitle}>
                 Octavio escaped in {moves} moves • {formatTime(elapsedSeconds)}
               </Text>
 
               <View style={styles.rewardBadge}>
-                <Text style={styles.rewardEmoji}>🪙</Text>
+                <Image source={require('../../assets/images/SandDollars.png')} style={styles.rewardIcon} />
                 <Text style={styles.rewardText}>+{cfg.reward} Sand Dollars!</Text>
               </View>
 

@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
   View,
   Platform,
+  Image,
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { styles } from '../../styles/coralReef.style';
@@ -342,14 +343,14 @@ export default function CoralReefScreen() {  const { width, height: windowHeigh
       {showWinModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalEmoji}>🎉🐙🐚</Text>
+            <Image source={require('../../assets/images/OctavioBasic.png')} style={styles.modalImage} />
             <Text style={styles.modalTitle}>Reef Explored Successfully!</Text>
             <Text style={styles.modalSubtitle}>
               You completed all pairs in {moves} moves.
             </Text>
 
             <View style={styles.rewardBadge}>
-              <Text style={styles.rewardEmoji}>🪙</Text>
+              <Image source={require('../../assets/images/SandDollars.png')} style={styles.rewardIcon} />
               <Text style={styles.rewardText}>
                 +{rewardAmount} Sand Dollars Earned!
               </Text>

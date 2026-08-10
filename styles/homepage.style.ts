@@ -125,8 +125,8 @@ export const styles = StyleSheet.create({
   backgroundOctavioMobile: {
     width: 120,
     height: 120,
-    top: 100,
-    left: 10,
+    top: 60,
+    left: -10,
   },
 
   // ================= DESKTOP =================
@@ -346,9 +346,9 @@ export const styles = StyleSheet.create({
   },
   dialogWrapperMobile: {
     position: 'absolute',
-    top: 10,
-    alignSelf: 'center',
-    width: '90%',
+    top: 55,
+    left: 110,
+    width: 240,
   },
   dialogBubble: {
     backgroundColor: '#FFFFFF',

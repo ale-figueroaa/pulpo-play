@@ -101,6 +101,10 @@ export const styles = StyleSheet.create({
     gap: 40,
     marginVertical: 6,
   },
+  gameAreaMobile: {
+    flexDirection: 'column',
+    gap: 20,
+  },
 
   // ── Maze wrapper ────────────────────────────────────────────
   mazeWrapper: {
@@ -157,10 +161,22 @@ export const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.12)',
     boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.25)',
   },
+  dpadPanelMobile: {
+    width: '100%',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    gap: 4,
+  },
   dpadMiddleRow: {
     flexDirection: 'row',
     gap: 8,
     alignItems: 'center',
+  },
+  dpadMiddleRowMobile: {
+    width: '100%',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    gap: 0,
   },
   controlBtn: {
     width: 52,
@@ -175,6 +191,11 @@ export const styles = StyleSheet.create({
   controlBtnText: {
     fontSize: 20,
     color: '#FFFFFF',
+  },
+  controlBtnMobile: {
+    width: 70,
+    height: 45,
+    borderRadius: 14,
   },
 
   // ── Legend (below d-pad) ─────────────────────────────────────
@@ -249,9 +270,11 @@ export const styles = StyleSheet.create({
     maxWidth: 420,
     width: '100%',
   },
-  modalEmoji: {
-    fontSize: 60,
+  modalImage: {
+    width: 80,
+    height: 80,
     marginBottom: 12,
+    resizeMode: 'contain',
   },
   modalTitle: {
     fontSize: 26,
@@ -284,8 +307,13 @@ export const styles = StyleSheet.create({
     backgroundColor: '#e0f2fe',
     borderColor: '#3b82f6',
   },
+  rewardIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+  },
   rewardEmoji: {
-    fontSize: 22,
+    fontSize: 24,
   },
   rewardText: {
     fontSize: 16,

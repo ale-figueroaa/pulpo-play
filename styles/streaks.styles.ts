@@ -246,8 +246,22 @@ export const styles = StyleSheet.create({
   sectionTitleMobile: {
     fontSize: 20,
     fontWeight: '900',
-    color: '#FFFFFF',
+    color: '#0569baff',
     marginBottom: 5,
+    textAlign: 'center',
+  },
+  sectionTitleMobileMilestone: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#f3f5f7ff',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  pageTitleMobile: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#3B629B',
+    marginBottom: 10,
     textAlign: 'center',
   },
   timerTextMobile: {

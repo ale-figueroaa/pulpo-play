@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     padding: 24,
     paddingBottom: 60,
   },
@@ -177,9 +178,11 @@ export const styles = StyleSheet.create({
     width: '100%',
     boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.35)',
   },
-  modalEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
+  modalImage: {
+    width: 80,
+    height: 80,
+    marginBottom: 12,
+    resizeMode: 'contain',
   },
   modalTitle: {
     fontSize: 26,
@@ -204,6 +207,11 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 20,
     marginBottom: 24,
+  },
+  rewardIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
   },
   rewardEmoji: {
     fontSize: 24,

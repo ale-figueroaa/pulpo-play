@@ -9,7 +9,8 @@ import { useStreaksLogic, NavItem, DayData, MilestoneData } from '../../utils/st
 import { styles } from '../../styles/streaks.styles';
 
 
-export default function StreaksScreenWeb() {  // Con esta línea, conectamos la vista con el "cerebro"
+export default function StreaksScreenWeb() {
+  // Con esta línea, conectamos la vista con el "cerebro"
   const { coins, streakTotal, isMobile, visibleNavItems, DAYS_DATA, MILESTONES, timeLeft, claimedMilestones, claimMilestone } = useStreaksLogic();
 
   const handleLogout = async () => {
@@ -169,7 +170,7 @@ export default function StreaksScreenWeb() {  // Con esta línea, conectamos la
             </View>
 
             <View style={styles.milestonesContainer}>
-              <Text style={styles.sectionTitleMobile}>Milestones Rewards</Text>
+              <Text style={styles.sectionTitleMobileMilestone}>Milestones Rewards</Text>
               {MILESTONES.map((milestone) => {
                 const isUnlocked = streakTotal >= milestone.days;
                 const isClaimed = claimedMilestones.includes(milestone.id);
