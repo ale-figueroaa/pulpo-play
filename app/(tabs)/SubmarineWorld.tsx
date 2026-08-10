@@ -431,7 +431,14 @@ export default function SubmarineWorld() {
                 <Text style={[styles.rewardText, styles.rewardTextXP]}>+{difficulty ? DIFFICULTY_CONFIG[difficulty].xp : 0} XP Earned!</Text>
               </View>
 
-              <TouchableOpacity style={styles.modalPrimaryBtn} onPress={() => { setShowWinModal(false); router.push('/(tabs)/homepage' as any); }}>
+              <TouchableOpacity 
+                style={styles.modalPrimaryBtn} 
+                onPress={() => { 
+                  soundManager.playSfx('itemBought');
+                  setShowWinModal(false); 
+                  router.push('/(tabs)/homepage' as any); 
+                }}
+              >
                 <Text style={styles.modalPrimaryBtnText}>View Sand Dollars in Home</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalSecondaryBtn} onPress={() => { setShowWinModal(false); startGame(difficulty); }}>

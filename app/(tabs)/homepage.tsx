@@ -159,6 +159,7 @@ export default function HomeScreenWeb() {
   const bubbleOpacity3B = bubbleAnim3B.interpolate({ inputRange: [0, 0.05, 0.15, 0.85, 1], outputRange: [0, 0, 0.6, 0.65, 0] });
 
   const handleLogout = async () => {
+    soundManager.playSfx('tap');
     try {
       await supabase.auth.signOut();
     } catch (err) {
@@ -194,13 +195,17 @@ export default function HomeScreenWeb() {
             </View>
 
             <View style={styles.headerCenterMobile}>
-              <View style={[styles.coinsCard, styles.coinsCardMobile]}>
+              <TouchableOpacity 
+                style={[styles.coinsCard, styles.coinsCardMobile]}
+                activeOpacity={0.8}
+                onPress={() => soundManager.playSfx('itemBought')}
+              >
                 <Image
                   source={require('../../assets/images/SandDollars.png')}
                   style={[styles.coinIcon, styles.coinIconMobile]}
                 />
                 <Text style={[styles.coinsText, styles.coinsTextMobile]}>{coins}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={[styles.headerSideMobile, styles.headerSideRightMobile]}>
@@ -258,13 +263,17 @@ export default function HomeScreenWeb() {
             </View>
 
             <View style={[styles.headerSide, styles.headerSideRight, { flexDirection: 'row', alignItems: 'center', gap: 12 }]}>
-              <View style={styles.coinsCard}>
+              <TouchableOpacity 
+                style={styles.coinsCard}
+                activeOpacity={0.8}
+                onPress={() => soundManager.playSfx('itemBought')}
+              >
                 <Image
                   source={require('../../assets/images/SandDollars.png')}
                   style={styles.coinIcon}
                 />
                 <Text style={styles.coinsText}>{coins}</Text>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.profileIconMobile}
                 activeOpacity={0.8}
@@ -329,15 +338,17 @@ export default function HomeScreenWeb() {
           />
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
-            {...({ pointerEvents: 'none' } as any)}
             style={[styles.seaweedDecorationRight2, isMobile && styles.seaweedDecorationRight2Mobile, { transform: [{ rotate: seaweedRotate2 }] }]}
           />
 
           {/* --- VENTANA FLOTANTE --- */}
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => setShowDialog(false)}
             disabled={!showDialog}
+            onPress={() => {
+              soundManager.playSfx('tap');
+              setShowDialog(false);
+            }}
             style={[
               styles.dialogWrapper,
               isMobile && styles.dialogWrapperMobile,
@@ -361,14 +372,17 @@ export default function HomeScreenWeb() {
               onTouchStart={(e) => { touchStartX.current = e.nativeEvent.pageX; }}
               onTouchEnd={(e) => {
                 const diffX = touchStartX.current - e.nativeEvent.pageX;
-                if (diffX > 50) changeWorld('next');
-                if (diffX < -50) changeWorld('prev');
+                if (diffX > 50) { soundManager.playSfx('tap'); changeWorld('next'); }
+                if (diffX < -50) { soundManager.playSfx('tap'); changeWorld('prev'); }
               }}
             >
-              <TouchableOpacity
+              <TouchableOpacity 
                 activeOpacity={0.9}
                 style={[styles.worldCircle, styles.sideWorldMobile]}
-                onPress={() => changeWorld('prev')}
+                onPress={() => {
+                  soundManager.playSfx('tap');
+                  changeWorld('prev');
+                }}
               >
                 <Image source={leftWorld.image} style={styles.worldImage} />
               </TouchableOpacity>
@@ -382,6 +396,7 @@ export default function HomeScreenWeb() {
                   activeOpacity={0.8}
                   style={styles.playButtonMobile}
                   onPress={async () => {
+                    soundManager.playSfx('tap');
                     await AsyncStorage.setItem('pulpo_difficulty', difficulty.toString());
                     router.push(centerWorldItem.route as any);
                   }}
@@ -391,7 +406,7 @@ export default function HomeScreenWeb() {
                 <View style={styles.difficultyContainerMobile}>
                   <View style={styles.starsRowMobile}>
                     {[1, 2, 3].map(star => (
-                      <TouchableOpacity key={star} onPress={() => setDifficulty(star)}>
+                      <TouchableOpacity key={star} onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}>
                         <Text style={[styles.starIconMobile, difficulty >= star ? styles.starActive : styles.starInactive]}>★</Text>
                       </TouchableOpacity>
                     ))}
@@ -402,20 +417,26 @@ export default function HomeScreenWeb() {
                 </View>
               </View>
 
-              <TouchableOpacity
+              <TouchableOpacity 
                 activeOpacity={0.9}
                 style={[styles.worldCircle, styles.sideWorldMobile]}
-                onPress={() => changeWorld('next')}
+                onPress={() => {
+                  soundManager.playSfx('tap');
+                  changeWorld('next');
+                }}
               >
                 <Image source={rightWorld.image} style={styles.worldImage} />
               </TouchableOpacity>
             </View>
           ) : (
             <View style={styles.worldsRow}>
-              <TouchableOpacity
+              <TouchableOpacity 
                 activeOpacity={0.9}
                 style={[styles.worldCircle, styles.sideWorld]}
-                onPress={() => changeWorld('prev')}
+                onPress={() => {
+                  soundManager.playSfx('tap');
+                  changeWorld('prev');
+                }}
               >
                 <Image source={leftWorld.image} style={styles.worldImage} />
               </TouchableOpacity>
@@ -429,6 +450,7 @@ export default function HomeScreenWeb() {
                   activeOpacity={0.8}
                   style={styles.playButton}
                   onPress={async () => {
+                    soundManager.playSfx('tap');
                     await AsyncStorage.setItem('pulpo_difficulty', difficulty.toString());
                     router.push(centerWorldItem.route as any);
                   }}
@@ -438,7 +460,7 @@ export default function HomeScreenWeb() {
                 <View style={styles.difficultyContainer}>
                   <View style={styles.starsRow}>
                     {[1, 2, 3].map(star => (
-                      <TouchableOpacity key={star} onPress={() => setDifficulty(star)}>
+                      <TouchableOpacity key={star} onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}>
                         <Text style={[styles.starIcon, difficulty >= star ? styles.starActive : styles.starInactive]}>★</Text>
                       </TouchableOpacity>
                     ))}
@@ -449,10 +471,13 @@ export default function HomeScreenWeb() {
                 </View>
               </View>
 
-              <TouchableOpacity
+              <TouchableOpacity 
                 activeOpacity={0.9}
                 style={[styles.worldCircle, styles.sideWorld]}
-                onPress={() => changeWorld('next')}
+                onPress={() => {
+                  soundManager.playSfx('tap');
+                  changeWorld('next');
+                }}
               >
                 <Image source={rightWorld.image} style={styles.worldImage} />
               </TouchableOpacity>

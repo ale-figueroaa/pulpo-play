@@ -370,7 +370,10 @@ export default function CoralReefScreen() {
               testID="win-modal-home-btn"
               id="win-modal-home-btn"
               style={styles.modalPrimaryBtn}
-              onPress={() => router.push('/homepage')}
+              onPress={() => {
+                soundManager.playSfx('itemBought');
+                router.push('/homepage');
+              }}
             >
               <Text style={styles.modalPrimaryBtnText}>
                 View my Sand Dollars in Home

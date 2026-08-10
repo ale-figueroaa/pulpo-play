@@ -197,7 +197,10 @@ export default function StreaksScreenWeb() {
                     style={[styles.milestoneCard, { opacity: cardOpacity }]}
                     activeOpacity={0.8}
                     disabled={!isUnlocked || isClaimed}
-                    onPress={() => setSelectedMilestone(milestone)}
+                    onPress={() => {
+                      soundManager.playSfx('tap');
+                      setSelectedMilestone(milestone);
+                    }}
                   >
                     <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIcon} />
                     <View style={styles.milestoneTextContainer}>
@@ -272,7 +275,10 @@ export default function StreaksScreenWeb() {
                         style={[styles.milestoneCard, styles.milestoneCardWeb, { opacity: cardOpacity }]}
                         activeOpacity={0.8}
                         disabled={!isUnlocked || isClaimed}
-                        onPress={() => setSelectedMilestone(milestone)}
+                        onPress={() => {
+                          soundManager.playSfx('tap');
+                          setSelectedMilestone(milestone);
+                        }}
                       >
                         <Image source={require('../../assets/images/SandDollars.png')} style={styles.milestoneCoinIconWeb} />
                         <View style={styles.milestoneTextContainer}>
@@ -356,7 +362,10 @@ export default function StreaksScreenWeb() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 activeOpacity={0.8}
-                onPress={() => setSelectedMilestone(null)}
+                onPress={() => {
+                  soundManager.playSfx('tap');
+                  setSelectedMilestone(null);
+                }}
               >
                 <Text style={styles.modalCloseButtonText}>Close</Text>
               </TouchableOpacity>

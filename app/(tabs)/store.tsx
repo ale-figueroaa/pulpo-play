@@ -104,10 +104,12 @@ export default function StoreScreen() {
   const visibleNavItems = NAV_ITEMS;
 
   const handlePriceClick = (item: StoreItem) => {
+    soundManager.playSfx('tap');
     setSelectedItem(item);
   };
 
   const handleEquipItem = async (item: StoreItem) => {
+    soundManager.playSfx('tap');
     setEquippedItem(item);
     if (userId) {
       await AsyncStorage.setItem(`pulpo_equipped_item_${userId}`, JSON.stringify(item));
@@ -426,9 +428,12 @@ export default function StoreScreen() {
                     <View style={styles.modalButtonsRow}>
                       <TouchableOpacity
                         testID="store-confirm-modal-cancel"
-                        id="store-confirm-modal-cancel"
                         style={styles.cancelButton}
-                        onPress={() => !purchasing && setSelectedItem(null)}
+                        activeOpacity={0.8}
+                        onPress={() => {
+                          soundManager.playSfx('tap');
+                          if (!purchasing) setSelectedItem(null);
+                        }}
                         disabled={purchasing}
                       >
                         <Text style={styles.cancelButtonText}>Cancel</Text>

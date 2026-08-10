@@ -133,6 +133,7 @@ export default function SunkenShipScreen() {
 
   // ── Initialize / reset game ──────────────────────────────────
   const initGame = useCallback((diff: 1 | 2 | 3) => {
+    soundManager.playSfx('tap');
     difficultyRef.current = diff;
     const dcfg = DIFFICULTY_CONFIG[diff];
     const newGrid = buildMaze(dcfg.rows, dcfg.cols);
@@ -233,6 +234,8 @@ export default function SunkenShipScreen() {
       if (prev.row === -1) return prev; // sentinel for "won"
       const nr = prev.row + dr;
       const nc = prev.col + dc;
+
+      soundManager.playSfx('tap');
 
       // Bounds check
       if (nr < 0 || nr >= dcfg.rows || nc < 0 || nc >= dcfg.cols) return prev;
@@ -571,7 +574,10 @@ export default function SunkenShipScreen() {
                 testID="win-home-btn"
                 id="win-home-btn"
                 style={styles.modalPrimaryBtn}
-                onPress={() => router.push('/homepage')}
+                onPress={() => {
+                  soundManager.playSfx('itemBought');
+                  router.push('/homepage');
+                }}
               >
                 <Text style={styles.modalPrimaryBtnText}>View Sand Dollars in Home</Text>
               </TouchableOpacity>

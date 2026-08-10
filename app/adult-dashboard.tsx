@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { styles } from '../styles/dashboard.style';
 import { supabase } from '../lib/supabase';
+import { soundManager } from '../utils/audio';
 import { getWeeklyProgress, getUserProfileByAuthId, getRecentActivity } from '../utils/db';
 export default function AdultDashboardScreen() {
   const [isUnlocked, setIsUnlocked] = useState(false);
@@ -53,6 +54,7 @@ export default function AdultDashboardScreen() {
   };
 
   const handleUnlock = () => {
+    soundManager.playSfx('tap');
     if (mathAnswer.trim() === mathProblem.answer) {
       setIsUnlocked(true);
       setErrorText('');
@@ -63,6 +65,7 @@ export default function AdultDashboardScreen() {
   };
 
   const handleBackToProfile = () => {
+    soundManager.playSfx('tap');
     router.replace('/(tabs)/profile' as any);
   };
 

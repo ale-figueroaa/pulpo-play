@@ -20,7 +20,7 @@ class SoundManager {
   }
 
   private async init() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return; // Skip SSR
 
     try {
       const storedMute = await AsyncStorage.getItem('pulpo_mute_sound');
@@ -28,11 +28,13 @@ class SoundManager {
         this.isMuted = true;
       }
       
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-      });
+      if (Platform.OS !== 'web') {
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: false,
+          shouldDuckAndroid: true,
+        });
+      }
 
       // Pre-load sounds
       await this.preloadSound('tap', SOUNDS.tap);
@@ -105,12 +107,8 @@ class SoundManager {
         await soundToPlay.replayAsync();
       } else {
         const { sound } = await Audio.Sound.createAsync(SOUNDS[name]);
+        this.sfxSounds[name] = sound; // Cache it
         await sound.playAsync();
-        sound.setOnPlaybackStatusUpdate(status => {
-          if (status.isLoaded && status.didJustFinish) {
-            sound.unloadAsync();
-          }
-        });
       }
     } catch (e) {
       console.warn(`Failed to play ${name}`, e);
@@ -118,4 +116,5 @@ class SoundManager {
   }
 }
 
+import { Platform } from 'react-native';
 export const soundManager = new SoundManager();
