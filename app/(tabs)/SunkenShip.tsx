@@ -92,7 +92,7 @@ const DIFFICULTY_CONFIG = {
 // ─────────────────────────────────────────────────────────────────
 export default function SunkenShipScreen() {
   const { width, height: windowHeight } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
 
   const [difficulty, setDifficulty] = useState<1 | 2 | 3>(2);
   const [grid, setGrid] = useState<Grid>([]);

@@ -88,7 +88,7 @@ const MemoramaCard = ({ card, isMobile, isCardFlipped, isCardMatched, onPress, c
 
 export default function CoralReefScreen() {
   const { width, height: windowHeight } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
 
   const [difficulty, setDifficulty] = useState<number>(2);
 

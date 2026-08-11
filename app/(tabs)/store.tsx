@@ -23,7 +23,7 @@ export default function StoreScreen() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const { width } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
 
   const fetchStoreData = async () => {
     try {

@@ -90,7 +90,8 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
 };
 
 export default function SubmarineWorld() {
-  const isMobile = Platform.OS !== 'web';
+  const { width, height: windowHeight } = useWindowDimensions();
+  const isMobile = Platform.OS !== 'web' || width < 768;
   const [difficulty, setDifficulty] = useState<Difficulty>(null);
   const [shapes, setShapes] = useState<ShapeData[]>([]);
   const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);

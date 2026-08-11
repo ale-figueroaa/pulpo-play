@@ -35,7 +35,7 @@ export const useHomeLogic = () => {
   const touchStartX = useRef(0);
   
   const { width } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
 
   const visibleNavItems = isMobile 
     ? NAV_ITEMS.filter(item => item.key !== 'profile') 
