@@ -406,14 +406,21 @@ export default function HomeScreenWeb() {
                 <View style={styles.difficultyContainerMobile}>
                   <View style={styles.starsRowMobile}>
                     {[1, 2, 3].map(star => (
-                      <TouchableOpacity key={star} onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}>
+                      <TouchableOpacity 
+                        key={star} 
+                        style={{ padding: 12, marginHorizontal: -4 }} // Give it a massive touch target
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}
+                      >
                         <Text style={[styles.starIconMobile, difficulty >= star ? styles.starActive : styles.starInactive]}>★</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
-                  <Text style={styles.difficultyLabelMobile}>
-                    {difficulty === 1 ? 'Easy' : difficulty === 2 ? 'Medium' : 'Hard'}
-                  </Text>
+                  <TouchableOpacity onPress={() => { soundManager.playSfx('tap'); setDifficulty(difficulty === 3 ? 1 : difficulty + 1); }}>
+                    <Text style={styles.difficultyLabelMobile}>
+                      {difficulty === 1 ? 'Easy' : difficulty === 2 ? 'Medium' : 'Hard'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
 
@@ -460,14 +467,21 @@ export default function HomeScreenWeb() {
                 <View style={styles.difficultyContainer}>
                   <View style={styles.starsRow}>
                     {[1, 2, 3].map(star => (
-                      <TouchableOpacity key={star} onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}>
+                      <TouchableOpacity 
+                        key={star} 
+                        style={{ padding: 10, marginHorizontal: -4 }}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        onPress={() => { soundManager.playSfx('tap'); setDifficulty(star); }}
+                      >
                         <Text style={[styles.starIcon, difficulty >= star ? styles.starActive : styles.starInactive]}>★</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
-                  <Text style={styles.difficultyLabel}>
-                    {difficulty === 1 ? 'Easy' : difficulty === 2 ? 'Medium' : 'Hard'}
-                  </Text>
+                  <TouchableOpacity onPress={() => { soundManager.playSfx('tap'); setDifficulty(difficulty === 3 ? 1 : difficulty + 1); }}>
+                    <Text style={styles.difficultyLabel}>
+                      {difficulty === 1 ? 'Easy' : difficulty === 2 ? 'Medium' : 'Hard'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
 
