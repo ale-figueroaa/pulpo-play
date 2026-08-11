@@ -98,6 +98,23 @@ class SoundManager {
     }
   }
 
+  public async stopBgMusic() {
+    try {
+      if (this.bgMusicSound) {
+        await this.bgMusicSound.stopAsync();
+        await this.bgMusicSound.unloadAsync();
+        this.bgMusicSound = null;
+      }
+      if (this.bubblesSound) {
+        await this.bubblesSound.stopAsync();
+        await this.bubblesSound.unloadAsync();
+        this.bubblesSound = null;
+      }
+    } catch (e) {
+      console.warn('Failed to stop bg music', e);
+    }
+  }
+
   public async playSfx(name: 'tap' | 'correct' | 'itemBought') {
     if (this.isMuted) return;
     

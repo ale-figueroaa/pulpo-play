@@ -529,6 +529,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
+    elevation: 10,
     marginHorizontal: -25,
     transform: [{ translateY: 15 }],
   },
@@ -571,11 +572,15 @@ export const styles = StyleSheet.create({
   difficultyContainerMobile: {
     alignItems: 'center',
     marginTop: 12,
+    zIndex: 100,
+    elevation: 10,
   },
   starsRowMobile: {
     flexDirection: 'row',
     gap: 8,
     marginBottom: 2,
+    zIndex: 100,
+    elevation: 10,
   },
   starIconMobile: {
     fontSize: 26,

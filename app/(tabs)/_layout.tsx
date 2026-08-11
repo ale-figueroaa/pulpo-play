@@ -12,6 +12,7 @@ export default function TabLayout() {
     // Escuchar cambios de autenticación
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
+        soundManager.stopBgMusic();
         router.replace('/(auth)/login');
       } else {
         ensureUsuarioProfile(session.user);
@@ -21,6 +22,7 @@ export default function TabLayout() {
     // Revisar sesión inicial
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
+        soundManager.stopBgMusic();
         router.replace('/(auth)/login');
       } else {
         ensureUsuarioProfile(session.user);
@@ -31,6 +33,7 @@ export default function TabLayout() {
 
     return () => {
       authListener.subscription.unsubscribe();
+      soundManager.stopBgMusic();
     };
   }, []);
 
