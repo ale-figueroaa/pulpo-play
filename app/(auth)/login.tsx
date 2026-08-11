@@ -53,10 +53,36 @@ export default function LoginScreen() {  const router = useRouter();
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
+          skipBrowserRedirect: true,
         },
       });
+      
+      if (error) throw error;
+
       if (data?.url) {
-        await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+        if (Platform.OS === 'web') {
+          window.location.assign(data.url);
+        } else {
+          const res = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+          if (res.type === 'success' && res.url) {
+            const urlStr = res.url;
+            const queryString = urlStr.includes('#') ? urlStr.split('#')[1] : urlStr.split('?')[1];
+            if (queryString) {
+              const params: Record<string, string> = {};
+              queryString.split('&').forEach(pair => {
+                const [key, value] = pair.split('=');
+                if (key && value) params[key] = decodeURIComponent(value);
+              });
+              if (params.access_token && params.refresh_token) {
+                await supabase.auth.setSession({
+                  access_token: params.access_token,
+                  refresh_token: params.refresh_token,
+                });
+                router.replace('/(tabs)/homepage');
+              }
+            }
+          }
+        }
       }
     } catch (err) {
       console.error('Google Auth Error:', err);
