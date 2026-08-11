@@ -515,13 +515,12 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // ================= ESTILOS DEL CARRUSEL CONTROLADO MOBILE =================
   carouselWrapperMobile: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 300,
+    minHeight: 350,
     marginTop: 20,
     marginBottom: 20,
   },

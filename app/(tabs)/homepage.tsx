@@ -338,6 +338,7 @@ export default function HomeScreenWeb() {
           />
           <Animated.Image
             source={require('../../assets/images/seaweed.png')}
+            {...({ pointerEvents: 'none' } as any)}
             style={[styles.seaweedDecorationRight2, isMobile && styles.seaweedDecorationRight2Mobile, { transform: [{ rotate: seaweedRotate2 }] }]}
           />
 
