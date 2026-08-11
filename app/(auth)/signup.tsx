@@ -66,38 +66,46 @@ export default function SignUpScreen() {  const router = useRouter();
   const handleGoogleAuth = async () => {
     try {
       setLoading(true);
-      const redirectUrl = Linking.createURL('/(tabs)/homepage');
+      const redirectUrl = Platform.OS === 'web' 
+        ? window.location.origin 
+        : Linking.createURL('/(tabs)/homepage');
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
-          skipBrowserRedirect: true,
+          skipBrowserRedirect: Platform.OS !== 'web',
         },
       });
       
       if (error) throw error;
 
-      if (data?.url) {
-        if (Platform.OS === 'web') {
-          window.location.assign(data.url);
-        } else {
-          const res = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
-          if (res.type === 'success' && res.url) {
-            const urlStr = res.url;
-            const queryString = urlStr.includes('#') ? urlStr.split('#')[1] : urlStr.split('?')[1];
-            if (queryString) {
-              const params: Record<string, string> = {};
-              queryString.split('&').forEach(pair => {
-                const [key, value] = pair.split('=');
-                if (key && value) params[key] = decodeURIComponent(value);
+      if (Platform.OS !== 'web' && data?.url) {
+        const res = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+        if (res.type === 'success' && res.url) {
+          const urlStr = res.url;
+          let queryString = '';
+          if (urlStr.includes('#')) {
+            queryString = urlStr.split('#')[1];
+          } else if (urlStr.includes('?')) {
+            queryString = urlStr.split('?')[1];
+          }
+
+          if (queryString) {
+            const params: Record<string, string> = {};
+            queryString.split('&').forEach(pair => {
+              const [key, value] = pair.split('=');
+              if (key && value) params[key] = decodeURIComponent(value);
+            });
+
+            if (params.access_token && params.refresh_token) {
+              await supabase.auth.setSession({
+                access_token: params.access_token,
+                refresh_token: params.refresh_token,
               });
-              if (params.access_token && params.refresh_token) {
-                await supabase.auth.setSession({
-                  access_token: params.access_token,
-                  refresh_token: params.refresh_token,
-                });
-                router.replace('/(tabs)/homepage');
-              }
+              router.replace('/(tabs)/homepage');
+            } else if (params.code) {
+              await supabase.auth.exchangeCodeForSession(params.code);
+              router.replace('/(tabs)/homepage');
             }
           }
         }

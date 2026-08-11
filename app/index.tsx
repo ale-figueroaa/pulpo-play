@@ -21,10 +21,43 @@ export default function WebLandingScreen() {
   const isWeb = Platform.OS === 'web';
   const isMobileScreen = width < 768;
 
-  // 2. Si el usuario está en la app nativa (móvil) O si está en web pero desde un celular, lo llevamos directo a la experiencia de la app!
+  // 2. Si el usuario está en la app nativa (móvil) O si está en web pero desde un celular, lo llevamos directo a la app
   if (!isWeb || isMobileScreen) {
     return <Redirect href="/(auth)/login" />;
   }
+
+  React.useEffect(() => {
+    import('../lib/supabase').then(({ supabase }) => {
+      // Si la URL trae un code de Google, intentamos intercambiarlo directamente (fallback)
+      if (isWeb && typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+          supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+            if (!error && data.session) {
+              router.replace('/(tabs)/homepage' as any);
+            }
+          });
+        }
+      }
+
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+          router.replace('/(tabs)/homepage' as any);
+        }
+      });
+
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          router.replace('/(tabs)/homepage' as any);
+        }
+      });
+
+      return () => {
+        authListener?.subscription.unsubscribe();
+      };
+    });
+  }, []);
 
   // 3. Renderizado principal de la Landing Page para Web
   return (

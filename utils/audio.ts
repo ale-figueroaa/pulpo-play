@@ -1,5 +1,6 @@
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 export const SOUNDS = {
   bgMusic: require('../assets/sounds/backgroundMusic.mp3'),
@@ -94,7 +95,25 @@ class SoundManager {
         await this.bubblesSound.playAsync();
       }
     } catch (e) {
-      console.warn('Failed to play bg music', e);
+      console.warn('Failed to play bg music, setting up web interaction fallback', e);
+      if (Platform.OS === 'web' && typeof document !== 'undefined') {
+        const tryPlay = async () => {
+          if (!this.isMuted) {
+            try {
+              await this.bgMusicSound?.playAsync();
+              await this.bubblesSound?.playAsync();
+            } catch (err) {
+              console.warn('Still failed to play bg music', err);
+            }
+          }
+          document.removeEventListener('click', tryPlay, true);
+          document.removeEventListener('touchstart', tryPlay, true);
+          document.removeEventListener('pointerdown', tryPlay, true);
+        };
+        document.addEventListener('click', tryPlay, true);
+        document.addEventListener('touchstart', tryPlay, true);
+        document.addEventListener('pointerdown', tryPlay, true);
+      }
     }
   }
 
@@ -133,5 +152,4 @@ class SoundManager {
   }
 }
 
-import { Platform } from 'react-native';
 export const soundManager = new SoundManager();
