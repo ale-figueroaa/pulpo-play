@@ -70,7 +70,8 @@ const DraggableShape = ({ shape, isSelected, onDrop, onClick }: { shape: ShapeDa
     <Animated.View
       style={[
         styles.shapeWrapper,
-        { transform: [{ translateX: pan.x }, { translateY: pan.y }] }
+        { transform: [{ translateX: pan.x }, { translateY: pan.y }] },
+        Platform.OS === 'web' ? { touchAction: 'none', userSelect: 'none' } as any : {}
       ]}
       {...panResponder.panHandlers}
     >
@@ -275,10 +276,12 @@ export default function SubmarineWorld() {
     if (droppedOnPink && shape.targetMonster === 'pink') correct = true;
 
     if (correct) {
+      soundManager.playSfx('correct');
       const newShapes = shapes.map(s => s.id === shape.id ? { ...s, isSorted: true } : s);
       setShapes(newShapes);
       triggerHappyAnimation(shape.targetMonster, newShapes);
     } else {
+      soundManager.playSfx('tap');
       const target = droppedOnGreen ? 'green' : 'pink';
       triggerMadShake(target);
     }
