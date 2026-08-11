@@ -9,17 +9,20 @@ import {
   TouchableOpacity,
   View,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { styles } from '../styles/landing.style';
 
 export default function WebLandingScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
 
-  // 1. Detectamos la plataforma (si se ejecuta en web, iOS o Android)
+  // 1. Detectamos la plataforma
   const isWeb = Platform.OS === 'web';
+  const isMobileScreen = width < 768;
 
-  // 2. Si el usuario está en la app nativa (móvil), lo llevamos directo al Login
-  if (!isWeb) {
+  // 2. Si el usuario está en la app nativa (móvil) O si está en web pero desde un celular, lo llevamos directo a la experiencia de la app!
+  if (!isWeb || isMobileScreen) {
     return <Redirect href="/(auth)/login" />;
   }
 
