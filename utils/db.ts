@@ -14,6 +14,38 @@ export interface UsuarioData {
 }
 
 /**
+ * Garantiza que el usuario tenga un perfil en la tabla Usuario (útil para Google Auth)
+ */
+export const ensureUsuarioProfile = async (user: any): Promise<void> => {
+  if (!user || !user.id) return;
+  
+  try {
+    const { data: profile } = await supabase
+      .from('Usuario')
+      .select('*')
+      .eq('idUsuario', user.id)
+      .maybeSingle();
+
+    const googleName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Diver';
+
+    if (!profile) {
+      // El perfil no existe, lo creamos
+      await supabase.from('Usuario').insert({
+        idUsuario: user.id,
+        nombreUsuario: googleName,
+        sandDollars: 0,
+        experienceLevel: 0
+      });
+    } else if (!profile.nombreUsuario) {
+      // El perfil existe pero el trigger falló al asignar el nombre
+      await supabase.from('Usuario').update({ nombreUsuario: googleName }).eq('idUsuario', user.id);
+    }
+  } catch (error) {
+    console.error('Error in ensureUsuarioProfile:', error);
+  }
+};
+
+/**
  * Inicia sesión verificando si el identificador es correo electrónico o nombre de usuario (nombreUsuario)
  * junto con su contraseña. Retorna el id del usuario autenticado.
  */

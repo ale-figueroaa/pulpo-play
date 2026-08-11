@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { soundManager } from '../../utils/audio';
 import { supabase } from '../../lib/supabase';
+import { ensureUsuarioProfile } from '../../utils/db';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function TabLayout() {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session) {
         router.replace('/(auth)/login');
+      } else {
+        ensureUsuarioProfile(session.user);
       }
     });
 
@@ -19,6 +22,8 @@ export default function TabLayout() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
         router.replace('/(auth)/login');
+      } else {
+        ensureUsuarioProfile(session.user);
       }
     });
 
