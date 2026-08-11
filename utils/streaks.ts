@@ -47,7 +47,7 @@ export const useStreaksLogic = () => {
   const [claimedMilestones, setClaimedMilestones] = useState<string[]>([]);
 
   const { width } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
 
   const calculateStreak = async () => {
     try {

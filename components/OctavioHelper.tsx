@@ -25,7 +25,7 @@ interface Props {
 
 export default function OctavioHelper({ hideMessage = false }: Props) {
   const { width, height } = useWindowDimensions();
-  const isMobile = Platform.OS !== 'web';
+  const isMobile = Platform.OS !== 'web' || width < 768;
   const [equippedItem, setEquippedItem] = useState<StoreItem>(BASIC_ITEM);
   const [message, setMessage] = useState(AFFIRMATIONS[0]);
   const floatAnim = useRef(new Animated.Value(0)).current;
